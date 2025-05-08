@@ -11,8 +11,8 @@ class AppConfig {
   //configure this
   // static String copyright_text =
   //     "@ Deve Finance " + this_year; //this shows in the splash screen
-  static const String app_name_ar = "Appleerastore";
-  static const String app_name_en = "Appleerastore";
+  static const String app_name_ar = "Mac Era";
+  static const String app_name_en = "Mac Era";
   /// This get the name of the application in deviceLocale
   static String appNameOnDeviceLang = PlatformDispatcher.instance.locale.languageCode == 'ar' ? app_name_ar : app_name_en;
 
