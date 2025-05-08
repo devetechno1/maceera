@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "58373654838",
+    "project_id": "appleerastore",
+    "storage_bucket": "appleerastore.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58373654838:android:8c66e06cf2d9a3b0024b97",
+        "android_client_info": {
+          "package_name": "com.appleerastore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB06d2oaA5zX1QRW1HqTmCq6NiuvrWYT24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58373654838:android:3815c96fe9fab591024b97",
+        "android_client_info": {
+          "package_name": "com.appleerastore.appleerastore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB06d2oaA5zX1QRW1HqTmCq6NiuvrWYT24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58373654838:android:7b906dee2ae7f8e1024b97",
+        "android_client_info": {
+          "package_name": "com.appleerastore.storeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB06d2oaA5zX1QRW1HqTmCq6NiuvrWYT24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
