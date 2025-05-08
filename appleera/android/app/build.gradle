@@ -23,7 +23,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.appleerastore.storeapp"
+    namespace "com.appleerastore.macera"
     compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
@@ -45,7 +45,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.appleerastore.storeapp"
+        applicationId "com.appleerastore.macera"
         minSdkVersion 23
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
