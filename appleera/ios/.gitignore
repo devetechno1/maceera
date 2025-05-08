@@ -32,3 +32,11 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+
+# Ignore Xcode user-specific settings
+**/xcuserdata/
+**/*.xcuserstate
+
+# Ignore Simulator logs and cache
+**/CoreSimulator/
