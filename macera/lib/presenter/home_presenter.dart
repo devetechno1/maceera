@@ -624,7 +624,13 @@ import 'package:active_ecommerce_cms_demo_app/repositories/sliders_repository.da
 import 'package:active_ecommerce_cms_demo_app/single_banner/model.dart';
 import 'package:flutter/material.dart';
 
+import '../data_model/popup_banner_model.dart';
+import '../helpers/shared_value_helper.dart';
 import '../repositories/brand_repository.dart';
+import '../status/execute_and_handle_remote_errors.dart';
+import '../status/status.dart';
+import '../ui_elements/pop_up_banner.dart';
+import 'package:one_context/one_context.dart';
 
 class HomePresenter extends ChangeNotifier {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -847,6 +853,29 @@ class HomePresenter extends ChangeNotifier {
 
     showAllLoadingContainer = false;
     notifyListeners();
+  }
+    Future<void> showPopupBanner() async {
+    final Status<List<PopupBannerModel>> bannersStatus = await executeAndHandleErrors(() => SlidersRepository().fetchBannerPopupData());
+
+    if (bannersStatus is Success<List<PopupBannerModel>>){
+      final List<PopupBannerModel> banners = List.unmodifiable(bannersStatus.data);
+      if (banners.isNotEmpty) {
+        final BuildContext? context = OneContext().context;
+        if (context != null) {
+          int index = lastIndexPopupBanner.$ + 1;
+          if (index >= banners.length) index = 0;
+
+          lastIndexPopupBanner.$ = index;
+          lastIndexPopupBanner.save();
+
+          
+          showDialog(
+            context: context,
+            builder: (context) => PopupBannerDialog(popupBannerModel: banners[index]),
+          );
+        }
+      }
+    }
   }
 
   reset() {

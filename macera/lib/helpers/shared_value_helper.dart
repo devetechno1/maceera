@@ -176,6 +176,10 @@ final SharedValue<int> minimum_order_quantity = SharedValue(
   value: 0, // initial value
   key: "minimum_order_quantity", // disk storage key for shared_preferences
 );
+final SharedValue<int> lastIndexPopupBanner = SharedValue(
+  value: -1, // initial value
+  key: "lastIndexPopupBanner", // disk storage key for shared_preferences
+);
 
 bool minOrderAmountNotEnough(double amount) => minimum_order_amount_check.$ && amount < minimum_order_amount.$;
 bool minOrderQuantityNotEnough(int quantity) => minimum_order_quantity_check.$ && quantity < minimum_order_quantity.$;
