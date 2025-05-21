@@ -23,6 +23,7 @@ import '../custom/home_search_box.dart';
 import '../custom/pirated_widget.dart';
 import '../other_config.dart';
 import '../services/push_notification_service.dart';
+import '../ui_elements/pop_up_banner.dart';
 HomePresenter homeData = HomePresenter();
 
 class Home extends StatefulWidget {
@@ -51,6 +52,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     });
 
     super.initState();
+    Future.delayed(const Duration(seconds: 1), () {
+      showPopupBanner(context);
+    });
   }
 
   void change() {
