@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Loading {
   static BuildContext? _context;
 
-  static show(BuildContext context) async {
+  static Future<Future> show(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -12,7 +12,7 @@ class Loading {
         return AlertDialog(
             content: Row(
           children: [
-            CircularProgressIndicator(),
+            const CircularProgressIndicator(),
             const SizedBox(
               width: 10,
             ),
@@ -33,10 +33,10 @@ class Loading {
     return value
         ? Container(
             alignment: Alignment.center,
-            child: SizedBox(
+            child: const SizedBox(
                 height: 20, width: 20, child: CircularProgressIndicator()),
           )
-        : SizedBox(
+        : const SizedBox(
             height: 5,
             width: 5,
           );

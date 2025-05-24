@@ -15,12 +15,12 @@ import '../../helpers/shared_value_helper.dart';
 import '../profile.dart';
 
 class NagadScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
-  NagadScreen(
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
+  const NagadScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -39,7 +39,7 @@ class _NagadScreenState extends State<NagadScreen> {
   String? _initial_url = "";
   bool _initial_url_fetched = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -55,8 +55,8 @@ class _NagadScreenState extends State<NagadScreen> {
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -74,8 +74,8 @@ class _NagadScreenState extends State<NagadScreen> {
     getSetInitialUrl();
   }
 
-  getSetInitialUrl() async {
-    var nagadUrlResponse = await PaymentRepository().getNagadBeginResponse(
+  Future<void> getSetInitialUrl() async {
+    final nagadUrlResponse = await PaymentRepository().getNagadBeginResponse(
         widget.payment_type,
         _combined_order_id,
         widget.package_id,
@@ -134,7 +134,7 @@ class _NagadScreenState extends State<NagadScreen> {
   }
 
   void getData() {
-    String? payment_details = '';
+    String? paymentDetails = '';
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -149,19 +149,19 @@ class _NagadScreenState extends State<NagadScreen> {
         Navigator.pop(context);
       } else if (widget.payment_type == "order_re_payment") {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return OrderList(from_checkout: true);
+          return const OrderList(from_checkout: true);
         }));
       } else if (responseJSON["result"] == true) {
-        payment_details = responseJSON['payment_details'];
-        onPaymentSuccess(payment_details);
+        paymentDetails = responseJSON['payment_details'];
+        onPaymentSuccess(paymentDetails);
       }
     });
   }
 
-  onPaymentSuccess(payment_details) async {
-    var nagadPaymentProcessResponse = await PaymentRepository()
+  Future<void> onPaymentSuccess(paymentDetails) async {
+    final nagadPaymentProcessResponse = await PaymentRepository()
         .getNagadPaymentProcessResponse(widget.payment_type, widget.amount,
-            _combined_order_id, payment_details);
+            _combined_order_id, paymentDetails);
 
     if (nagadPaymentProcessResponse.result == false) {
       ToastComponent.showDialog(
@@ -175,21 +175,22 @@ class _NagadScreenState extends State<NagadScreen> {
       nagadPaymentProcessResponse.message!,
     );
     if (widget.payment_type == "cart_payment") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "wallet_payment") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return Wallet(from_recharge: true);
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const Wallet(from_recharge: true);
       }));
     } else if (widget.payment_type == "customer_package_payment") {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Profile();
+      await Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) {
+        return const Profile();
       }));
     }
   }
 
-  buildBody() {
+  Widget? buildBody() {
     if (_order_init == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -233,7 +234,7 @@ class _NagadScreenState extends State<NagadScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_nagad,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../../custom/useful_elements.dart';
@@ -13,7 +14,7 @@ class ImageShow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (notificationShowType == 'only_text') {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     if (notificationShowType == 'design_1') {
@@ -37,7 +38,7 @@ class ImageShow extends StatelessWidget {
             width: 38.0,
             height: 40.0,
             fit: BoxFit.cover,
-            borderRadius: BorderRadius.circular(8)),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall)),
       );
     }
     if (notificationShowType == 'design_3') {
@@ -49,7 +50,8 @@ class ImageShow extends StatelessWidget {
             width: 38.0,
             height: 40.0,
             fit: BoxFit.cover,
-            borderRadius: BorderRadius.circular(116)),
+            borderRadius:
+                BorderRadius.circular(AppDimensions.radiusVeryVeryExtra)),
       );
     }
 

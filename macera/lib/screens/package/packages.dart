@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/device_info.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/enum_classes.dart';
@@ -32,14 +33,14 @@ class _UpdatePackageState extends State<UpdatePackage> {
   bool _isFetchAllData = false;
 
   Future<bool> getPackageList() async {
-    var response = await CustomerPackageRepository().getList();
+    final response = await CustomerPackageRepository().getList();
     _packages.addAll(response.data!);
     setState(() {});
     return true;
   }
 
   Future<bool> sendFreePackageReq(id) async {
-    var response = await CustomerPackageRepository().freePackagePayment(id);
+    final response = await CustomerPackageRepository().freePackagePayment(id);
     ToastComponent.showDialog(
       response.message,
     );
@@ -88,7 +89,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
       onWillPop: () {
         if (widget.goHome) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Main();
+            return const Main();
           }));
         }
 
@@ -118,9 +119,9 @@ class _UpdatePackageState extends State<UpdatePackage> {
         body: RefreshIndicator(
           onRefresh: refresh,
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
               child: buildList(),
             ),
           ),
@@ -132,14 +133,14 @@ class _UpdatePackageState extends State<UpdatePackage> {
   ListView buildList() {
     return _isFetchAllData
         ? ListView.separated(
-            padding: EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: AppDimensions.paddingSupSmall),
             separatorBuilder: (context, index) {
-              return SizedBox(
+              return const SizedBox(
                 height: 10,
               );
             },
             itemCount: _packages.length,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return packageItem(
@@ -168,10 +169,10 @@ class _UpdatePackageState extends State<UpdatePackage> {
       String packagePrice,
       String packageProduct,
       price,
-      package_id) {
+      packageId) {
     print(url);
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecorations.buildBoxDecoration_1(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,33 +187,37 @@ class _UpdatePackageState extends State<UpdatePackage> {
               padding: const EdgeInsets.only(top: 4.0),
               child: Text(
                 packageName,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                    fontSize: 17, fontWeight: FontWeight.normal),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: AppDimensions.paddingSmall),
               child: Container(
                 width: DeviceInfo(context).width! / 2,
                 decoration: BoxDecoration(
-                    color: MyTheme.accent_color,
-                    borderRadius: BorderRadius.circular(6)),
-                padding: EdgeInsets.symmetric(vertical: 10),
+                    color: Theme.of(context).primaryColor,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusHalfSmall)),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                     onTap: () {
                       if (is_logged_in.$) {
                         if (double.parse(price.toString()) <= 0) {
-                          sendFreePackageReq(package_id);
+                          sendFreePackageReq(packageId);
                           return;
                         } else {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Checkout(
-                                        title: LangText(context).local.purchase_package,
+                                        title: LangText(context)
+                                            .local
+                                            .purchase_package,
                                         rechargeAmount:
                                             double.parse(price.toString()),
                                         paymentFor: PaymentFor.PackagePay,
-                                        packageId: package_id,
+                                        packageId: packageId,
                                       )));
                         }
                       } else {
@@ -223,7 +228,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
                     radius: 3.0,
                     child: Text(
                       packagePrice,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: MyTheme.white),
@@ -232,7 +237,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: AppDimensions.paddingSmall),
               child: Container(
                 width: DeviceInfo(context).width! / 2,
                 child: Row(
@@ -240,14 +245,14 @@ class _UpdatePackageState extends State<UpdatePackage> {
                   children: [
                     Icon(
                       Icons.check_circle,
-                      color: MyTheme.accent_color,
+                      color: Theme.of(context).primaryColor,
                       size: 11,
                     ),
                     Text(
                       packageProduct +
                           " " +
                           LangText(context).local.upload_limit_ucf,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.normal),
                     ),
                   ],

@@ -14,10 +14,10 @@ import '../data_model/reorder_response.dart';
 class OrderRepository {
   Future<dynamic> getOrderList(
       {page = 1, payment_status = "", delivery_status = ""}) async {
-    String url = ("${AppConfig.BASE_URL}/purchase-history" +
-        "?page=${page}&payment_status=${payment_status}&delivery_status=${delivery_status}");
+    final String url = ("${AppConfig.BASE_URL}/purchase-history" +
+        "?page=$page&payment_status=$payment_status&delivery_status=$delivery_status");
 
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);
@@ -29,10 +29,10 @@ class OrderRepository {
   }
 
   Future<OrderDetailResponse?> getOrderDetails({int? id = 0}) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/purchase-history-details/" + id.toString());
 
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);
@@ -43,7 +43,7 @@ class OrderRepository {
   }
 
   Future<ReOrderResponse> reOrder({int? id = 0}) async {
-    String url = ("${AppConfig.BASE_URL}/re-order/$id");
+    final String url = ("${AppConfig.BASE_URL}/re-order/$id");
 
     final response = await ApiRequest.get(
         url: url,
@@ -56,7 +56,7 @@ class OrderRepository {
   }
 
   Future<CommonResponse> cancelOrder({int? id = 0}) async {
-    String url = "${AppConfig.BASE_URL}/order/cancel/$id";
+    final String url = "${AppConfig.BASE_URL}/order/cancel/$id";
 
     final response = await ApiRequest.get(
         url: url,
@@ -69,9 +69,9 @@ class OrderRepository {
   }
 
   Future<dynamic> getOrderItems({int? id = 0}) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/purchase-history-items/" + id.toString());
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);
@@ -85,8 +85,9 @@ class OrderRepository {
   Future<dynamic> getPurchasedDigitalProducts({
     page = 1,
   }) async {
-    String url = ("${AppConfig.BASE_URL}/digital/purchased-list?page=$page");
-    Map<String, String> header = commonHeader;
+    final String url =
+        ("${AppConfig.BASE_URL}/digital/purchased-list?page=$page");
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);

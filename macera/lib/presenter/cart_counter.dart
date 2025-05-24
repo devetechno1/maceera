@@ -21,7 +21,7 @@ class CartCounter extends ChangeNotifier {
   int cartCounter = 0;
 
   Future<void> getCount() async {
-    var res = await CartRepository().getCartCount();
+    final res = await CartRepository().getCartCount();
     // Ensure res.count is not null
     cartCounter = res.count ?? 0; // Default to 0 if count is null
     notifyListeners();

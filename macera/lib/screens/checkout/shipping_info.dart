@@ -20,10 +20,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../app_config.dart';
+
 class ShippingInfo extends StatefulWidget {
   final String? guestCheckOutShippingAddress;
 
-  ShippingInfo({
+  const ShippingInfo({
     Key? key,
     this.guestCheckOutShippingAddress,
   }) : super(key: key);
@@ -33,8 +35,8 @@ class ShippingInfo extends StatefulWidget {
 }
 
 class _ShippingInfoState extends State<ShippingInfo> {
-  ScrollController _mainScrollController = ScrollController();
-  List<SellerWithShipping> _sellerWiseShippingOption = [];
+  final ScrollController _mainScrollController = ScrollController();
+  final List<SellerWithShipping> _sellerWiseShippingOption = [];
   List<DeliveryInfoResponse> _deliveryInfoList = [];
   String? _shipping_cost_string = ". . .";
   // Boolean variables
@@ -52,21 +54,22 @@ class _ShippingInfoState extends State<ShippingInfo> {
     _isFetchDeliveryInfo = true;
 
     _deliveryInfoList.forEach((element) {
-      var shippingOption = carrier_base_shipping.$
+      final shippingOption = AppConfig.businessSettingsData.carrierBaseShipping
           ? ShippingOption.Carrier
           : ShippingOption.HomeDelivery;
       int? shippingId;
-      if (carrier_base_shipping.$ &&
+      if (AppConfig.businessSettingsData.carrierBaseShipping &&
           element.carriers!.data!.isNotEmpty &&
           !(element.cartItems
                   ?.every((element2) => element2.isDigital ?? false) ??
               false)) {
         shippingId = element.carriers!.data!.first.id;
       }
-      print("carrier_base_shipping.${carrier_base_shipping.$}");
+      print(
+          "AppConfig.businessSettingsData.carrierBaseShipping{AppConfig.businessSettingsData.carrierBaseShipping}");
 
-      _sellerWiseShippingOption.add(
-          new SellerWithShipping(element.ownerId, shippingOption, shippingId));
+      _sellerWiseShippingOption
+          .add(SellerWithShipping(element.ownerId, shippingOption, shippingId));
     });
     getSetShippingCost();
     setState(() {});
@@ -142,10 +145,10 @@ class _ShippingInfoState extends State<ShippingInfo> {
     setState(() {});
   }
 
-  onPressProceed(context) async {
+  Future<void> onPressProceed(context) async {
     var shippingCostResponse;
 
-    var _sellerWiseShippingOptionErrors =
+    final _sellerWiseShippingOptionErrors =
         _sellerWiseShippingOption.where((element) {
       print(element.shippingId);
       if ((element.shippingId == 0 || element.shippingId == null) &&
@@ -158,7 +161,8 @@ class _ShippingInfoState extends State<ShippingInfo> {
     print(_sellerWiseShippingOptionErrors.length);
     print(jsonEncode(_sellerWiseShippingOption));
 
-    if (_sellerWiseShippingOptionErrors.isNotEmpty && carrier_base_shipping.$) {
+    if (_sellerWiseShippingOptionErrors.isNotEmpty &&
+        AppConfig.businessSettingsData.carrierBaseShipping) {
       ToastComponent.showDialog(
         LangText(context).local.please_choose_valid_info,
       );
@@ -218,7 +222,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
 
   RefreshIndicator buildBody(BuildContext context) {
     return RefreshIndicator(
-      color: MyTheme.accent_color,
+      color: Theme.of(context).primaryColor,
       backgroundColor: Colors.white,
       onRefresh: _onRefresh,
       displacement: 0,
@@ -255,15 +259,15 @@ class _ShippingInfoState extends State<ShippingInfo> {
       ),
       title: Text(
         "${AppLocalizations.of(context)!.shipping_cost_ucf} $_shipping_cost_string",
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,
     );
   }
 
-  buildHomeDeliveryORCarrier(sellerArrayIndex) {
-    if (carrier_base_shipping.$) {
+  Widget buildHomeDeliveryORCarrier(sellerArrayIndex) {
+    if (AppConfig.businessSettingsData.carrierBaseShipping) {
       return buildCarrierSection(sellerArrayIndex);
     } else {
       return Container();
@@ -276,7 +280,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
         child: Center(
             child: Text(
           LangText(context).local.you_need_to_log_in,
-          style: TextStyle(color: MyTheme.font_grey),
+          style: const TextStyle(color: MyTheme.font_grey),
         )));
   }
 
@@ -284,34 +288,34 @@ class _ShippingInfoState extends State<ShippingInfo> {
     // if (is_logged_in.$ == false) {
     //   return buildLoginWarning();
     // } else
-    if (_isFetchDeliveryInfo && _deliveryInfoList.length == 0) {
+    if (_isFetchDeliveryInfo && _deliveryInfoList.isEmpty) {
       return buildCarrierShimmer();
-    } else if (_deliveryInfoList[sellerArrayIndex].pickupPoints!.length > 0) {
+    } else if (_deliveryInfoList[sellerArrayIndex].pickupPoints!.isNotEmpty) {
       return ListView.separated(
-        separatorBuilder: (context, index) => SizedBox(
+        separatorBuilder: (context, index) => const SizedBox(
           height: 14,
         ),
         itemCount: _deliveryInfoList[sellerArrayIndex].pickupPoints!.length,
         scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return buildPickupPointItemCard(index, sellerArrayIndex);
         },
       );
     } else if (_isFetchDeliveryInfo &&
-        _deliveryInfoList[sellerArrayIndex].pickupPoints!.length == 0) {
+        _deliveryInfoList[sellerArrayIndex].pickupPoints!.isEmpty) {
       return Container(
         height: 100,
         child: Center(
           child: Text(
             AppLocalizations.of(context)!.pickup_point_is_unavailable_ucf,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           ),
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   GestureDetector buildPickupPointItemCard(pickupPointIndex, sellerArrayIndex) {
@@ -335,10 +339,10 @@ class _ShippingInfoState extends State<ShippingInfo> {
                     _deliveryInfoList[sellerArrayIndex]
                         .pickupPoints![pickupPointIndex]
                         .id
-                ? Border.all(color: MyTheme.accent_color, width: 1.0)
+                ? Border.all(color: Theme.of(context).primaryColor, width: 1.0)
                 : Border.all(color: MyTheme.light_grey, width: 1.0)),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppDimensions.paddingDefault),
           child: buildPickUpPointInfoItemChildren(
               pickupPointIndex, sellerArrayIndex),
         ),
@@ -351,7 +355,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -378,7 +382,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       fontWeight: FontWeight.w600),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               buildShippingSelectMarkContainer(
                   _sellerWiseShippingOption[sellerArrayIndex].shippingId ==
                       _deliveryInfoList[sellerArrayIndex]
@@ -388,7 +392,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -428,7 +432,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
     // } else
     if (!_isFetchDeliveryInfo) {
       return buildCarrierShimmer();
-    } else if (_deliveryInfoList[sellerArrayIndex].carriers!.data!.length > 0) {
+    } else if (_deliveryInfoList[sellerArrayIndex].carriers!.data!.isNotEmpty) {
       return Container(child: buildCarrierListView(sellerArrayIndex));
     } else {
       return buildCarrierNoData();
@@ -441,7 +445,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
       child: Center(
         child: Text(
           AppLocalizations.of(context)!.carrier_points_is_unavailable_ucf,
-          style: TextStyle(color: MyTheme.font_grey),
+          style: const TextStyle(color: MyTheme.font_grey),
         ),
       ),
     );
@@ -452,11 +456,11 @@ class _ShippingInfoState extends State<ShippingInfo> {
       itemCount: _deliveryInfoList[sellerArrayIndex].carriers!.data!.length,
       scrollDirection: Axis.vertical,
       separatorBuilder: (context, index) {
-        return SizedBox(
+        return const SizedBox(
           height: 14,
         );
       },
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         // if (_sellerWiseShippingOption[sellerArrayIndex].shippingId == 0) {
@@ -496,7 +500,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                         .carriers!
                         .data![carrierIndex]
                         .id
-                ? Border.all(color: MyTheme.accent_color, width: 1.0)
+                ? Border.all(color: Theme.of(context).primaryColor, width: 1.0)
                 : Border.all(color: MyTheme.light_grey, width: 1.0)),
         child: buildCarrierInfoItemChildren(carrierIndex, sellerArrayIndex),
       ),
@@ -514,15 +518,17 @@ class _ShippingInfoState extends State<ShippingInfo> {
               MyImage.imageNetworkPlaceholder(
                   height: 75.0,
                   width: 75.0,
-                  radius: BorderRadius.only(
-                      topLeft: Radius.circular(6),
-                      bottomLeft: Radius.circular(6)),
+                  radius: const BorderRadius.only(
+                      topLeft: Radius.circular(AppDimensions.radiusHalfSmall),
+                      bottomLeft:
+                          Radius.circular(AppDimensions.radiusHalfSmall)),
                   url: _deliveryInfoList[sellerArrayIndex]
                       .carriers!
                       .data![carrierIndex]
                       .logo),
               Padding(
-                padding: const EdgeInsets.only(left: 10.0),
+                padding: const EdgeInsets.only(
+                    bottom: AppDimensions.paddingSupSmall),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -541,7 +547,8 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.only(
+                          top: AppDimensions.paddingSupSmall),
                       child: Text(
                         _deliveryInfoList[sellerArrayIndex]
                                 .carriers!
@@ -560,7 +567,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Container(
                 child: Text(
                   _deliveryInfoList[sellerArrayIndex]
@@ -575,7 +582,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       fontWeight: FontWeight.w600),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               )
             ],
@@ -601,9 +608,11 @@ class _ShippingInfoState extends State<ShippingInfo> {
             height: 16,
             width: 16,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0), color: Colors.green),
-            child: Padding(
-              padding: const EdgeInsets.all(3),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusDefault),
+                color: Colors.green),
+            child: const Padding(
+              padding: EdgeInsets.all(3),
               child: Icon(Icons.check, color: Colors.white, size: 10),
             ),
           )
@@ -618,13 +627,13 @@ class _ShippingInfoState extends State<ShippingInfo> {
         child: Btn.minWidthFixHeight(
           minWidth: MediaQuery.of(context).size.width,
           height: 50,
-          color: MyTheme.accent_color,
+          color: Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(0.0),
           ),
           child: Text(
             AppLocalizations.of(context)!.proceed_to_checkout,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           onPressed: () {
@@ -672,14 +681,15 @@ class _ShippingInfoState extends State<ShippingInfo> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          if (carrier_base_shipping.$)
+          if (AppConfig.businessSettingsData.carrierBaseShipping)
             buildCarrierOption(context, sellerIndex)
           else
             buildAddressOption(context, sellerIndex),
-          SizedBox(
+          const SizedBox(
             width: 14,
           ),
-          if (pick_up_status.$) buildPickUpPointOption(context, sellerIndex),
+          if (AppConfig.businessSettingsData.pickupPoint)
+            buildPickUpPointOption(context, sellerIndex),
         ],
       ),
     );
@@ -689,12 +699,12 @@ class _ShippingInfoState extends State<ShippingInfo> {
     return Btn.basic(
       color: _sellerWiseShippingOption[sellerIndex].shippingOption ==
               ShippingOption.PickUpPoint
-          ? MyTheme.accent_color
-          : MyTheme.accent_color.withOpacity(0.1),
+          ? Theme.of(context).primaryColor
+          : Theme.of(context).primaryColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-          side: BorderSide(color: MyTheme.accent_color)),
-      padding: EdgeInsets.only(right: 14),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
+          side: BorderSide(color: Theme.of(context).primaryColor)),
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
       onPressed: () {
         setState(() {
           changeShippingOption(ShippingOption.PickUpPoint, sellerIndex);
@@ -710,7 +720,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 fillColor: WidgetStateProperty.resolveWith((states) {
                   if (!states.contains(WidgetState.selected)) {
-                    return MyTheme.accent_color;
+                    return Theme.of(context).primaryColor;
                   }
                   return MyTheme.white;
                 }),
@@ -729,7 +739,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.PickUpPoint
                           ? MyTheme.white
-                          : MyTheme.accent_color,
+                          : Theme.of(context).primaryColor,
                   fontWeight:
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.PickUpPoint
@@ -746,12 +756,12 @@ class _ShippingInfoState extends State<ShippingInfo> {
     return Btn.basic(
       color: _sellerWiseShippingOption[sellerIndex].shippingOption ==
               ShippingOption.HomeDelivery
-          ? MyTheme.accent_color
-          : MyTheme.accent_color.withOpacity(0.1),
+          ? Theme.of(context).primaryColor
+          : Theme.of(context).primaryColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-          side: BorderSide(color: MyTheme.accent_color)),
-      padding: EdgeInsetsDirectional.only(end: 14),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
+          side: BorderSide(color: Theme.of(context).primaryColor)),
+      padding: const EdgeInsetsDirectional.only(end: 14),
       onPressed: () {
         changeShippingOption(ShippingOption.HomeDelivery, sellerIndex);
       },
@@ -762,19 +772,19 @@ class _ShippingInfoState extends State<ShippingInfo> {
         child: Row(
           children: [
             Radio(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              fillColor: WidgetStateProperty.resolveWith((states) {
-                if (!states.contains(WidgetState.selected)) {
-                  return MyTheme.accent_color;
-                }
-                return MyTheme.white;
-              }),
-              value: ShippingOption.HomeDelivery,
-              groupValue:
-                  _sellerWiseShippingOption[sellerIndex].shippingOption,
-              onChanged: (dynamic newOption) {
-                changeShippingOption(newOption, sellerIndex);
-            }),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                fillColor: WidgetStateProperty.resolveWith((states) {
+                  if (!states.contains(WidgetState.selected)) {
+                    return Theme.of(context).primaryColor;
+                  }
+                  return MyTheme.white;
+                }),
+                value: ShippingOption.HomeDelivery,
+                groupValue:
+                    _sellerWiseShippingOption[sellerIndex].shippingOption,
+                onChanged: (dynamic newOption) {
+                  changeShippingOption(newOption, sellerIndex);
+                }),
             Text(
               AppLocalizations.of(context)!.home_delivery_ucf,
               style: TextStyle(
@@ -783,7 +793,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.HomeDelivery
                           ? MyTheme.white
-                          : MyTheme.accent_color,
+                          : Theme.of(context).primaryColor,
                   fontWeight:
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.HomeDelivery
@@ -800,12 +810,12 @@ class _ShippingInfoState extends State<ShippingInfo> {
     return Btn.basic(
       color: _sellerWiseShippingOption[sellerIndex].shippingOption ==
               ShippingOption.Carrier
-          ? MyTheme.accent_color
-          : MyTheme.accent_color.withOpacity(0.1),
+          ? Theme.of(context).primaryColor
+          : Theme.of(context).primaryColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-          side: BorderSide(color: MyTheme.accent_color)),
-      padding: EdgeInsets.only(right: 14),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
+          side: BorderSide(color: Theme.of(context).primaryColor)),
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
       onPressed: () {
         changeShippingOption(ShippingOption.Carrier, sellerIndex);
       },
@@ -819,7 +829,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 fillColor: WidgetStateProperty.resolveWith((states) {
                   if (!states.contains(WidgetState.selected)) {
-                    return MyTheme.accent_color;
+                    return Theme.of(context).primaryColor;
                   }
                   return MyTheme.white;
                 }),
@@ -837,7 +847,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.Carrier
                           ? MyTheme.white
-                          : MyTheme.accent_color,
+                          : Theme.of(context).primaryColor,
                   fontWeight:
                       _sellerWiseShippingOption[sellerIndex].shippingOption ==
                               ShippingOption.Carrier
@@ -863,19 +873,19 @@ class _ShippingInfoState extends State<ShippingInfo> {
     //           )));
     // }
     // else
-    if (_isFetchDeliveryInfo && _deliveryInfoList.length == 0) {
+    if (_isFetchDeliveryInfo && _deliveryInfoList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 5, item_height: 100.0));
-    } else if (_deliveryInfoList.length > 0) {
+    } else if (_deliveryInfoList.isNotEmpty) {
       return buildCartSellerListBody();
-    } else if (_isFetchDeliveryInfo && _deliveryInfoList.length == 0) {
+    } else if (_isFetchDeliveryInfo && _deliveryInfoList.isEmpty) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.cart_is_empty,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
     return Container();
@@ -886,13 +896,13 @@ class _ShippingInfoState extends State<ShippingInfo> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: ListView.separated(
-          padding: EdgeInsets.only(bottom: 20),
-          separatorBuilder: (context, index) => SizedBox(
+          padding: const EdgeInsets.only(bottom: 20),
+          separatorBuilder: (context, index) => const SizedBox(
             height: 26,
           ),
           itemCount: _deliveryInfoList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return buildCartSellerListItem(index, context);
@@ -911,7 +921,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
           child: Text(
             _deliveryInfoList[index].name!,
             style: TextStyle(
-                color: MyTheme.accent_color,
+                color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.w700,
                 fontSize: 16),
           ),
@@ -923,7 +933,8 @@ class _ShippingInfoState extends State<ShippingInfo> {
           Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 18.0),
+                padding:
+                    const EdgeInsets.only(top: AppDimensions.paddingMedium),
                 child: Text(
                   LangText(context).local.choose_delivery_ucf,
                   style: TextStyle(
@@ -932,11 +943,11 @@ class _ShippingInfoState extends State<ShippingInfo> {
                       fontSize: 12),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               buildChooseShippingOptions(context, index),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               buildShippingListBody(index),
@@ -946,24 +957,24 @@ class _ShippingInfoState extends State<ShippingInfo> {
     );
   }
 
-  SingleChildScrollView buildCartSellerItemList(seller_index) {
+  SingleChildScrollView buildCartSellerItemList(sellerIndex) {
     return SingleChildScrollView(
       child: ListView.separated(
-        separatorBuilder: (context, index) => SizedBox(
+        separatorBuilder: (context, index) => const SizedBox(
           height: 24,
         ),
-        itemCount: _deliveryInfoList[seller_index].cartItems!.length,
+        itemCount: _deliveryInfoList[sellerIndex].cartItems!.length,
         scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          return buildCartSellerItemCard(index, seller_index);
+          return buildCartSellerItemCard(index, sellerIndex);
         },
       ),
     );
   }
 
-  buildCartSellerItemCard(itemIndex, sellerIndex) {
+  Container buildCartSellerItemCard(itemIndex, sellerIndex) {
     return Container(
       height: 100,
       decoration: BoxDecorations.buildBoxDecoration_1(),
@@ -973,10 +984,11 @@ class _ShippingInfoState extends State<ShippingInfo> {
           child: AspectRatio(
             aspectRatio: 1,
             child: ClipRRect(
-              borderRadius: BorderRadius.horizontal(
-                  left: Radius.circular(6), right: Radius.zero),
+              borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(AppDimensions.radiusHalfSmall),
+                  right: Radius.zero),
               child: FadeInImage.assetNetwork(
-                placeholder: 'assets/placeholder.png',
+                placeholder: AppImages.placeholder,
                 image: _deliveryInfoList[sellerIndex]
                     .cartItems![itemIndex]
                     .productThumbnailImage!,
@@ -985,10 +997,10 @@ class _ShippingInfoState extends State<ShippingInfo> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -1000,36 +1012,35 @@ class _ShippingInfoState extends State<ShippingInfo> {
                         .productName!,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 12,
                         fontWeight: FontWeight.w400),
                   ),
                 ),
-                
-                Builder(
-                  builder: (context) {
-                    String priceWithCurrency = SystemConfig.systemCurrency != null
-                          ? "${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productPrice}"
-                              .replaceAll(
-                                  SystemConfig.systemCurrency!.code!,
-                                  SystemConfig.systemCurrency!.symbol!)
-                          : "${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productPrice}";
-                    if(SystemConfig.systemCurrency?.symbol != null && !priceWithCurrency.contains("${SystemConfig.systemCurrency?.symbol}")){
-                      priceWithCurrency += " ${SystemConfig.systemCurrency!.symbol!}";
-                    }
-                    return Text(
-                      "$priceWithCurrency × ${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productQuantity}",
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(
-                          color: MyTheme.accent_color,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700),
-                    );
+                Builder(builder: (context) {
+                  String priceWithCurrency = SystemConfig.systemCurrency != null
+                      ? "${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productPrice}"
+                          .replaceAll(SystemConfig.systemCurrency!.code!,
+                              SystemConfig.systemCurrency!.symbol!)
+                      : "${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productPrice}";
+                  if (SystemConfig.systemCurrency?.symbol != null &&
+                      !priceWithCurrency
+                          .contains("${SystemConfig.systemCurrency?.symbol}")) {
+                    priceWithCurrency +=
+                        " ${SystemConfig.systemCurrency!.symbol!}";
                   }
-                ),
+                  return Text(
+                    "$priceWithCurrency × ${_deliveryInfoList[sellerIndex].cartItems![itemIndex].productQuantity}",
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  );
+                }),
               ],
             ),
           ),

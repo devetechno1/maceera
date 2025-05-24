@@ -147,14 +147,14 @@ class ClassifiedProductModel {
     bool? status,
   }) {
     return ClassifiedProductModel(
-      id: this.id,
-      slug: this.slug,
-      name: this.name,
-      thumbnailImage: this.thumbnailImage,
-      condition: this.condition,
-      unitPrice: this.unitPrice,
-      category: this.category,
-      published: this.published,
+      id: id,
+      slug: slug,
+      name: name,
+      thumbnailImage: thumbnailImage,
+      condition: condition,
+      unitPrice: unitPrice,
+      category: category,
+      published: published,
       status: status ?? this.status,
     );
   }

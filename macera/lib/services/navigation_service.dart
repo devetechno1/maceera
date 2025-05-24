@@ -4,22 +4,29 @@ import 'package:go_router/go_router.dart';
 import 'package:one_context/one_context.dart';
 
 import '../app_config.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NavigationService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  static void handleUrls(String? url, [BuildContext? context]) {
-    if(url?.isNotEmpty != true) return;
+  static Future<void> handleUrls(String? url, [BuildContext? context]) async {
+    if (url?.isNotEmpty != true) return;
     context ??= OneContext().context!;
     final Uri? uri = Uri.tryParse(url ?? '');
-    if(uri?.hasAbsolutePath ?? false){
-      if(uri?.host ==  AppConfig.DOMAIN_PATH){
-        context.push(uri!.path);
-      }else{
-        launchUrl(uri!);
+    try {
+      if (uri?.hasAbsolutePath ?? false) {
+        if (uri?.host == AppConfig.DOMAIN_PATH) {
+          context.push(uri!.path);
+        } else {
+          await launchUrl(uri!);
+        }
+      } else {
+        throw AppLocalizations.of(context)!.invalidURL;
       }
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text('Invalid URL')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 

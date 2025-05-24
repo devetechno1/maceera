@@ -13,7 +13,7 @@ class OfflinePaymentRepository {
       required String name,
       required String trx_id,
       required int? photo}) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "order_id": "$order_id",
       "amount": "$amount",
       "name": "$name",
@@ -21,7 +21,7 @@ class OfflinePaymentRepository {
       "photo": "$photo",
     });
 
-    String url = ("${AppConfig.BASE_URL}/offline/payment/submit");
+    const String url = ("${AppConfig.BASE_URL}/offline/payment/submit");
 
     final response = await ApiRequest.post(
         url: url,
@@ -32,7 +32,7 @@ class OfflinePaymentRepository {
           "Accept": "application/json",
           "System-Key": AppConfig.system_key
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return offlinePaymentSubmitResponseFromJson(response.body);
   }

@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class PurchasedDigitalProducts extends StatefulWidget {
-  PurchasedDigitalProducts({
+  const PurchasedDigitalProducts({
     Key? key,
   }) : super(key: key);
 
@@ -21,11 +21,11 @@ class PurchasedDigitalProducts extends StatefulWidget {
 }
 
 class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
-  ScrollController _mainScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
 
   //init
   bool _dataFetch = false;
-  List<dynamic> _digitalProducts = [];
+  final List<dynamic> _digitalProducts = [];
   int page = 1;
 
   @override
@@ -47,7 +47,7 @@ class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
   }
 
   fetchData() async {
-    var digitalProductRes =
+    final digitalProductRes =
         await OrderRepository().getPurchasedDigitalProducts(page: page);
 
     _digitalProducts.addAll(digitalProductRes.data);
@@ -73,11 +73,11 @@ class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
     );
   }
 
-  bool? shouldProductBoxBeVisible(product_name, search_key) {
-    if (search_key == "") {
+  bool? shouldProductBoxBeVisible(productName, searchKey) {
+    if (searchKey == "") {
       return true; //do not check if the search key is empty
     }
-    return StringHelper().stringContains(product_name, search_key);
+    return StringHelper().stringContains(productName, searchKey);
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -118,7 +118,7 @@ class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
           .buildProductGridShimmer(scontroller: _mainScrollController);
     }
 
-    if (_digitalProducts.length == 0) {
+    if (_digitalProducts.isEmpty) {
       return Center(
         child: Text(LangText(context).local.no_data_is_available),
       );
@@ -126,15 +126,16 @@ class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
     return RefreshIndicator(
       onRefresh: _onPageRefresh,
       child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: MasonryGridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
           itemCount: _digitalProducts.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: 0.0, bottom: 10, left: 20, right: 20),
-          physics: NeverScrollableScrollPhysics(),
+          padding:
+              const EdgeInsets.only(top: 0.0, bottom: 10, left: 20, right: 20),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             // 3
             return PurchasedDigitalProductCard(

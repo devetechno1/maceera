@@ -11,9 +11,9 @@ import 'api-request.dart';
 
 class FileUploadRepository {
   Future<CommonResponse> fileUpload(File file) async {
-    Uri url = Uri.parse("${AppConfig.BASE_URL}/file/upload");
+    final Uri url = Uri.parse("${AppConfig.BASE_URL}/file/upload");
 
-    Map<String, String> header = {
+    final Map<String, String> header = {
       "App-Language": app_language.$!,
       "Authorization": "Bearer ${access_token.$}",
       "Content-Type":
@@ -33,7 +33,7 @@ class FileUploadRepository {
     var commonResponse =
         CommonResponse(result: false, message: "File upload failed");
 
-    var responseDecode = await response.stream.bytesToString();
+    final responseDecode = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
       try {
@@ -46,7 +46,7 @@ class FileUploadRepository {
   }
 
   Future<UploadedFilesListResponse> getFiles(page, search, type, sort) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/file/all?page=$page&search=$search&type=$type&sort=$sort");
     final response = await ApiRequest.get(url: url, headers: {
       "Content-Type": "application/json",
@@ -59,7 +59,7 @@ class FileUploadRepository {
   }
 
   Future<CommonResponse> deleteFile(id) async {
-    String url = ("${AppConfig.BASE_URL}/file/delete/$id");
+    final String url = ("${AppConfig.BASE_URL}/file/delete/$id");
     final response = await ApiRequest.get(url: url, headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer ${access_token.$}",

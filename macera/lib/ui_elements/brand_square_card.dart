@@ -1,15 +1,17 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:active_ecommerce_cms_demo_app/screens/brand_products.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 
 class BrandSquareCard extends StatefulWidget {
-  int? id;
-  String slug;
-  String? image;
-  String? name;
+  final int? id;
+  final String slug;
+  final String? image;
+  final String? name;
 
-  BrandSquareCard(
+  const BrandSquareCard(
       {Key? key, this.id, this.image, required this.slug, this.name})
       : super(key: key);
 
@@ -37,23 +39,24 @@ class _BrandSquareCardState extends State<BrandSquareCard> {
                   //height: 60,
                   //width: double.infinity,
                   child: ClipRRect(
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(16), bottom: Radius.zero),
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(AppDimensions.radiusDefault),
+                          bottom: Radius.zero),
                       child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/placeholder.png',
+                        placeholder: AppImages.placeholder,
                         image: widget.image!,
                         fit: BoxFit.cover,
                       ))),
               Container(
                 height: 40,
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: Text(
                     widget.name!,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 14,
                         height: 1.6,

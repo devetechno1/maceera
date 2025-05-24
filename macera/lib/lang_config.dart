@@ -191,7 +191,7 @@ class LangConfig {
 
   List<Locale> supportedLocales() {
     langList.forEach((lang) {
-      var local = Locale(lang, '');
+      final local = Locale(lang, '');
       localList.add(local);
     });
 

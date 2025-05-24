@@ -12,20 +12,20 @@ import '../data_model/product_mini_response.dart';
 import '../helpers/main_helpers.dart';
 
 class CouponRepository {
-  Future<dynamic> getCouponApplyResponse(String coupon_code) async {
+  Future<dynamic> getCouponApplyResponse(String couponCode) async {
     // var post_body =
     //     jsonEncode({"user_id": "${user_id.$}", "coupon_code": "$coupon_code"});
 
-    var post_body;
-    if (guest_checkout_status.$ && !is_logged_in.$) {
-      post_body = jsonEncode(
-          {"temp_user_id": temp_user_id.$, "coupon_code": "$coupon_code"});
+    String postBody;
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
+      postBody = jsonEncode(
+          {"temp_user_id": temp_user_id.$, "coupon_code": "$couponCode"});
     } else {
-      post_body =
-          jsonEncode({"user_id": user_id.$, "coupon_code": "$coupon_code"});
+      postBody =
+          jsonEncode({"user_id": user_id.$, "coupon_code": "$couponCode"});
     }
 
-    String url = ("${AppConfig.BASE_URL}/coupon-apply");
+    const String url = ("${AppConfig.BASE_URL}/coupon-apply");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -33,20 +33,20 @@ class CouponRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return couponApplyResponseFromJson(response.body);
   }
 
   Future<dynamic> getCouponRemoveResponse() async {
     // var post_body = jsonEncode({"user_id": "${user_id.$}"});
-    var post_body;
-    if (guest_checkout_status.$ && !is_logged_in.$) {
-      post_body = jsonEncode({"temp_user_id": temp_user_id.$});
+    String postBody;
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
+      postBody = jsonEncode({"temp_user_id": temp_user_id.$});
     } else {
-      post_body = jsonEncode({"user_id": user_id.$});
+      postBody = jsonEncode({"user_id": user_id.$});
     }
-    String url = ("${AppConfig.BASE_URL}/coupon-remove");
+    const String url = ("${AppConfig.BASE_URL}/coupon-remove");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -54,7 +54,7 @@ class CouponRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return couponRemoveResponseFromJson(response.body);
   }
@@ -64,20 +64,20 @@ class CouponRepository {
   // coupons
 
   Future<CouponListResponse> getCouponResponseList({page = 1}) async {
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
     header.addAll(currencyHeader);
 
-    String url = ("${AppConfig.BASE_URL}/coupon-list?page=$page");
+    final String url = ("${AppConfig.BASE_URL}/coupon-list?page=$page");
     final response = await ApiRequest.get(url: url, headers: header);
 //print('coupon ${response.body}');
     return couponListResponseFromJson(response.body);
   }
 
   Future<ProductMiniResponse> getCouponProductList({id}) async {
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
     header.addAll(currencyHeader);
 
-    String url = ("${AppConfig.BASE_URL}/coupon-products/$id");
+    final String url = ("${AppConfig.BASE_URL}/coupon-products/$id");
     final response = await ApiRequest.get(url: url, headers: header);
 
     return productMiniResponseFromJson(response.body);

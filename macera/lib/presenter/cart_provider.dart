@@ -213,7 +213,7 @@
 //       if (mode == "update") {
 //         fetchData(context);
 //       } else if (mode == "proceed_to_shipping") {
-//         if (guest_checkout_status.$ && !is_logged_in.$) {
+//         if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
 //           // Handle guest checkout logic
 //           // For example, navigate to guest checkout page
 //           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -259,6 +259,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
+import '../app_config.dart';
 import '../custom/aiz_route.dart';
 import '../custom/btn.dart';
 import '../custom/lang_text.dart';
@@ -268,8 +269,8 @@ import '../screens/checkout/select_address.dart';
 import '../screens/guest_checkout_pages/guest_checkout_address.dart';
 
 class CartProvider extends ChangeNotifier {
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  ScrollController _mainScrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _mainScrollController = ScrollController();
   List _shopList = [];
   CartResponse? _shopResponse;
   bool _isInitial = true;
@@ -292,24 +293,27 @@ class CartProvider extends ChangeNotifier {
     return count;
   }
 
-  bool get isMinOrderQuantityNotEnough => shopList.isNotEmpty && minOrderQuantityNotEnough(itemsCount);
-  bool get isMinOrderAmountNotEnough => shopList.isNotEmpty && minOrderAmountNotEnough(_cartTotal);
+  bool get isMinOrderQuantityNotEnough =>
+      shopList.isNotEmpty && minOrderQuantityNotEnough(itemsCount);
+  bool get isMinOrderAmountNotEnough =>
+      shopList.isNotEmpty && minOrderAmountNotEnough(_cartTotal);
 
   void initState(BuildContext context) {
     fetchData(context);
   }
 
+  @override
   void dispose() {
     _mainScrollController.dispose();
     super.dispose();
   }
 
-  void fetchData(BuildContext context) async {
+  Future<void> fetchData(BuildContext context) async {
     getCartCount(context);
-    CartResponse cartResponseList =
+    final CartResponse cartResponseList =
         await CartRepository().getCartResponseList(user_id.$);
 
-    if (cartResponseList.data != null && cartResponseList.data!.length > 0) {
+    if (cartResponseList.data != null && cartResponseList.data!.isNotEmpty) {
       _shopList = cartResponseList.data!;
       _shopResponse = cartResponseList;
       getSetCartTotal();
@@ -327,7 +331,11 @@ class CartProvider extends ChangeNotifier {
     _cartTotalString = _shopResponse!.grandTotal!.replaceAll(
         SystemConfig.systemCurrency!.code!,
         SystemConfig.systemCurrency!.symbol!);
-    _cartTotal = double.tryParse(_cartTotalString.replaceAll(",",'').replaceAll("${SystemConfig.systemCurrency!.symbol}",'').replaceAll("${SystemConfig.systemCurrency!.code}",'')) ?? 0;
+    _cartTotal = double.tryParse(_cartTotalString
+            .replaceAll(",", '')
+            .replaceAll("${SystemConfig.systemCurrency!.symbol}", '')
+            .replaceAll("${SystemConfig.systemCurrency!.code}", '')) ??
+        0;
 
     notifyListeners();
   }
@@ -366,14 +374,14 @@ class CartProvider extends ChangeNotifier {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.white,
-        contentPadding:
-            EdgeInsets.only(top: 30.0, left: 2.0, right: 2.0, bottom: 20.0),
+        contentPadding: const EdgeInsets.only(
+            top: 30.0, left: 2.0, right: 2.0, bottom: 20.0),
         content: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(
             AppLocalizations.of(context)!.are_you_sure_to_remove_this_item,
             maxLines: 3,
-            style: TextStyle(color: MyTheme.font_grey, fontSize: 14),
+            style: const TextStyle(color: MyTheme.font_grey, fontSize: 14),
           ),
         ),
         actions: [
@@ -402,8 +410,8 @@ class CartProvider extends ChangeNotifier {
     );
   }
 
-  void confirmDelete(BuildContext context, String cartId) async {
-    var cartDeleteResponse =
+  Future<void> confirmDelete(BuildContext context, String cartId) async {
+    final cartDeleteResponse =
         await CartRepository().getCartDeleteResponse(int.parse(cartId));
 
     if (cartDeleteResponse.result == true) {
@@ -428,10 +436,10 @@ class CartProvider extends ChangeNotifier {
     process(context, mode: "proceed_to_shipping");
   }
 
-  void process(BuildContext context, {required String mode}) async {
-    var cartIds = [];
-    var cartQuantities = [];
-    if (_shopList.length > 0) {
+  Future<void> process(BuildContext context, {required String mode}) async {
+    final cartIds = [];
+    final cartQuantities = [];
+    if (_shopList.isNotEmpty) {
       _shopList.forEach((shop) {
         if (shop.cartItems.length > 0) {
           shop.cartItems.forEach((cartItem) {
@@ -442,17 +450,17 @@ class CartProvider extends ChangeNotifier {
       });
     }
 
-    if (cartIds.length == 0) {
+    if (cartIds.isEmpty) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.cart_is_empty,
       );
       return;
     }
 
-    var cartIdsString = cartIds.join(',').toString();
-    var cartQuantitiesString = cartQuantities.join(',').toString();
+    final cartIdsString = cartIds.join(',').toString();
+    final cartQuantitiesString = cartQuantities.join(',').toString();
 
-    var cartProcessResponse = await CartRepository()
+    final cartProcessResponse = await CartRepository()
         .getCartProcessResponse(cartIdsString, cartQuantitiesString);
 
     if (cartProcessResponse.result == false) {
@@ -463,29 +471,28 @@ class CartProvider extends ChangeNotifier {
       if (mode == "update") {
         fetchData(context);
       } else if (mode == "proceed_to_shipping") {
-        if(isMinOrderQuantityNotEnough){
+        if (isMinOrderQuantityNotEnough) {
           ToastComponent.showDialog(
-            '${LangText(context).local.minimum_order_qty_is} ${minimum_order_quantity.$}',
-            color: Theme.of(context).colorScheme.error
-          );
+              '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity}',
+              color: Theme.of(context).colorScheme.error);
           return;
-        }else if(isMinOrderAmountNotEnough){
+        } else if (isMinOrderAmountNotEnough) {
           ToastComponent.showDialog(
-            '${LangText(context).local.minimum_order_amount_is} ${minimum_order_amount.$}',
-            color: Theme.of(context).colorScheme.error
-          );
+              '${LangText(context).local.minimum_order_amount_is} ${AppConfig.businessSettingsData.minimumOrderAmount}',
+              color: Theme.of(context).colorScheme.error);
           return;
         }
-        if (guest_checkout_status.$ && !is_logged_in.$) {
+        if (AppConfig.businessSettingsData.guestCheckoutStatus &&
+            !is_logged_in.$) {
           // Handle guest checkout logic
           // For example, navigate to guest checkout page
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return GuestCheckoutAddress();
+            return const GuestCheckoutAddress();
           }));
         } else {
           // Navigate to select address page
           // Example:
-          AIZRoute.push(context, SelectAddress()).then((value) {
+          AIZRoute.push(context, const SelectAddress()).then((value) {
             onPopped(context, value);
           });
         }

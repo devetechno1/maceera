@@ -5,7 +5,7 @@ import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 
 class LanguageRepository {
   Future<LanguageListResponse> getLanguageList() async {
-    String url = ("${AppConfig.BASE_URL}/languages");
+    const String url = ("${AppConfig.BASE_URL}/languages");
     final response = await ApiRequest.get(url: url, headers: {
       "App-Language": app_language.$ ?? AppConfig.default_language,
     });

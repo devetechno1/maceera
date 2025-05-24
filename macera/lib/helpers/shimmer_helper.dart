@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:flutter/material.dart';
@@ -66,11 +67,11 @@ class ShimmerHelper {
     );
   }
 
-  buildListShimmer({item_count = 10, item_height = 100.0}) {
+  ListView buildListShimmer({item_count = 10, item_height = 100.0}) {
     return ListView.builder(
       itemCount: item_count,
       scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         return Padding(
@@ -82,15 +83,16 @@ class ShimmerHelper {
     );
   }
 
-  buildProductGridShimmer({scontroller, item_count = 10}) {
+  MasonryGridView buildProductGridShimmer({scontroller, item_count = 10}) {
     return MasonryGridView.count(
         crossAxisCount: 2,
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
         itemCount: item_count,
         shrinkWrap: true,
-        padding: EdgeInsets.only(top: 20.0, bottom: 10, left: 18, right: 18),
-        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(
+            top: AppDimensions.paddingLarge, bottom: 10, left: 18, right: 18),
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return Shimmer.fromColors(
             baseColor: MyTheme.shimmer_base,
@@ -104,7 +106,7 @@ class ShimmerHelper {
         });
   }
 
-  buildCategoryCardShimmer({is_base_category}) {
+  GridView buildCategoryCardShimmer({is_base_category}) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         mainAxisSpacing: 14,
@@ -116,7 +118,7 @@ class ShimmerHelper {
       padding: EdgeInsets.only(
           left: 18, right: 18, bottom: is_base_category ? 30 : 0),
       scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         return Container(
@@ -127,21 +129,21 @@ class ShimmerHelper {
     );
   }
 
-  buildSquareGridShimmer({scontroller, item_count = 10}) {
+  GridView buildSquareGridShimmer({scontroller, item_count = 10}) {
     return GridView.builder(
       itemCount: item_count,
       controller: scontroller,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           childAspectRatio: 1),
-      padding: EdgeInsets.all(8),
-      physics: NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(AppDimensions.paddingSmall),
           child: Shimmer.fromColors(
             baseColor: MyTheme.shimmer_base,
             highlightColor: MyTheme.shimmer_highlighted,
@@ -156,7 +158,7 @@ class ShimmerHelper {
     );
   }
 
-  buildHorizontalGridShimmerWithAxisCount(
+  GridView buildHorizontalGridShimmerWithAxisCount(
       {item_count = 10,
       int crossAxisCount = 2,
       crossAxisSpacing = 10.0,
@@ -164,7 +166,7 @@ class ShimmerHelper {
       mainAxisExtent = 100.0,
       controller}) {
     return GridView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppDimensions.paddingDefault),
         scrollDirection: Axis.horizontal,
         controller: controller,
         itemCount: item_count,
@@ -186,12 +188,12 @@ class ShimmerHelper {
         });
   }
 
-  buildSeparatedHorizontalListShimmer(
+  ListView buildSeparatedHorizontalListShimmer(
       {double separationWidth = 16.0,
       int itemCount = 10,
       double itemHeight = 120}) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(AppDimensions.paddingDefault),
       separatorBuilder: (context, index) => SizedBox(
         width: separationWidth,
       ),

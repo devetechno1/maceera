@@ -9,7 +9,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class ClubpointRepository {
   Future<dynamic> getClubPointListResponse({page = 1}) async {
-    String url = ("${AppConfig.BASE_URL}/clubpoint/get-list?page=$page");
+    final String url = ("${AppConfig.BASE_URL}/clubpoint/get-list?page=$page");
 
     final response = await ApiRequest.get(
         url: url,
@@ -23,10 +23,10 @@ class ClubpointRepository {
   }
 
   Future<dynamic> getClubpointToWalletResponse(int? id) async {
-    var post_body = jsonEncode({
-      "id": "${id}",
+    final postBody = jsonEncode({
+      "id": "$id",
     });
-    String url = ("${AppConfig.BASE_URL}/clubpoint/convert-into-wallet");
+    const String url = ("${AppConfig.BASE_URL}/clubpoint/convert-into-wallet");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -34,7 +34,7 @@ class ClubpointRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return clubpointToWalletResponseFromJson(response.body);
   }

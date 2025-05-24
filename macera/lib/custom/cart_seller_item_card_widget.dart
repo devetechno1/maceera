@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 
 import '../helpers/system_config.dart';
@@ -23,7 +24,8 @@ class CartSellerItemCardWidget extends StatelessWidget {
     return Container(
       height: 120,
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(6)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall)),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -31,10 +33,11 @@ class CartSellerItemCardWidget extends StatelessWidget {
                 width: DeviceInfo(context).width! / 4,
                 height: 120,
                 child: ClipRRect(
-                    borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(6), right: Radius.zero),
+                    borderRadius: const BorderRadius.horizontal(
+                        left: Radius.circular(AppDimensions.radiusHalfSmall),
+                        right: Radius.zero),
                     child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/placeholder.png',
+                      placeholder: AppImages.placeholder,
                       image: cartProvider.shopList[sellerIndex]
                           .cartItems[itemIndex].productThumbnailImage,
                       fit: BoxFit.contain,
@@ -43,7 +46,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
               //color: Colors.red,
               width: DeviceInfo(context).width! / 3,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -53,13 +56,14 @@ class CartSellerItemCardWidget extends StatelessWidget {
                           .productName,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: MyTheme.font_grey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 23.0),
+                      padding: const EdgeInsets.only(
+                          top: AppDimensions.paddingLarge),
                       child: Row(
                         children: [
                           Text(
@@ -75,7 +79,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: TextStyle(
-                                color: MyTheme.accent_color,
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700),
                           ),
@@ -86,7 +90,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
               width: 32,
               child: Column(
@@ -103,9 +107,10 @@ class CartSellerItemCardWidget extends StatelessWidget {
                       );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 14.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingNormal),
                       child: Image.asset(
-                        'assets/trash.png',
+                        AppImages.trash,
                         height: 16,
                         color: Colors.red,
                       ),
@@ -115,7 +120,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(14.0),
+              padding: const EdgeInsets.all(AppDimensions.paddingDefault),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -127,7 +132,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                         cartProvider.onQuantityIncrease(
                             context, sellerIndex, itemIndex);
                       }
-                      return null;
+                      return;
                     },
                     child: Container(
                       width: 24,
@@ -139,20 +144,22 @@ class CartSellerItemCardWidget extends StatelessWidget {
                         color: cartProvider.shopList[sellerIndex]
                                     .cartItems[itemIndex].auctionProduct ==
                                 0
-                            ? MyTheme.accent_color
+                            ? Theme.of(context).primaryColor
                             : MyTheme.grey_153,
                         size: 12,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        top: AppDimensions.paddingSmall,
+                        bottom: AppDimensions.paddingSmall),
                     child: Text(
                       cartProvider
                           .shopList[sellerIndex].cartItems[itemIndex].quantity
                           .toString(),
-                      style:
-                          TextStyle(color: MyTheme.accent_color, fontSize: 16),
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor, fontSize: 16),
                     ),
                   ),
                   GestureDetector(
@@ -163,7 +170,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                         cartProvider.onQuantityDecrease(
                             context, sellerIndex, itemIndex);
                       }
-                      return null;
+                      return;
                     },
                     child: Container(
                       width: 24,
@@ -175,7 +182,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                         color: cartProvider.shopList[sellerIndex]
                                     .cartItems[itemIndex].auctionProduct ==
                                 0
-                            ? MyTheme.accent_color
+                            ? Theme.of(context).primaryColor
                             : MyTheme.grey_153,
                         size: 12,
                       ),

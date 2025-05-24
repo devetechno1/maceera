@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/product_repository.dart';
@@ -10,19 +11,19 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../helpers/shared_value_helper.dart';
 
 class BrandProducts extends StatefulWidget {
-  BrandProducts({Key? key, required this.slug}) : super(key: key);
-  String slug;
+  const BrandProducts({Key? key, required this.slug}) : super(key: key);
+  final String slug;
 
   @override
   _BrandProductsState createState() => _BrandProductsState();
 }
 
 class _BrandProductsState extends State<BrandProducts> {
-  ScrollController _scrollController = ScrollController();
-  ScrollController _xcrollController = ScrollController();
-  TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final ScrollController _xcrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
-  List<dynamic> _productList = [];
+  final List<dynamic> _productList = [];
   bool _isInitial = true;
   int _page = 1;
   String _searchKey = "";
@@ -56,8 +57,8 @@ class _BrandProductsState extends State<BrandProducts> {
     super.dispose();
   }
 
-  fetchData() async {
-    var productResponse = await ProductRepository()
+  Future<void> fetchData() async {
+    final productResponse = await ProductRepository()
         .getBrandProducts(slug: widget.slug, page: _page, name: _searchKey);
     _productList.addAll(productResponse.products!);
     _isInitial = false;
@@ -66,7 +67,7 @@ class _BrandProductsState extends State<BrandProducts> {
     setState(() {});
   }
 
-  reset() {
+  void reset() {
     _productList.clear();
     _isInitial = true;
     _totalData = 0;
@@ -115,7 +116,11 @@ class _BrandProductsState extends State<BrandProducts> {
       backgroundColor: Colors.white,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(app_language_rtl.$! ?  CupertinoIcons.arrow_right : CupertinoIcons.arrow_left, color: MyTheme.dark_grey),
+          icon: Icon(
+              app_language_rtl.$!
+                  ? CupertinoIcons.arrow_right
+                  : CupertinoIcons.arrow_left,
+              color: MyTheme.dark_grey),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -138,15 +143,15 @@ class _BrandProductsState extends State<BrandProducts> {
           decoration: InputDecoration(
               hintText:
                   "${AppLocalizations.of(context)!.search_product_here} : ",
-              hintStyle:
-                  TextStyle(fontSize: 14.0, color: MyTheme.textfield_grey),
-              enabledBorder: OutlineInputBorder(
+              hintStyle: const TextStyle(
+                  fontSize: 14.0, color: MyTheme.textfield_grey),
+              enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: MyTheme.white, width: 0.0),
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: MyTheme.white, width: 0.0),
               ),
-              contentPadding: EdgeInsets.all(0.0)),
+              contentPadding: const EdgeInsets.all(0.0)),
         ),
       ),
       elevation: 0.0,
@@ -168,14 +173,14 @@ class _BrandProductsState extends State<BrandProducts> {
     );
   }
 
-  buildProductList() {
-    if (_isInitial && _productList.length == 0) {
+  Widget buildProductList() {
+    if (_isInitial && _productList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildProductGridShimmer(scontroller: _scrollController));
-    } else if (_productList.length > 0) {
+    } else if (_productList.isNotEmpty) {
       return RefreshIndicator(
-        color: MyTheme.accent_color,
+        color: Theme.of(context).primaryColor,
         backgroundColor: Colors.white,
         displacement: 0,
         onRefresh: _onRefresh,
@@ -189,9 +194,12 @@ class _BrandProductsState extends State<BrandProducts> {
             crossAxisSpacing: 14,
             itemCount: _productList.length,
             shrinkWrap: true,
-            padding:
-                EdgeInsets.only(top: 10.0, bottom: 10, left: 18, right: 18),
-            physics: NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(
+                top: AppDimensions.paddingSupSmall,
+                bottom: 10,
+                left: 18,
+                right: 18),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               // 3
               return ProductCard(
@@ -203,7 +211,7 @@ class _BrandProductsState extends State<BrandProducts> {
                 stroked_price: _productList[index].stroked_price,
                 has_discount: _productList[index].has_discount,
                 discount: _productList[index].discount,
-                is_wholesale: _productList[index].isWholesale,
+                isWholesale: _productList[index].isWholesale,
               );
             },
           ),

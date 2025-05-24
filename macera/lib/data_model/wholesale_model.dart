@@ -18,8 +18,9 @@ class ProductData {
   ProductData({required this.data});
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
-    var list = json['data'] as List;
-    List<Product> productList = list.map((i) => Product.fromJson(i)).toList();
+    final list = json['data'] as List;
+    final List<Product> productList =
+        list.map((i) => Product.fromJson(i)).toList();
 
     return ProductData(
       data: productList,
@@ -67,7 +68,7 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    var photosList = List<String>.from(json['photos']);
+    final photosList = List<String>.from(json['photos']);
     return Product(
       id: json['id'],
       slug: json['slug'],

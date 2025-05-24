@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../app_config.dart';
 import '../../custom/cart_seller_item_list_widget.dart';
 import '../../custom/lang_text.dart';
 import '../../presenter/cart_provider.dart';
@@ -39,7 +40,7 @@ class Cart extends StatelessWidget {
 }
 
 class _Cart extends StatefulWidget {
-  _Cart(
+  const _Cart(
       {Key? key,
       this.has_bottomnav,
       this.from_navigation = false,
@@ -73,7 +74,7 @@ class _CartState extends State<_Cart> {
         body: Stack(
           children: [
             RefreshIndicator(
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               backgroundColor: Colors.white,
               onRefresh: () => cartProvider.onRefresh(context),
               displacement: 0,
@@ -87,41 +88,55 @@ class _CartState extends State<_Cart> {
                       [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          height: cartProvider.isMinOrderQuantityNotEnough ? 25:0,
+                          height:
+                              cartProvider.isMinOrderQuantityNotEnough ? 25 : 0,
                           width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 3),
-                          color: MyTheme.accent_color,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 3),
+                          color: Theme.of(context).primaryColor,
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: RichText(
                               text: TextSpan(
-                                style: TextStyle(color: Colors.white),
-                                children: [
-                                  TextSpan(text: '${LangText(context).local.minimum_order_qty_is} ${minimum_order_quantity.$} , '),
-                                  TextSpan(text: LangText(context).local.remaining),
-                                  TextSpan(text: ' ${minimum_order_quantity.$ - (cartProvider.shopList.firstOrNull?.cartItems?.length ?? 0)} '),
-                                ]
-                              ),
+                                  style: const TextStyle(color: Colors.white),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity} , '),
+                                    TextSpan(
+                                        text:
+                                            LangText(context).local.remaining),
+                                    TextSpan(
+                                        text:
+                                            ' ${AppConfig.businessSettingsData.minimumOrderQuantity - (cartProvider.shopList.firstOrNull?.cartItems?.length ?? 0)} '),
+                                  ]),
                             ),
                           ),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          height: cartProvider.isMinOrderAmountNotEnough?25:0,
+                          height:
+                              cartProvider.isMinOrderAmountNotEnough ? 25 : 0,
                           width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 3),
-                          color: MyTheme.accent_color,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 3),
+                          color: Theme.of(context).primaryColor,
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: RichText(
                               text: TextSpan(
-                                style: TextStyle(color: Colors.white),
-                                children: [
-                                  TextSpan(text: '${LangText(context).local.minimum_order_amount_is} ${minimum_order_amount.$} , '),
-                                  TextSpan(text: LangText(context).local.remaining),
-                                  TextSpan(text: ' ${minimum_order_amount.$ - cartProvider.cartTotal} '),
-                                ]
-                              ),
+                                  style: const TextStyle(color: Colors.white),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '${LangText(context).local.minimum_order_amount_is} ${AppConfig.businessSettingsData.minimumOrderAmount} , '),
+                                    TextSpan(
+                                        text:
+                                            LangText(context).local.remaining),
+                                    TextSpan(
+                                        text:
+                                            ' ${AppConfig.businessSettingsData.minimumOrderAmount - cartProvider.cartTotal} '),
+                                  ]),
                             ),
                           ),
                         ),
@@ -148,7 +163,7 @@ class _CartState extends State<_Cart> {
 
   Container buildBottomContainer(cartProvider) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: MyTheme.mainColor,
       ),
 
@@ -162,7 +177,8 @@ class _CartState extends State<_Cart> {
               height: 40,
               width: double.infinity,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.0),
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusHalfSmall),
                   color: MyTheme.soft_accent_color),
               child: Row(
                 children: [
@@ -176,12 +192,12 @@ class _CartState extends State<_Cart> {
                           fontWeight: FontWeight.w700),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(cartProvider.cartTotalString,
                         style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w600)),
                   ),
@@ -191,51 +207,65 @@ class _CartState extends State<_Cart> {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
+                  padding:
+                      const EdgeInsets.only(top: AppDimensions.paddingSmall),
                   child: Container(
                     height: 58,
                     width: (MediaQuery.of(context).size.width - 48),
                     // width: (MediaQuery.of(context).size.width - 48) * (2 / 3),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: MyTheme.accent_color, width: 1),
+                      border: Border.all(
+                          color: Theme.of(context).primaryColor, width: 1),
                       borderRadius: app_language_rtl.$!
                           ? const BorderRadius.only(
-                              topLeft: const Radius.circular(6.0),
-                              bottomLeft: const Radius.circular(6.0),
-                              topRight: const Radius.circular(6.0),
-                              bottomRight: const Radius.circular(6.0),
+                              topLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              topRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
                             )
                           : const BorderRadius.only(
-                              topLeft: const Radius.circular(6.0),
-                              bottomLeft: const Radius.circular(6.0),
-                              topRight: const Radius.circular(6.0),
-                              bottomRight: const Radius.circular(6.0),
+                              topLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              topRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
                             ),
                     ),
                     child: Btn.basic(
                       minWidth: MediaQuery.of(context).size.width,
-                      color: MyTheme.accent_color,
+                      color: Theme.of(context).primaryColor,
                       shape: app_language_rtl.$!
-                          ? RoundedRectangleBorder(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: const Radius.circular(6.0),
-                                bottomLeft: const Radius.circular(6.0),
-                                topRight: const Radius.circular(0.0),
-                                bottomRight: const Radius.circular(0.0),
+                          ? const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(
+                                    AppDimensions.radiusHalfSmall),
+                                bottomLeft: Radius.circular(
+                                    AppDimensions.radiusHalfSmall),
+                                topRight: Radius.circular(0.0),
+                                bottomRight: Radius.circular(0.0),
                               ),
                             )
-                          : RoundedRectangleBorder(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: const Radius.circular(0.0),
-                                bottomLeft: const Radius.circular(0.0),
-                                topRight: const Radius.circular(6.0),
-                                bottomRight: const Radius.circular(6.0),
+                          : const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(0.0),
+                                bottomLeft: Radius.circular(0.0),
+                                topRight: Radius.circular(
+                                    AppDimensions.radiusHalfSmall),
+                                bottomRight: Radius.circular(
+                                    AppDimensions.radiusHalfSmall),
                               ),
                             ),
                       child: Text(
                         AppLocalizations.of(context)!.proceed_to_shipping_ucf,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.w700),
@@ -273,7 +303,7 @@ class _CartState extends State<_Cart> {
     );
   }
 
-  buildCartSellerList(cartProvider, context) {
+  Widget? buildCartSellerList(cartProvider, context) {
     if (cartProvider.isInitial && cartProvider.shopList.length == 0) {
       return SingleChildScrollView(
           child: ShimmerHelper()
@@ -281,19 +311,20 @@ class _CartState extends State<_Cart> {
     } else if (cartProvider.shopList.length > 0) {
       return SingleChildScrollView(
         child: ListView.separated(
-          separatorBuilder: (context, index) => SizedBox(
+          separatorBuilder: (context, index) => const SizedBox(
             height: 26,
           ),
           itemCount: cartProvider.shopList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 14.0),
+                  padding: const EdgeInsets.only(
+                      bottom: AppDimensions.paddingNormal),
                   child: Row(
                     children: [
                       Text(
@@ -303,14 +334,14 @@ class _CartState extends State<_Cart> {
                             fontWeight: FontWeight.bold,
                             fontSize: 12),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Text(
                         cartProvider.shopList[index].subTotal.replaceAll(
                                 SystemConfig.systemCurrency!.code,
                                 SystemConfig.systemCurrency!.symbol) ??
                             '',
                         style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 12),
                       ),
@@ -333,8 +364,9 @@ class _CartState extends State<_Cart> {
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.cart_is_empty,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
+    return null;
   }
 }

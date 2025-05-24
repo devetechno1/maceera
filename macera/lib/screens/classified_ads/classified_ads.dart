@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/lang_text.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
@@ -9,10 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../../data_model/classified_ads_response.dart';
 import '../../repositories/classified_product_repository.dart';
 
 class ClassifiedAds extends StatefulWidget {
-  ClassifiedAds({
+  const ClassifiedAds({
     Key? key,
   }) : super(key: key);
 
@@ -21,11 +23,11 @@ class ClassifiedAds extends StatefulWidget {
 }
 
 class _ClassifiedAdsState extends State<ClassifiedAds> {
-  ScrollController _mainScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
 
   //init
   bool _dataFetch = false;
-  dynamic _classifiedProducts = [];
+  final List<ClassifiedAdsMiniData> _classifiedProducts = [];
   int page = 1;
 
   @override
@@ -47,10 +49,10 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
   }
 
   fetchData() async {
-    var classifiedProductRes =
+    final ClassifiedAdsResponse classifiedProductRes =
         await ClassifiedProductRepository().getClassifiedProducts(page: page);
 
-    _classifiedProducts.addAll(classifiedProductRes.data);
+    _classifiedProducts.addAll(classifiedProductRes.data ?? []);
     _dataFetch = true;
     setState(() {});
   }
@@ -73,11 +75,11 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
     );
   }
 
-  bool? shouldProductBoxBeVisible(product_name, search_key) {
-    if (search_key == "") {
+  bool? shouldProductBoxBeVisible(productName, searchKey) {
+    if (searchKey == "") {
       return true; //do not check if the search key is empty
     }
-    return StringHelper().stringContains(product_name, search_key);
+    return StringHelper().stringContains(productName, searchKey);
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -104,7 +106,7 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
           .buildProductGridShimmer(scontroller: _mainScrollController);
     }
 
-    if (_classifiedProducts.length == 0) {
+    if (_classifiedProducts.isEmpty) {
       return Center(
         child: Text(LangText(context).local.no_data_is_available),
       );
@@ -112,15 +114,19 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
     return RefreshIndicator(
       onRefresh: _onPageRefresh,
       child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: MasonryGridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
           itemCount: _classifiedProducts.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: 10.0, bottom: 10, left: 18, right: 18),
-          physics: NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(
+              top: AppDimensions.paddingSupSmall,
+              bottom: AppDimensions.paddingSupSmall,
+              left: 18,
+              right: 18),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             // 3
             return ClassifiedAdsCard(
@@ -128,7 +134,7 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
               slug: _classifiedProducts[index].slug,
               image: _classifiedProducts[index].thumbnailImage,
               name: _classifiedProducts[index].name,
-              unit_price: _classifiedProducts[index].unitPrice,
+              unitPrice: _classifiedProducts[index].unitPrice,
               condition: _classifiedProducts[index].condition,
             );
           },

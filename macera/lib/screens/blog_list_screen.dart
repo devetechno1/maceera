@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/device_info.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
@@ -20,7 +21,20 @@ class BlogListScreen extends StatefulWidget {
 
 class _BlogListScreenState extends State<BlogListScreen> {
   bool _showSearchBar = false;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    Provider.of<BlogProvider>(context, listen: false).fetchBlogs(false);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +53,9 @@ class _BlogListScreenState extends State<BlogListScreen> {
           child: AnimatedContainer(
             //color: MyTheme.textfield_grey,
 
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
           ),
-          preferredSize: Size.fromHeight(0.0)),
+          preferredSize: const Size.fromHeight(0.0)),
       title: buildAppBarTitle(context),
       elevation: 0.0,
       titleSpacing: 0,
@@ -57,29 +71,31 @@ class _BlogListScreenState extends State<BlogListScreen> {
         crossFadeState: _showSearchBar
             ? CrossFadeState.showSecond
             : CrossFadeState.showFirst,
-        duration: Duration(milliseconds: 500));
+        duration: const Duration(milliseconds: 500));
   }
 
   Container buildAppBarTitleOption(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 37),
+      padding: const EdgeInsets.symmetric(horizontal: 37),
       child: Row(
         children: [
           Container(
             width: 20,
+            margin: const EdgeInsetsDirectional.only(
+                end: AppDimensions.paddingDefault),
             child: UsefulElements.backButton(context, color: "black"),
           ),
           Container(
-            padding: EdgeInsets.only(left: 10),
+            padding:
+                const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
             width: DeviceInfo(context).width! / 2,
             child: Text(
               AppLocalizations.of(context)!.all_blogs_ucf,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          Spacer(),
           SizedBox(
               width: 20,
               child: GestureDetector(
@@ -87,7 +103,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                     _showSearchBar = true;
                     setState(() {});
                   },
-                  child: Image.asset('assets/search.png')))
+                  child: Image.asset(AppImages.search)))
         ],
       ),
     );
@@ -95,7 +111,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
 
   Container buildAppBarSearchOption(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       width: DeviceInfo(context).width,
       height: 40,
       child: TextField(
@@ -110,40 +126,45 @@ class _BlogListScreenState extends State<BlogListScreen> {
               _showSearchBar = false;
               setState(() {});
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.clear,
               color: MyTheme.grey_153,
             ),
           ),
           filled: true,
-          fillColor: MyTheme.white.withOpacity(0.6),
-          hintText: LangText(context).local.search_in_blogs //widget.category_name!
+          fillColor: MyTheme.white.withValues(alpha: 0.6),
+          hintText:
+              LangText(context).local.search_in_blogs //widget.category_name!
           ,
-          hintStyle: TextStyle(fontSize: 14.0, color: MyTheme.font_grey),
+          hintStyle: const TextStyle(fontSize: 14.0, color: MyTheme.font_grey),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: MyTheme.noColor, width: 0.0),
-              borderRadius: BorderRadius.circular(6)),
+              borderRadius:
+                  BorderRadius.circular(AppDimensions.radiusHalfSmall)),
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: MyTheme.noColor, width: 0.0),
-              borderRadius: BorderRadius.circular(6)),
-          contentPadding: EdgeInsets.all(8.0),
+              borderRadius:
+                  BorderRadius.circular(AppDimensions.radiusHalfSmall)),
+          contentPadding: const EdgeInsets.all(8.0),
         ),
       ),
     );
   }
 
-  buildBlogList(context) {
-    return FutureBuilder(
-        future: Provider.of<BlogProvider>(context, listen: false).fetchBlogs(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+  Widget buildBlogList(context) {
+    return RefreshIndicator(
+      onRefresh: Provider.of<BlogProvider>(context, listen: false).fetchBlogs,
+      child: Consumer<BlogProvider>(
+        builder: (context, blogProvider, child) {
+          if (blogProvider.isLoading) {
             return ShimmerHelper()
                 .buildListShimmer(item_count: 10, item_height: 100.0);
           } else {
             return Consumer<BlogProvider>(
                 builder: (context, blogProvider, child) {
               return MasonryGridView.count(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 crossAxisCount: 2,
                 itemCount: blogProvider.blogs.length,
                 crossAxisSpacing: 10,
@@ -161,7 +182,8 @@ class _BlogListScreenState extends State<BlogListScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusDefault),
                         image: DecorationImage(
                           image: NetworkImage(blogProvider.blogs[index]
                               .banner), // Replace with your image asset
@@ -169,8 +191,8 @@ class _BlogListScreenState extends State<BlogListScreen> {
                         ),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                            16.0), // Ensure the gradient follows the border radius
+                        borderRadius: BorderRadius.circular(AppDimensions
+                            .radiusDefault), // Ensure the gradient follows the border radius
                         child: Stack(
                           children: [
                             // Gradient overlay
@@ -181,8 +203,8 @@ class _BlogListScreenState extends State<BlogListScreen> {
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     colors: [
-                                      Colors.white.withOpacity(0.5),
-                                      Colors.black.withOpacity(0.5)
+                                      Colors.white.withValues(alpha: 0.5),
+                                      Colors.black.withValues(alpha: 0.5)
                                     ],
                                   ),
                                 ),
@@ -236,6 +258,6 @@ class _BlogListScreenState extends State<BlogListScreen> {
               );
             });
           }
-        });
+        }));
   }
 }

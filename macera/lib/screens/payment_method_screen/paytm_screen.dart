@@ -39,7 +39,7 @@ class _PaytmScreenState extends State<PaytmScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -54,8 +54,8 @@ class _PaytmScreenState extends State<PaytmScreen> {
     });
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -72,8 +72,8 @@ class _PaytmScreenState extends State<PaytmScreen> {
     paytm();
   }
 
-  checkPhoneAvailability() async {
-    var phoneEmailAvailabilityResponse =
+  Future<void> checkPhoneAvailability() async {
+    final phoneEmailAvailabilityResponse =
         await ProfileRepository().getPhoneEmailAvailabilityResponse();
     if (phoneEmailAvailabilityResponse.phone_available == false) {
       ToastComponent.showDialog(
@@ -99,8 +99,8 @@ class _PaytmScreenState extends State<PaytmScreen> {
   }
 
   paytm() {
-    String initial_url =
-        "${AppConfig.BASE_URL}/paytm/payment/pay?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
+    final String initialUrl =
+        "${AppConfig.BASE_URL}/paytm/payment/pay?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
 
     _webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -115,7 +115,7 @@ class _PaytmScreenState extends State<PaytmScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(initial_url), headers: commonHeader);
+      ..loadRequest(Uri.parse(initialUrl), headers: commonHeader);
   }
 
   void getData() {
@@ -139,27 +139,27 @@ class _PaytmScreenState extends State<PaytmScreen> {
 
         if (widget.payment_type == "cart_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "order_re_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "wallet_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Wallet(from_recharge: true);
+            return const Wallet(from_recharge: true);
           }));
         } else if (widget.payment_type == "customer_package_payment") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return Profile();
+            return const Profile();
           }));
         }
       }
     });
   }
 
-  buildBody() {
+  Widget? buildBody() {
     //print(initial_url);
     if (_order_init == false &&
         _combined_order_id == 0 &&
@@ -198,7 +198,7 @@ class _PaytmScreenState extends State<PaytmScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_paytm,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

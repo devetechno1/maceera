@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/system_config.dart';
@@ -46,7 +48,11 @@ class _WholesalesScreenState extends State<WholesalesScreen> {
       scrolledUnderElevation: 0.0,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(app_language_rtl.$! ?  CupertinoIcons.arrow_right : CupertinoIcons.arrow_left, color: MyTheme.dark_grey),
+          icon: Icon(
+              app_language_rtl.$!
+                  ? CupertinoIcons.arrow_right
+                  : CupertinoIcons.arrow_left,
+              color: MyTheme.dark_grey),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -75,7 +81,8 @@ class _WholesalesScreenState extends State<WholesalesScreen> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            return Center(child: Text(LangText(context).local.error_loading_products));
+            return Center(
+                child: Text(LangText(context).local.error_loading_products));
           }
 
           // Safely check if data and products exist
@@ -94,11 +101,14 @@ class _WholesalesScreenState extends State<WholesalesScreen> {
               crossAxisSpacing: 14,
               itemCount: products.length, // Fix length issue here
               shrinkWrap: true,
-              padding:
-                  EdgeInsets.only(top: 20.0, bottom: 10, left: 18, right: 18),
-              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(
+                  top: AppDimensions.paddingLarge,
+                  bottom: AppDimensions.paddingSupSmall,
+                  left: 18,
+                  right: 18),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                var product = products[index]; // Fix index issue here
+                final product = products[index]; // Fix index issue here
                 return WholeSalesProductCard(
                   id: product.id,
                   slug: product.slug,
@@ -108,7 +118,7 @@ class _WholesalesScreenState extends State<WholesalesScreen> {
                   stroked_price: product.baseDiscountedPrice.toString(),
                   has_discount: product.discount != 0.0,
                   discount: product.discount_percentage,
-                  is_wholesale: true,
+                  isWholesale: true,
                 );
               },
             ),
@@ -142,7 +152,7 @@ class WholeSalesProductCard extends StatefulWidget {
   final bool? isWholesale;
   final String? discount;
 
-  WholeSalesProductCard({
+  const WholeSalesProductCard({
     Key? key,
     this.identifier,
     required this.slug,
@@ -152,9 +162,9 @@ class WholeSalesProductCard extends StatefulWidget {
     this.main_price,
     this.stroked_price,
     this.has_discount = false,
-    bool? is_wholesale = false, // Corrected to use is_wholesale
+    bool? isWholesale = false, // Corrected to use isWholesale
     this.discount,
-  })  : isWholesale = is_wholesale, // Assigning isWholesale to is_wholesale
+  })  : isWholesale = isWholesale, // Assigning isWholesale to isWholesale
         super(key: key);
 
   @override
@@ -191,10 +201,11 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                       width: double.infinity,
                       child: ClipRRect(
                         clipBehavior: Clip.hardEdge,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusNormal),
                         child: FadeInImage.assetNetwork(
-                          placeholder: 'assets/placeholder.png',
-                          image: widget.image ?? 'assets/placeholder.png',
+                          placeholder: AppImages.placeholder,
+                          image: widget.image ?? AppImages.placeholder,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -203,17 +214,19 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                       Positioned(
                         bottom: 0,
                         child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: const BoxDecoration(
                             color: Colors.blueGrey,
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(6),
-                              bottomLeft: Radius.circular(6),
+                              topRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0x14000000),
+                                color: Color(0x14000000),
                                 offset: Offset(-1, 1),
                                 blurRadius: 1,
                               ),
@@ -221,13 +234,13 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                           ),
                           child: Text(
                             LangText(context).local.wholesale,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               height: 1.8,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
+                            textHeightBehavior: const TextHeightBehavior(
                                 applyHeightToFirstAscent: false),
                             softWrap: false,
                           ),
@@ -242,12 +255,12 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                         child: Text(
                           widget.name ?? LangText(context).local.no_name,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: MyTheme.font_grey,
                             fontSize: 14,
                             height: 1.2,
@@ -257,7 +270,7 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                       ),
                       if (widget.has_discount)
                         Padding(
-                          padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                           child: Text(
                             SystemConfig.systemCurrency != null
                                 ? widget.main_price?.replaceAll(
@@ -277,9 +290,9 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                           ),
                         )
                       else
-                        SizedBox(height: 8.0),
+                        const SizedBox(height: 8.0),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                         child: Text(
                           SystemConfig.systemCurrency != null
                               ? widget.stroked_price?.replaceAll(
@@ -291,7 +304,7 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -313,13 +326,17 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                       Container(
                         height: 20,
                         width: 48,
-                        margin: EdgeInsets.only(top: 8, right: 8, bottom: 15),
+                        margin: const EdgeInsets.only(
+                            top: AppDimensions.paddingSmall,
+                            right: AppDimensions.paddingSmall,
+                            bottom: 15),
                         decoration: BoxDecoration(
-                          color: MyTheme.accent_color,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
+                          color: Theme.of(context).primaryColor,
+                          borderRadius:
+                              BorderRadius.circular(AppDimensions.radiusNormal),
+                          boxShadow: const [
                             BoxShadow(
-                              color: const Color(0x14000000),
+                              color: Color(0x14000000),
                               offset: Offset(-1, 1),
                               blurRadius: 1,
                             ),
@@ -328,13 +345,13 @@ class _WholeSalesProductCardState extends State<WholeSalesProductCard> {
                         child: Center(
                           child: Text(
                             widget.discount ?? '',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               height: 1.8,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
+                            textHeightBehavior: const TextHeightBehavior(
                                 applyHeightToFirstAscent: false),
                             softWrap: false,
                           ),

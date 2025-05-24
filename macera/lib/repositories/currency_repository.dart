@@ -4,7 +4,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class CurrencyRepository {
   Future<CurrencyResponse> getListResponse() async {
-    String url = ('${AppConfig.BASE_URL}/currencies');
+    const String url = ('${AppConfig.BASE_URL}/currencies');
 
     final response = await ApiRequest.get(url: url);
     return currencyResponseFromJson(response.body);

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/input_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/toast_component.dart';
@@ -19,7 +20,8 @@ import '../../main.dart';
 class Otp extends StatefulWidget {
   final String? title;
   final bool fromRegistration;
-  const Otp({Key? key, this.title, required this.fromRegistration}) : super(key: key);
+  const Otp({Key? key, this.title, required this.fromRegistration})
+      : super(key: key);
 
   @override
   _OtpState createState() => _OtpState();
@@ -27,14 +29,16 @@ class Otp extends StatefulWidget {
 
 class _OtpState extends State<Otp> {
   //controllers
-  TextEditingController _verificationCodeController = TextEditingController();
-  CountdownController countdownController = CountdownController(autoStart: true);
+  final TextEditingController _verificationCodeController =
+      TextEditingController();
+  CountdownController countdownController =
+      CountdownController(autoStart: true);
   bool canResend = false;
   @override
   void initState() {
     //on Splash Screen hide statusbar
-    if(!widget.fromRegistration) AuthRepository().getResendCodeResponse();
-    
+    if (!widget.fromRegistration) AuthRepository().getResendCodeResponse();
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom]);
     super.initState();
@@ -54,7 +58,7 @@ class _OtpState extends State<Otp> {
     setState(() {
       canResend = false;
     });
-    var resendCodeResponse = await AuthRepository().getResendCodeResponse();
+    final resendCodeResponse = await AuthRepository().getResendCodeResponse();
 
     if (resendCodeResponse.result == false) {
       ToastComponent.showDialog(
@@ -67,8 +71,8 @@ class _OtpState extends State<Otp> {
     }
   }
 
-  onPressConfirm() async {
-    var code = _verificationCodeController.text.toString();
+  Future<void> onPressConfirm() async {
+    final code = _verificationCodeController.text.toString();
 
     if (code == "") {
       ToastComponent.showDialog(
@@ -77,7 +81,7 @@ class _OtpState extends State<Otp> {
       return;
     }
 
-    var confirmCodeResponse =
+    final confirmCodeResponse =
         await AuthRepository().getConfirmCodeResponse(code);
 
     if (!(confirmCodeResponse.result)) {
@@ -88,9 +92,9 @@ class _OtpState extends State<Otp> {
       if (SystemConfig.systemUser != null) {
         SystemConfig.systemUser!.emailVerified = true;
       }
-      if(widget.fromRegistration){
+      if (widget.fromRegistration) {
         context.go("/");
-      }else{
+      } else {
         context.pop();
       }
       ToastComponent.showDialog(confirmCodeResponse.message);
@@ -112,8 +116,7 @@ class _OtpState extends State<Otp> {
               color: MyTheme.soft_accent_color,
               width: _screen_width,
               height: 200,
-              child: Image.asset(
-                  "assets/splash_login_registration_background_image.png"),
+              child: Image.asset(AppImages.splashLoginRegisterationBackground),
             ),
             Container(
               width: double.infinity,
@@ -124,15 +127,15 @@ class _OtpState extends State<Otp> {
                   if (widget.title != null)
                     Text(
                       widget.title!,
-                      style: TextStyle(fontSize: 25, color: MyTheme.font_grey),
+                      style: const TextStyle(
+                          fontSize: 25, color: MyTheme.font_grey),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 40.0, bottom: 15),
                     child: Container(
                       width: 75,
                       height: 75,
-                      child: Image.asset(
-                          'assets/login_registration_form_logo.png'),
+                      child: Image.asset(AppImages.loginRegisteration),
                     ),
                   ),
                   Container(
@@ -141,7 +144,8 @@ class _OtpState extends State<Otp> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
+                          padding: const EdgeInsets.only(
+                              bottom: AppDimensions.paddingSmall),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -167,16 +171,18 @@ class _OtpState extends State<Otp> {
                                 border: Border.all(
                                     color: MyTheme.textfield_grey, width: 1),
                                 borderRadius: const BorderRadius.all(
-                                    Radius.circular(12.0))),
+                                    Radius.circular(
+                                        AppDimensions.radiusNormal))),
                             child: Btn.basic(
                               minWidth: MediaQuery.of(context).size.width,
-                              color: MyTheme.accent_color,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(12.0))),
+                              color: Theme.of(context).primaryColor,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                          AppDimensions.radiusNormal))),
                               child: Text(
                                 AppLocalizations.of(context)!.confirm_ucf,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600),
@@ -191,8 +197,11 @@ class _OtpState extends State<Otp> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Text(AppLocalizations.of(context)!.check_your_WhatsApp_messages_to_retrieve_the_verification_code,
+                    padding:
+                        const EdgeInsets.only(top: AppDimensions.paddingLarge),
+                    child: Text(
+                        AppLocalizations.of(context)!
+                            .check_your_WhatsApp_messages_to_retrieve_the_verification_code,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Theme.of(context).disabledColor,
@@ -205,30 +214,34 @@ class _OtpState extends State<Otp> {
                       child: Text(AppLocalizations.of(context)!.resend_code_ucf,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: canResend? MyTheme.accent_color : Theme.of(context).disabledColor,
+                              color: canResend
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).disabledColor,
                               decoration: TextDecoration.underline,
                               fontSize: 13)),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 40, bottom: 60),
+                    padding: const EdgeInsets.only(
+                        top: AppDimensions.paddingVeryLarge, bottom: 60),
                     child: Visibility(
                       visible: !canResend,
                       child: TimerWidget(
-                        duration: Duration(seconds: 20), 
+                        duration: const Duration(seconds: 20),
                         callback: () {
-                            setState(() {
-                              countdownController.restart();
-                              canResend = true;
-                            });
-                        }, 
+                          setState(() {
+                            countdownController.restart();
+                            canResend = true;
+                          });
+                        },
                         controller: countdownController,
                       ),
                     ),
                   ),
                   // SizedBox(height: 15,),
                   Padding(
-                    padding: const EdgeInsets.only(top: 40),
+                    padding: const EdgeInsets.only(
+                        top: AppDimensions.paddingVeryLarge),
                     child: Center(
                       child: InkWell(
                         onTap: () {
@@ -237,7 +250,7 @@ class _OtpState extends State<Otp> {
                         child: Text(AppLocalizations.of(context)!.logout_ucf,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: MyTheme.accent_color,
+                                color: Theme.of(context).primaryColor,
                                 decoration: TextDecoration.underline,
                                 fontSize: 13)),
                       ),
@@ -262,7 +275,6 @@ class _OtpState extends State<Otp> {
   }
 }
 
-
 class TimerWidget extends StatelessWidget {
   const TimerWidget({
     required this.duration,
@@ -277,16 +289,17 @@ class TimerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 6, bottom: 2, left: 12, right: 12),
+      padding: const EdgeInsets.only(top: 6, bottom: 2, left: 12, right: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusNormal),
       ),
       child: Countdown(
         controller: controller,
         seconds: duration.inSeconds,
         onFinished: callback,
-        build: (BuildContext context, double seconds) => Text(seconds.fromSeconds ?? ''),
+        build: (BuildContext context, double seconds) =>
+            Text(seconds.fromSeconds ?? ''),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/product_repository.dart';
 import 'package:active_ecommerce_cms_demo_app/ui_elements/product_card.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +21,8 @@ class LastViewProduct extends StatefulWidget {
 class _LastViewProductState extends State<LastViewProduct> {
   //init
   bool _dataFetch = false;
-  dynamic _lastViewProducts = [];
-  ScrollController _mainScrollController = ScrollController();
+  final dynamic _lastViewProducts = [];
+  final ScrollController _mainScrollController = ScrollController();
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _LastViewProductState extends State<LastViewProduct> {
   }
 
   fetchData() async {
-    var lastViewProductResponse = await ProductRepository().lastViewProduct();
+    final lastViewProductResponse = await ProductRepository().lastViewProduct();
 
     _lastViewProducts.addAll(lastViewProductResponse.products);
     _dataFetch = true;
@@ -81,15 +82,19 @@ class _LastViewProductState extends State<LastViewProduct> {
     return RefreshIndicator(
       onRefresh: _onPageRefresh,
       child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: MasonryGridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
           itemCount: _lastViewProducts.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: 10.0, bottom: 10, left: 18, right: 18),
-          physics: NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(
+              top: AppDimensions.paddingSupSmall,
+              bottom: AppDimensions.paddingSupSmall,
+              left: 18,
+              right: 18),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             // 3
             return ProductCard(
@@ -101,7 +106,7 @@ class _LastViewProductState extends State<LastViewProduct> {
               stroked_price: _lastViewProducts[index].stroked_price,
               has_discount: _lastViewProducts[index].has_discount,
               discount: _lastViewProducts[index].discount,
-              is_wholesale: _lastViewProducts[index].isWholesale,
+              isWholesale: _lastViewProducts[index].isWholesale,
             );
           },
         ),

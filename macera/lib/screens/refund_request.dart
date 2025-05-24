@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/device_info.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
@@ -15,7 +16,7 @@ class RefundRequest extends StatefulWidget {
 }
 
 class _RefundRequestState extends State<RefundRequest> {
-  ScrollController _xcrollController = ScrollController();
+  final ScrollController _xcrollController = ScrollController();
   List<dynamic> _list = [];
   List<dynamic> _converted_ids = [];
   bool _isInitial = true;
@@ -46,7 +47,7 @@ class _RefundRequestState extends State<RefundRequest> {
   }
 
   fetchData() async {
-    var refundRequestResponse = await RefundRequestRepository()
+    final refundRequestResponse = await RefundRequestRepository()
         .getRefundRequestListResponse(page: _page);
     _list.addAll(refundRequestResponse.refund_requests);
 
@@ -87,7 +88,7 @@ class _RefundRequestState extends State<RefundRequest> {
         body: Stack(
           children: [
             RefreshIndicator(
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               backgroundColor: Colors.white,
               onRefresh: _onRefresh,
               displacement: 0,
@@ -99,7 +100,8 @@ class _RefundRequestState extends State<RefundRequest> {
                   SliverList(
                     delegate: SliverChildListDelegate([
                       Padding(
-                        padding: const EdgeInsets.all(18.0),
+                        padding:
+                            const EdgeInsets.all(AppDimensions.paddingMedium),
                         child: buildList(),
                       ),
                     ]),
@@ -152,23 +154,23 @@ class _RefundRequestState extends State<RefundRequest> {
     );
   }
 
-  buildList() {
-    if (_isInitial && _list.length == 0) {
+  Widget buildList() {
+    if (_isInitial && _list.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 10, item_height: 100.0));
-    } else if (_list.length > 0) {
+    } else if (_list.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.separated(
           separatorBuilder: (context, index) {
-            return SizedBox(
+            return const SizedBox(
               height: 14,
             );
           },
           itemCount: _list.length,
           scrollDirection: Axis.vertical,
-          padding: EdgeInsets.all(0.0),
-          physics: NeverScrollableScrollPhysics(),
+          //padding: const EdgeInsets.all(0.0),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return buildItemCard(index);
@@ -183,11 +185,11 @@ class _RefundRequestState extends State<RefundRequest> {
     }
   }
 
-  buildItemCard(index) {
+  Container buildItemCard(index) {
     return Container(
       decoration: BoxDecorations.buildBoxDecoration_1(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppDimensions.paddingDefault),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -197,7 +199,8 @@ class _RefundRequestState extends State<RefundRequest> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall),
                       child: Text(
                         _list[index].product_name,
                         textAlign: TextAlign.start,
@@ -208,11 +211,12 @@ class _RefundRequestState extends State<RefundRequest> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall),
                       child: Text(
                         _list[index].order_code,
                         style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w600),
                       ),
@@ -223,23 +227,24 @@ class _RefundRequestState extends State<RefundRequest> {
                         color: MyTheme.dark_font_grey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                   ],
                 )),
-            Spacer(),
+            const Spacer(),
             Container(
                 width: 120,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall),
                       child: Text(
                         convertPrice(_list[index].product_price),
                         style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 16,
                             fontWeight: FontWeight.bold),
                       ),

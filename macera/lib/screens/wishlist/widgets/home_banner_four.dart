@@ -38,7 +38,7 @@
 //                     width: 230,
 
 //                     // decoration: BoxDecoration(
-//                     //   borderRadius: BorderRadius.circular(10),
+//                     //   borderRadius: BorderRadius.circular(AppDimensions.radiusNormal),
 //                     //   image: DecorationImage(
 //                     //     image: NetworkImage(banner.banner!),
 //                     //     fit: BoxFit.cover,
@@ -47,11 +47,11 @@
 //                     decoration: BoxDecoration(
 //                       color: Colors.white, // background color for container
 //                       borderRadius:
-//                           BorderRadius.circular(10), // rounded corners
+//                           BorderRadius.circular(AppDimensions.radiusNormal), // rounded corners
 //                       boxShadow: [
 //                         BoxShadow(
 //                           color: Color(0xff000000)
-//                               .withOpacity(0.1), // shadow color
+//                               .withValues(alpha: 0.1), // shadow color
 //                           spreadRadius: 2, // spread radius
 //                           blurRadius: 5, // blur radius
 //                           offset: Offset(0, 3), // changes position of shadow

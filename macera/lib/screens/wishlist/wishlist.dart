@@ -14,9 +14,9 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
-  ScrollController _mainScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
   bool _wishlistInit = true;
-  List<dynamic> _wishlistItems = [];
+  final List<dynamic> _wishlistItems = [];
 
   //init
   @override
@@ -34,7 +34,7 @@ class _WishlistState extends State<Wishlist> {
   }
 
   fetchWishlistItems() async {
-    var wishlistResponse = await WishListRepository().getUserWishlist();
+    final wishlistResponse = await WishListRepository().getUserWishlist();
     _wishlistItems.addAll(wishlistResponse.wishlist_items);
     _wishlistInit = false;
     setState(() {});
@@ -74,7 +74,7 @@ class _WishlistState extends State<Wishlist> {
           backgroundColor: MyTheme.mainColor,
           appBar: buildAppBar(context),
           body: RefreshIndicator(
-            color: MyTheme.accent_color,
+            color: Theme.of(context).primaryColor,
             backgroundColor: Colors.white,
             onRefresh: _onPageRefresh,
             child: CustomScrollView(
@@ -92,30 +92,31 @@ class _WishlistState extends State<Wishlist> {
     );
   }
 
-  buildWishlist() {
+  Widget buildWishlist() {
     if (is_logged_in.$ == false) {
       return Container(
         height: 100,
         child: Center(
           child: Text(
             AppLocalizations.of(context)!.you_need_to_log_in,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           ),
         ),
       );
-    } else if (_wishlistInit == true && _wishlistItems.length == 0) {
+    } else if (_wishlistInit == true && _wishlistItems.isEmpty) {
       return SingleChildScrollView(
         child: ShimmerHelper().buildListShimmer(item_count: 10),
       );
-    } else if (_wishlistItems.length > 0) {
-      return WishListGridView(onPopFromProduct: _onPageRefresh, wishlistItems: _wishlistItems);
+    } else if (_wishlistItems.isNotEmpty) {
+      return WishListGridView(
+          onPopFromProduct: _onPageRefresh, wishlistItems: _wishlistItems);
     } else {
       return Container(
         height: 100,
         child: Center(
           child: Text(
             AppLocalizations.of(context)!.no_item_is_available,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           ),
         ),
       );
@@ -161,7 +162,7 @@ class _WishlistState extends State<Wishlist> {
   //           child: Card(
   //             shape: RoundedRectangleBorder(
   //               side: new BorderSide(color: MyTheme.light_grey, width: 1.0),
-  //               borderRadius: BorderRadius.circular(16.0),
+  //               borderRadius: BorderRadius.circular(AppDimensions.radiusDefualt),
   //             ),
   //             elevation: 0.0,
   //             child: Row(
@@ -172,9 +173,9 @@ class _WishlistState extends State<Wishlist> {
   //                       height: 100,
   //                       child: ClipRRect(
   //                           borderRadius: BorderRadius.horizontal(
-  //                               left: Radius.circular(16), right: Radius.zero),
+  //                               left: Radius.circular(AppDimensions.radiusDefualt), right: Radius.zero),
   //                           child: FadeInImage.assetNetwork(
-  //                             placeholder: 'assets/placeholder.png',
+  //                             placeholder: 'AppImages.placeholder',
   //                             image:
   //                                 _wishlistItems[index].product.thumbnail_image,
   //                             fit: BoxFit.cover,

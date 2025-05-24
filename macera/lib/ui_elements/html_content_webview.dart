@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class HtmlContentWebView extends StatefulWidget {
-  HtmlContentWebView({super.key, required this.html});
-  String html;
+  const HtmlContentWebView({super.key, required this.html});
+  final String html;
 
   @override
   State<HtmlContentWebView> createState() => _HtmlContentWebViewState();
@@ -16,8 +16,8 @@ class _HtmlContentWebViewState extends State<HtmlContentWebView> {
   double webViewHeight = 100.0;
 
   makeHeight() async {
-    await Future.delayed(Duration(seconds: 1));
-    var h = await viewController.runJavaScriptReturningResult(
+    await Future.delayed(const Duration(seconds: 1));
+    final h = await viewController.runJavaScriptReturningResult(
         "document.getElementById('scaled-frame').clientHeight");
 
     webViewHeight = double.parse(

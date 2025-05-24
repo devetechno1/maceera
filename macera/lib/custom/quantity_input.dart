@@ -13,7 +13,7 @@ class QuantityInputField {
       onSubmitted: (str) {
         onSubmitted();
       },
-      decoration: InputDecoration.collapsed(hintText: "0"),
+      decoration: const InputDecoration.collapsed(hintText: "0"),
     );
   }
 }

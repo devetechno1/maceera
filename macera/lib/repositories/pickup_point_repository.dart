@@ -1,6 +1,1 @@
-
-
-
-class PickupPointRepository{
-
-}
+class PickupPointRepository {}

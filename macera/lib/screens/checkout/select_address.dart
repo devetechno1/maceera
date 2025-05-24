@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/lang_text.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
@@ -46,7 +47,7 @@ class _SelectAddressState extends State<SelectAddress> {
             bottomNavigationBar:
                 buildBottomAppBar(context, selectAddressProvider),
             body: RefreshIndicator(
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               backgroundColor: Colors.white,
               onRefresh: () => selectAddressProvider.onRefresh(context),
               displacement: 0,
@@ -59,11 +60,12 @@ class _SelectAddressState extends State<SelectAddress> {
                     SliverList(
                         delegate: SliverChildListDelegate([
                       Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(
+                              AppDimensions.paddingDefault),
                           child: buildShippingInfoList(
                               selectAddressProvider, context)),
                       buildAddOrEditAddress(context, selectAddressProvider),
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                       )
                     ]))
@@ -77,14 +79,15 @@ class _SelectAddressState extends State<SelectAddress> {
     );
   }
 
-  Widget buildAddOrEditAddress(BuildContext context, SelectAddressProvider provider) {
+  Widget buildAddOrEditAddress(
+      BuildContext context, SelectAddressProvider provider) {
     return Container(
       height: 40,
       child: Center(
         child: InkWell(
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return Address(
+              return const Address(
                 from_shipping_info: true,
               );
             })).then((value) {
@@ -92,7 +95,7 @@ class _SelectAddressState extends State<SelectAddress> {
             });
           },
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(AppDimensions.paddingSmall),
             child: Text(
               LangText(context)
                   .local
@@ -100,7 +103,7 @@ class _SelectAddressState extends State<SelectAddress> {
               style: TextStyle(
                   fontSize: 14,
                   decoration: TextDecoration.underline,
-                  color: MyTheme.accent_color),
+                  color: Theme.of(context).primaryColor),
             ),
           ),
         ),
@@ -124,37 +127,39 @@ class _SelectAddressState extends State<SelectAddress> {
       ),
       title: Text(
         "${LangText(context).local.shipping_cost_ucf}",
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,
     );
   }
 
-  buildShippingInfoList(SelectAddressProvider selectAddressProvider, BuildContext context) {
+  Widget? buildShippingInfoList(
+      SelectAddressProvider selectAddressProvider, BuildContext context) {
     if (is_logged_in.$ == false) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             LangText(context).local.you_need_to_log_in,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     } else if (!selectAddressProvider.faceData &&
-        selectAddressProvider.shippingAddressList.length == 0) {
+        selectAddressProvider.shippingAddressList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 5, item_height: 100.0));
-    } else if (selectAddressProvider.shippingAddressList.length > 0) {
+    } else if (selectAddressProvider.shippingAddressList.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.builder(
           itemCount: selectAddressProvider.shippingAddressList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  bottom: AppDimensions.paddingSmallExtra),
               child: buildShippingInfoItemCard(
                   index, selectAddressProvider, context),
             );
@@ -162,27 +167,31 @@ class _SelectAddressState extends State<SelectAddress> {
         ),
       );
     } else if (selectAddressProvider.faceData &&
-        selectAddressProvider.shippingAddressList.length == 0) {
+        selectAddressProvider.shippingAddressList.isEmpty) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             LangText(context).local.no_address_is_added,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
+    return null;
   }
 
-  GestureDetector buildShippingInfoItemCard(
-      int index, SelectAddressProvider selectAddressProvider, BuildContext context) {
+  GestureDetector buildShippingInfoItemCard(int index,
+      SelectAddressProvider selectAddressProvider, BuildContext context) {
     return GestureDetector(
-      onTap: (){ 
-        if(selectAddressProvider.shippingAddressList[index].location_available == true){
+      onTap: () {
+        if (selectAddressProvider
+                .shippingAddressList[index].location_available ==
+            true) {
           selectAddressProvider.shippingInfoCardFnc(index, context);
-        }else{
+        } else {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MapLocation(address: selectAddressProvider.shippingAddressList[index]);
-          })).then((value) async{
+            return MapLocation(
+                address: selectAddressProvider.shippingAddressList[index]);
+          })).then((value) async {
             if (value != null) {
               await selectAddressProvider.onRefresh(context);
               selectAddressProvider.shippingInfoCardFnc(index, context);
@@ -194,103 +203,116 @@ class _SelectAddressState extends State<SelectAddress> {
         shape: RoundedRectangleBorder(
           side: selectAddressProvider.selectedShippingAddress ==
                   selectAddressProvider.shippingAddressList[index].id
-              ? BorderSide(color: MyTheme.accent_color, width: 2.0)
+              ? BorderSide(color: Theme.of(context).primaryColor, width: 2.0)
               : BorderSide(color: MyTheme.light_grey, width: 1.0),
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
         ),
         elevation: 0.0,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LineData(
-                          name: LangText(context).local.address_ucf, 
-                          body: "${selectAddressProvider.shippingAddressList[index].address}",
-                        ),
+            padding: const EdgeInsets.all(AppDimensions.paddingDefault),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: LineData(
+                        name: LangText(context).local.address_ucf,
+                        body:
+                            "${selectAddressProvider.shippingAddressList[index].address}",
                       ),
-                      buildShippingOptionsCheckContainer(
+                    ),
+                    buildShippingOptionsCheckContainer(
                         selectAddressProvider.selectedShippingAddress ==
                             selectAddressProvider.shippingAddressList[index].id)
-                    ],
-                  ),
-                  LineData(
-                    name: LangText(context).local.city_ucf, 
-                    body: "${selectAddressProvider.shippingAddressList[index].city_name}",
-                  ),
-                  LineData(
-                    name: LangText(context).local.state_ucf, 
-                    body: "${selectAddressProvider.shippingAddressList[index].state_name}",
-                  ),
-                  LineData(
-                    name: LangText(context).local.country_ucf, 
-                    body: "${selectAddressProvider.shippingAddressList[index].country_name}",
-                  ),
-                  LineData(
-                    name: LangText(context).local.postal_code, 
-                    body: "${selectAddressProvider.shippingAddressList[index].postal_code}",
-                  ),
-                  LineData(
-                    name: LangText(context).local.phone_ucf, 
-                    body: "${selectAddressProvider.shippingAddressList[index].phone}",
-                  ),
-                  selectAddressProvider.shippingAddressList[index].location_available != true 
-                  ? Center(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 8),
-                      padding: EdgeInsets.symmetric(vertical: 3,horizontal: 9),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.error,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Text(
-                          LangText(context).local.you_have_to_add_location_here,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                  ],
+                ),
+                LineData(
+                  name: LangText(context).local.city_ucf,
+                  body:
+                      "${selectAddressProvider.shippingAddressList[index].city_name}",
+                ),
+                LineData(
+                  name: LangText(context).local.state_ucf,
+                  body:
+                      "${selectAddressProvider.shippingAddressList[index].state_name}",
+                ),
+                LineData(
+                  name: LangText(context).local.country_ucf,
+                  body:
+                      "${selectAddressProvider.shippingAddressList[index].country_name}",
+                ),
+                LineData(
+                  name: LangText(context).local.postal_code,
+                  body:
+                      "${selectAddressProvider.shippingAddressList[index].postal_code}",
+                ),
+                LineData(
+                  name: LangText(context).local.phone_ucf,
+                  body:
+                      "${selectAddressProvider.shippingAddressList[index].phone}",
+                ),
+                selectAddressProvider
+                            .shippingAddressList[index].location_available !=
+                        true
+                    ? Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3, horizontal: 9),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.error,
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusSmallExtra)),
+                          child: Text(
+                            LangText(context)
+                                .local
+                                .you_have_to_add_location_here,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                    ),
-                  )
-                  : Column(
-                    children: [
-                      LineData(
-                        name: LangText(context).local.latitude, 
-                        body: "${selectAddressProvider.shippingAddressList[index].lat}",
+                      )
+                    : Column(
+                        children: [
+                          LineData(
+                            name: LangText(context).local.latitude,
+                            body:
+                                "${selectAddressProvider.shippingAddressList[index].lat}",
+                          ),
+                          LineData(
+                            name: LangText(context).local.longitude,
+                            body:
+                                "${selectAddressProvider.shippingAddressList[index].lang}",
+                          ),
+                        ],
                       ),
-                      LineData(
-                        name: LangText(context).local.longitude, 
-                        body: "${selectAddressProvider.shippingAddressList[index].lang}",
-                      ),
-                    ],
-                  ),
-                ],
-              )
-          
-          // Column(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     buildShippingInfoItemAddress(index, selectAddressProvider),
-          //     buildShippingInfoItemCity(index, selectAddressProvider),
-          //     buildShippingInfoItemState(index, selectAddressProvider),
-          //     buildShippingInfoItemCountry(index, selectAddressProvider),
-          //     buildShippingInfoItemPostalCode(index, selectAddressProvider),
-          //     buildShippingInfoItemPhone(index, selectAddressProvider),
-          //   ],
-          // ),
-        ),
+              ],
+            )
+
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     buildShippingInfoItemAddress(index, selectAddressProvider),
+            //     buildShippingInfoItemCity(index, selectAddressProvider),
+            //     buildShippingInfoItemState(index, selectAddressProvider),
+            //     buildShippingInfoItemCountry(index, selectAddressProvider),
+            //     buildShippingInfoItemPostalCode(index, selectAddressProvider),
+            //     buildShippingInfoItemPhone(index, selectAddressProvider),
+            //   ],
+            // ),
+            ),
       ),
     );
   }
 
   // Padding buildShippingInfoItemPhone(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -319,7 +341,7 @@ class _SelectAddressState extends State<SelectAddress> {
 
   // Padding buildShippingInfoItemPostalCode(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -348,7 +370,7 @@ class _SelectAddressState extends State<SelectAddress> {
 
   // Padding buildShippingInfoItemCountry(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -377,7 +399,7 @@ class _SelectAddressState extends State<SelectAddress> {
 
   // Padding buildShippingInfoItemState(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -406,7 +428,7 @@ class _SelectAddressState extends State<SelectAddress> {
 
   // Padding buildShippingInfoItemCity(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -435,7 +457,7 @@ class _SelectAddressState extends State<SelectAddress> {
 
   // Padding buildShippingInfoItemAddress(index, selectAddressProvider) {
   //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 8.0),
+  //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //     child: Row(
   //       crossAxisAlignment: CrossAxisAlignment.start,
   //       children: [
@@ -472,9 +494,11 @@ class _SelectAddressState extends State<SelectAddress> {
             height: 16,
             width: 16,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0), color: Colors.green),
-            child: Padding(
-              padding: const EdgeInsets.all(3),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusDefault),
+                color: Colors.green),
+            child: const Padding(
+              padding: EdgeInsets.all(3),
               child: Icon(Icons.check, color: Colors.white, size: 10),
             ),
           )
@@ -489,13 +513,13 @@ class _SelectAddressState extends State<SelectAddress> {
         child: Btn.minWidthFixHeight(
           minWidth: MediaQuery.of(context).size.width,
           height: 50,
-          color: MyTheme.accent_color,
+          color: Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(0.0),
           ),
           child: Text(
             LangText(context).local.continue_to_delivery_info_ucf,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           onPressed: () {
@@ -523,7 +547,7 @@ class _SelectAddressState extends State<SelectAddress> {
             ),
             // container for gaping into title text and title-bottom buttons
             Container(
-              padding: EdgeInsets.only(top: 2),
+              padding: const EdgeInsets.only(top: 2),
               width: mWidth,
               color: MyTheme.light_grey,
               height: 1,

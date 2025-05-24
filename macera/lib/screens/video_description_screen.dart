@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ class VideoDescription extends StatefulWidget {
 }
 
 class _VideoDescriptionState extends State<VideoDescription> {
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _VideoDescriptionState extends State<VideoDescription> {
     );
   }
 
-  buildBody() {
+  SizedBox buildBody() {
     return SizedBox.expand(
       child: Container(
         child: Stack(
@@ -76,17 +77,21 @@ class _VideoDescriptionState extends State<VideoDescription> {
               child: Container(
                 decoration: ShapeDecoration(
                   color: MyTheme.medium_grey_50,
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(25),
-                      bottomRight: Radius.circular(25),
+                      topRight: Radius.circular(AppDimensions.radius),
+                      bottomRight: Radius.circular(AppDimensions.radius),
                     ),
                   ),
                 ),
                 width: 40,
                 height: 40,
                 child: IconButton(
-                  icon: Icon(app_language_rtl.$! ?  CupertinoIcons.arrow_right : CupertinoIcons.arrow_left, color: MyTheme.white),
+                  icon: Icon(
+                      app_language_rtl.$!
+                          ? CupertinoIcons.arrow_right
+                          : CupertinoIcons.arrow_left,
+                      color: MyTheme.white),
                   onPressed: () {
                     if (MediaQuery.of(context).orientation ==
                         Orientation.landscape) {

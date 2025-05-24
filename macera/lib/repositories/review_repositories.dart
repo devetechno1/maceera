@@ -8,9 +8,9 @@ import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class ReviewRepository {
-  Future<dynamic> getReviewResponse(int? product_id, {page = 1}) async {
-    String url =
-        ("${AppConfig.BASE_URL}/reviews/product/${product_id}?page=${page}");
+  Future<dynamic> getReviewResponse(int? productId, {page = 1}) async {
+    final String url =
+        ("${AppConfig.BASE_URL}/reviews/product/$productId?page=$page");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -24,18 +24,18 @@ class ReviewRepository {
   }
 
   Future<dynamic> getReviewSubmitResponse(
-    int? product_id,
+    int? productId,
     int rating,
     String comment,
   ) async {
-    var post_body = jsonEncode({
-      "product_id": "${product_id}",
+    final postBody = jsonEncode({
+      "product_id": "$productId",
       "user_id": "${user_id.$}",
       "rating": "$rating",
       "comment": "$comment"
     });
 
-    String url = ("${AppConfig.BASE_URL}/reviews/submit");
+    const String url = ("${AppConfig.BASE_URL}/reviews/submit");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -43,7 +43,7 @@ class ReviewRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body);
+        body: postBody);
 
     return reviewSubmitResponseFromJson(response.body);
   }

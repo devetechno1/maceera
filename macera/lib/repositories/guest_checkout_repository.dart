@@ -9,7 +9,7 @@ import 'api-request.dart';
 class GuestCheckoutRepository {
   Future<GuestCustomerInfoCheckResponse> guestCustomerInfoCheck(
       postBody) async {
-    String url = ("${AppConfig.BASE_URL}/guest-customer-info-check");
+    const String url = ("${AppConfig.BASE_URL}/guest-customer-info-check");
     final response = await ApiRequest.post(
       url: url,
       headers: {
@@ -23,7 +23,7 @@ class GuestCheckoutRepository {
   }
 
   Future<dynamic> guestUserAccountCreate(postBody) async {
-    String url = ("${AppConfig.BASE_URL}/guest-user-account-create");
+    const String url = ("${AppConfig.BASE_URL}/guest-user-account-create");
 
     final response = await ApiRequest.post(
       url: url,

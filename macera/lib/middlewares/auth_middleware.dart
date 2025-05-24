@@ -4,7 +4,7 @@ import 'package:active_ecommerce_cms_demo_app/screens/auth/login.dart';
 import 'package:flutter/cupertino.dart';
 
 class AuthMiddleware extends RouteMiddleware {
-  Widget _goto;
+  final Widget _goto;
 
   AuthMiddleware(this._goto);
 

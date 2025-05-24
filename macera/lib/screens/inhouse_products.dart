@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -18,17 +19,17 @@ class InhouseProducts extends StatefulWidget {
 }
 
 class _InhouseProductsState extends State<InhouseProducts> {
-  ScrollController _scrollController = ScrollController();
-  ScrollController _xcrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  final ScrollController _xcrollController = ScrollController();
 
-  List<dynamic> _inhouseProductList = [];
+  final List<dynamic> _inhouseProductList = [];
   bool _isFetch = true;
   int _page = 1;
   int? _totalData = 0;
   bool _showLoadingContainer = false;
 
   fetchData() async {
-    var productResponse =
+    final productResponse =
         await ProductRepository().getInHouseProducts(page: _page);
     _inhouseProductList.addAll(productResponse.products!);
     _isFetch = false;
@@ -117,7 +118,11 @@ class _InhouseProductsState extends State<InhouseProducts> {
       // centerTitle: true,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(app_language_rtl.$! ?  CupertinoIcons.arrow_right : CupertinoIcons.arrow_left, color: MyTheme.dark_grey),
+          icon: Icon(
+              app_language_rtl.$!
+                  ? CupertinoIcons.arrow_right
+                  : CupertinoIcons.arrow_left,
+              color: MyTheme.dark_grey),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -133,14 +138,14 @@ class _InhouseProductsState extends State<InhouseProducts> {
     );
   }
 
-  buildInhouserProductList(context) {
-    if (_isFetch && _inhouseProductList.length == 0) {
+  Widget buildInhouserProductList(context) {
+    if (_isFetch && _inhouseProductList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildProductGridShimmer(scontroller: _scrollController));
-    } else if (_inhouseProductList.length > 0) {
+    } else if (_inhouseProductList.isNotEmpty) {
       return RefreshIndicator(
-        color: MyTheme.accent_color,
+        color: Theme.of(context).primaryColor,
         backgroundColor: Colors.white,
         displacement: 0,
         onRefresh: _onRefresh,
@@ -154,9 +159,12 @@ class _InhouseProductsState extends State<InhouseProducts> {
             crossAxisSpacing: 14,
             itemCount: _inhouseProductList.length,
             shrinkWrap: true,
-            padding:
-                EdgeInsets.only(top: 20.0, bottom: 10, left: 18, right: 18),
-            physics: NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(
+                top: AppDimensions.paddingLarge,
+                bottom: AppDimensions.paddingSupSmall,
+                left: 18,
+                right: 18),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return ProductCard(
                 id: _inhouseProductList[index].id,
@@ -167,7 +175,7 @@ class _InhouseProductsState extends State<InhouseProducts> {
                 stroked_price: _inhouseProductList[index].stroked_price,
                 has_discount: _inhouseProductList[index].has_discount,
                 discount: _inhouseProductList[index].discount,
-                is_wholesale: _inhouseProductList[index].isWholesale,
+                isWholesale: _inhouseProductList[index].isWholesale,
               );
             },
           ),

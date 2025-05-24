@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/enum_classes.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/input_decorations.dart';
@@ -21,16 +22,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
 class OfflineScreen extends StatefulWidget {
-  int? order_id;
-  String? paymentInstruction;
-  String? paymentMethod;
+  final int? order_id;
+  final String? paymentInstruction;
+  final String? paymentMethod;
 
-  PaymentFor? offLinePaymentFor;
-  int? offline_payment_id;
+  final PaymentFor? offLinePaymentFor;
+  final int? offline_payment_id;
   final double? rechargeAmount;
-  var packageId;
+  final packageId;
 
-  OfflineScreen(
+  const OfflineScreen(
       {Key? key,
       this.order_id,
       this.paymentInstruction,
@@ -46,11 +47,11 @@ class OfflineScreen extends StatefulWidget {
 }
 
 class _OfflineState extends State<OfflineScreen> {
-  ScrollController _mainScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
 
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _trxIdController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _trxIdController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
   XFile? _photo_file;
@@ -71,12 +72,12 @@ class _OfflineState extends State<OfflineScreen> {
     setState(() {});
   }
 
-  onPressSubmit() async {
-    String amount = _amountController.text.toString();
-    String name = _nameController.text.toString();
-    String trx_id = _trxIdController.text.toString();
+  Future<void> onPressSubmit() async {
+    final String amount = _amountController.text.toString();
+    final String name = _nameController.text.toString();
+    final String trxId = _trxIdController.text.toString();
 
-    if (amount == "" || name == "" || trx_id == "") {
+    if (amount == "" || name == "" || trxId == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!
             .amount_name_and_transaction_id_are_necessary,
@@ -92,11 +93,11 @@ class _OfflineState extends State<OfflineScreen> {
     }
     loading();
     if (widget.offLinePaymentFor == PaymentFor.WalletRecharge) {
-      var submitResponse = await OfflineWalletRechargeRepository()
+      final submitResponse = await OfflineWalletRechargeRepository()
           .getOfflineWalletRechargeResponse(
         amount: amount,
         name: name,
-        trx_id: trx_id,
+        trx_id: trxId,
         photo: _photo_upload_id,
       );
       Navigator.pop(loadingcontext);
@@ -109,16 +110,16 @@ class _OfflineState extends State<OfflineScreen> {
           submitResponse.message,
         );
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return Wallet(from_recharge: true);
+          return const Wallet(from_recharge: true);
         }));
       }
     } else if (widget.offLinePaymentFor == PaymentFor.ManualPayment) {
-      var submitResponse = await OfflinePaymentRepository()
+      final submitResponse = await OfflinePaymentRepository()
           .getOfflinePaymentSubmitResponse(
               order_id: widget.order_id,
               amount: amount,
               name: name,
-              trx_id: trx_id,
+              trx_id: trxId,
               photo: _photo_upload_id);
       Navigator.pop(loadingcontext);
       if (submitResponse.result == false) {
@@ -130,16 +131,16 @@ class _OfflineState extends State<OfflineScreen> {
           submitResponse.message,
         );
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        await Navigator.push(context, MaterialPageRoute(builder: (context) {
           return OrderDetails(id: widget.order_id, go_back: false);
         }));
       }
     } else if (widget.offLinePaymentFor == PaymentFor.PackagePay) {
-      var submitResponse = await CustomerPackageRepository()
+      final submitResponse = await CustomerPackageRepository()
           .offlinePackagePayment(
               packageId: widget.packageId,
               method: widget.paymentMethod,
-              trx_id: trx_id,
+              trx_id: trxId,
               photo: _photo_upload_id);
       Navigator.pop(loadingcontext);
       if (submitResponse.result == false) {
@@ -152,13 +153,13 @@ class _OfflineState extends State<OfflineScreen> {
         );
 
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return UpdatePackage(goHome: true);
+          return const UpdatePackage(goHome: true);
         }));
       }
     }
   }
 
-  onPickPhoto(context) async {
+  Future<void> onPickPhoto(context) async {
     _photo_file = await _picker.pickImage(source: ImageSource.gallery);
 
     if (_photo_file == null) {
@@ -169,10 +170,11 @@ class _OfflineState extends State<OfflineScreen> {
     }
 
     //return;
-    String base64Image = FileHelper.getBase64FormateFile(_photo_file!.path);
-    String fileName = _photo_file!.path.split("/").last;
+    final String base64Image =
+        FileHelper.getBase64FormateFile(_photo_file!.path);
+    final String fileName = _photo_file!.path.split("/").last;
 
-    var imageUpdateResponse =
+    final imageUpdateResponse =
         await FileRepository().getSimpleImageUploadResponse(
       base64Image,
       fileName,
@@ -231,25 +233,25 @@ class _OfflineState extends State<OfflineScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.make_offline_payment_ucf,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,
     );
   }
 
-  buildBody(context) {
+  Widget buildBody(context) {
     if (is_logged_in == false) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.you_need_to_log_in,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     } else {
       return RefreshIndicator(
-        color: MyTheme.accent_color,
+        color: Theme.of(context).primaryColor,
         backgroundColor: Colors.white,
         onRefresh: _onPageRefresh,
         displacement: 10,
@@ -261,13 +263,13 @@ class _OfflineState extends State<OfflineScreen> {
             SliverList(
               delegate: SliverChildListDelegate([
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(AppDimensions.paddingDefault),
                   child: HtmlContentWebView(
                     html: widget.paymentInstruction ?? """<p>Heading</p>""",
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Divider(
                     height: 24,
                   ),
@@ -283,60 +285,72 @@ class _OfflineState extends State<OfflineScreen> {
 
   Widget buildProfileForm(context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+      padding: const EdgeInsets.only(
+          top: AppDimensions.paddingSmall,
+          bottom: AppDimensions.paddingSmall,
+          left: 16.0,
+          right: 16.0),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Text(
                 AppLocalizations.of(context)!.all_marked_fields_are_mandatory,
-                style: TextStyle(
+                style: const TextStyle(
                     color: MyTheme.grey_153,
                     fontWeight: FontWeight.w600,
                     fontSize: 14.0),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Text(
                 AppLocalizations.of(context)!
                     .correctly_fill_up_the_necessary_information,
-                style: TextStyle(color: MyTheme.grey_153, fontSize: 14.0),
+                style: const TextStyle(color: MyTheme.grey_153, fontSize: 14.0),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  bottom: AppDimensions.paddingSmallExtra),
               child: Text(
                 "${AppLocalizations.of(context)!.amount_ucf}*",
                 style: TextStyle(
-                    color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Container(
                 height: 36,
                 child: TextField(
                   controller: _amountController,
                   autofocus: false,
                   decoration: InputDecorations.buildInputDecoration_1(
-                      hint_text: AppLocalizations.of(context)!.twelve_thousand_only ),
+                      hint_text:
+                          AppLocalizations.of(context)!.twelve_thousand_only),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  bottom: AppDimensions.paddingSmallExtra),
               child: Text(
                 "${AppLocalizations.of(context)!.name_ucf}*",
                 style: TextStyle(
-                    color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Container(
                 height: 36,
                 child: TextField(
@@ -348,15 +362,18 @@ class _OfflineState extends State<OfflineScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  bottom: AppDimensions.paddingSmallExtra),
               child: Text(
                 "${AppLocalizations.of(context)!.transaction_id_ucf}*",
                 style: TextStyle(
-                    color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Container(
                 height: 36,
                 child: TextField(
@@ -368,11 +385,13 @@ class _OfflineState extends State<OfflineScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  bottom: AppDimensions.paddingSmallExtra),
               child: Text(
                 "${AppLocalizations.of(context)!.photo_proof_ucf}* (${AppLocalizations.of(context)!.only_image_file_allowed})",
                 style: TextStyle(
-                    color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600),
               ),
             ),
             Row(
@@ -385,17 +404,17 @@ class _OfflineState extends State<OfflineScreen> {
                     decoration: BoxDecoration(
                         border:
                             Border.all(color: MyTheme.textfield_grey, width: 1),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8.0))),
+                        borderRadius: const BorderRadius.all(
+                            Radius.circular(AppDimensions.radiusSmall))),
                     child: Btn.basic(
                       minWidth: MediaQuery.of(context).size.width,
                       color: MyTheme.medium_grey,
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(8.0))),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(AppDimensions.radiusSmall))),
                       child: Text(
                         AppLocalizations.of(context)!.photo_proof_ucf,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w600),
@@ -408,18 +427,21 @@ class _OfflineState extends State<OfflineScreen> {
                 ),
                 _photo_path != ""
                     ? Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:
+                            const EdgeInsets.all(AppDimensions.paddingSmall),
                         child: Text(AppLocalizations.of(context)!.selected_ucf),
                       )
                     : Container()
               ],
             ),
-            if(_photo_file != null) 
+            if (_photo_file != null)
               Center(
                 child: Container(
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusSmall)),
                   constraints: BoxConstraints(
                     maxHeight: MediaQuery.sizeOf(context).shortestSide * .5,
                     maxWidth: MediaQuery.sizeOf(context).shortestSide * .5,
@@ -429,26 +451,27 @@ class _OfflineState extends State<OfflineScreen> {
               ),
             Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  padding:
+                      const EdgeInsets.only(top: AppDimensions.paddingDefault),
                   child: Container(
                     width: 120,
                     height: 36,
                     decoration: BoxDecoration(
                         border:
                             Border.all(color: MyTheme.textfield_grey, width: 1),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8.0))),
+                        borderRadius: const BorderRadius.all(
+                            Radius.circular(AppDimensions.radiusSmall))),
                     child: Btn.basic(
                       minWidth: MediaQuery.of(context).size.width,
-                      color: MyTheme.accent_color,
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(8.0))),
+                      color: Theme.of(context).primaryColor,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(AppDimensions.radiusSmall))),
                       child: Text(
                         AppLocalizations.of(context)!.submit_ucf + "",
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w600),
@@ -475,8 +498,8 @@ class _OfflineState extends State<OfflineScreen> {
           return AlertDialog(
               content: Row(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(
+              const CircularProgressIndicator(),
+              const SizedBox(
                 width: 10,
               ),
               Text("${AppLocalizations.of(context)!.please_wait_ucf}"),

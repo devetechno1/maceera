@@ -28,7 +28,7 @@ class PurchasedDigitalProductCard extends StatefulWidget
 
 class _PurchasedDigitalProductCardState
     extends State<PurchasedDigitalProductCard> {
-  ReceivePort _port = ReceivePort();
+  final ReceivePort _port = ReceivePort();
 
   @pragma('vm:entry-point')
   static void downloadCallback(String id, int status, int progress) {
@@ -71,22 +71,22 @@ class _PurchasedDigitalProductCardState
               width: double.infinity,
               child: ClipRRect(
                 clipBehavior: Clip.hardEdge,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusNormal),
                 child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/placeholder.png',
-                  image: widget.image ?? 'assets/placeholder.png',
+                  placeholder: AppImages.placeholder,
+                  image: widget.image ?? AppImages.placeholder,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
             child: Text(
               widget.name ?? LangText(context).local.no_name,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xff6B7377),
                 fontSize: 12,
                 height: 1.2,
@@ -99,15 +99,16 @@ class _PurchasedDigitalProductCardState
             child: Container(
               height: 24,
               width: 170,
-              margin: EdgeInsets.symmetric(vertical: 14),
+              margin: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: Color(0xffE5411C),
-                borderRadius: BorderRadius.circular(3.0),
+                color: const Color(0xffE5411C),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusSmallExtra),
               ),
               child: Center(
                 child: Text(
                   LangText(context).local.download,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Public Sans',
                     fontSize: 10,
                     color: Colors.white,

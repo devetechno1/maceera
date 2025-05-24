@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -8,7 +9,7 @@ class AIZImage {
       imageUrl: url,
       progressIndicatorBuilder: (context, string, progress) {
         return Image.asset(
-          "assets/placeholder_rectangle.png",
+          AppImages.placeholderRectangle,
           fit: BoxFit.cover,
         );
       },
@@ -18,7 +19,7 @@ class AIZImage {
       // progressIndicatorBuilder: (context, url, downloadProgress) =>
       //     CircularProgressIndicator(value: downloadProgress.progress),
       errorWidget: (context, url, error) => Image.asset(
-        "assets/placeholder_rectangle.png",
+        AppImages.placeholderRectangle,
         fit: BoxFit.cover,
       ),
     );
@@ -41,10 +42,11 @@ class AIZImage {
           boxShadow: isShadow
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(.08),
+                    color: Colors.black.withValues(alpha: .08),
                     blurRadius: 20,
                     spreadRadius: 0.0,
-                    offset: Offset(0.0, 10.0), // shadow direction: bottom right
+                    offset: const Offset(
+                        0.0, 10.0), // shadow direction: bottom right
                   )
                 ]
               : []),

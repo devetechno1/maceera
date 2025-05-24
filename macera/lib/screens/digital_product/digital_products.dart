@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/lang_text.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
@@ -14,7 +16,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class DigitalProducts extends StatefulWidget {
-  DigitalProducts({
+  const DigitalProducts({
     Key? key,
   }) : super(key: key);
 
@@ -23,12 +25,12 @@ class DigitalProducts extends StatefulWidget {
 }
 
 class _DigitalProductsState extends State<DigitalProducts> {
-  ScrollController _mainScrollController = ScrollController();
-  ScrollController _xcrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
+  final ScrollController _xcrollController = ScrollController();
 
   //init
   bool _dataFetch = false;
-  List<dynamic> _digitalProducts = [];
+  final List<dynamic> _digitalProducts = [];
   int _page = 1;
   int? _totalData = 0;
 
@@ -67,7 +69,7 @@ class _DigitalProductsState extends State<DigitalProducts> {
   }
 
   fetchData() async {
-    var digitalProductRes =
+    final digitalProductRes =
         await ProductRepository().getDigitalProducts(page: _page);
 
     _digitalProducts.addAll(digitalProductRes.products!);
@@ -115,11 +117,11 @@ class _DigitalProductsState extends State<DigitalProducts> {
     );
   }
 
-  bool? shouldProductBoxBeVisible(product_name, search_key) {
-    if (search_key == "") {
+  bool? shouldProductBoxBeVisible(productName, searchKey) {
+    if (searchKey == "") {
       return true; //do not check if the search key is empty
     }
-    return StringHelper().stringContains(product_name, search_key);
+    return StringHelper().stringContains(productName, searchKey);
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -161,7 +163,7 @@ class _DigitalProductsState extends State<DigitalProducts> {
           .buildProductGridShimmer(scontroller: _mainScrollController);
     }
 
-    if (_digitalProducts.length == 0) {
+    if (_digitalProducts.isEmpty) {
       return Center(
         child: Text(LangText(context).local.no_data_is_available),
       );
@@ -170,15 +172,16 @@ class _DigitalProductsState extends State<DigitalProducts> {
       onRefresh: _onPageRefresh,
       child: SingleChildScrollView(
         controller: _xcrollController,
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: MasonryGridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 10,
           crossAxisSpacing: 14,
           itemCount: _digitalProducts.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: 0.0, bottom: 10, left: 18, right: 18),
-          physics: NeverScrollableScrollPhysics(),
+          padding:
+              const EdgeInsets.only(top: 0.0, bottom: 10, left: 18, right: 18),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             // 3
             return DigitalProductCard(
@@ -190,7 +193,7 @@ class _DigitalProductsState extends State<DigitalProducts> {
               stroked_price: _digitalProducts[index].stroked_price,
               has_discount: _digitalProducts[index].has_discount,
               discount: _digitalProducts[index].discount,
-              is_wholesale: null,
+              isWholesale: null,
             );
           },
         ),
@@ -211,7 +214,7 @@ class DigitalProductCard extends StatefulWidget {
   final bool? isWholesale;
   final String? discount;
 
-  DigitalProductCard({
+  const DigitalProductCard({
     Key? key,
     this.identifier,
     required this.slug,
@@ -221,9 +224,9 @@ class DigitalProductCard extends StatefulWidget {
     this.main_price,
     this.stroked_price,
     this.has_discount = false,
-    bool? is_wholesale = false, // Corrected to use is_wholesale
+    bool? isWholesale = false, // Corrected to use isWholesale
     this.discount,
-  })  : isWholesale = is_wholesale, // Assigning isWholesale to is_wholesale
+  })  : isWholesale = isWholesale, // Assigning isWholesale to isWholesale
         super(key: key);
 
   @override
@@ -260,10 +263,11 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                       width: double.infinity,
                       child: ClipRRect(
                         clipBehavior: Clip.hardEdge,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusNormal),
                         child: FadeInImage.assetNetwork(
-                          placeholder: 'assets/placeholder.png',
-                          image: widget.image ?? 'assets/placeholder.png',
+                          placeholder: AppImages.placeholder,
+                          image: widget.image ?? AppImages.placeholder,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -274,17 +278,19 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                       Positioned(
                         bottom: 0,
                         child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: const BoxDecoration(
                             color: Colors.blueGrey,
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(6),
-                              bottomLeft: Radius.circular(6),
+                              topRight: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
+                              bottomLeft: Radius.circular(
+                                  AppDimensions.radiusHalfSmall),
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0x14000000),
+                                color: Color(0x14000000),
                                 offset: Offset(-1, 1),
                                 blurRadius: 1,
                               ),
@@ -292,13 +298,13 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                           ),
                           child: Text(
                             LangText(context).local.wholesale,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               height: 1.8,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
+                            textHeightBehavior: const TextHeightBehavior(
                                 applyHeightToFirstAscent: false),
                             softWrap: false,
                           ),
@@ -313,12 +319,12 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                         child: Text(
                           widget.name ?? LangText(context).local.no_name,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: MyTheme.font_grey,
                             fontSize: 14,
                             height: 1.2,
@@ -328,7 +334,7 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                       ),
                       if (widget.has_discount)
                         Padding(
-                          padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                           child: Text(
                             SystemConfig.systemCurrency != null
                                 ? widget.stroked_price?.replaceAll(
@@ -348,9 +354,9 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                           ),
                         )
                       else
-                        SizedBox(height: 8.0),
+                        const SizedBox(height: 8.0),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                         child: Text(
                           SystemConfig.systemCurrency != null
                               ? widget.main_price?.replaceAll(
@@ -362,7 +368,7 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -384,13 +390,17 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                       Container(
                         height: 20,
                         width: 48,
-                        margin: EdgeInsets.only(top: 8, right: 8, bottom: 15),
+                        margin: const EdgeInsets.only(
+                            top: AppDimensions.paddingSmall,
+                            right: AppDimensions.paddingSmall,
+                            bottom: 15),
                         decoration: BoxDecoration(
-                          color: MyTheme.accent_color,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
+                          color: Theme.of(context).primaryColor,
+                          borderRadius:
+                              BorderRadius.circular(AppDimensions.radiusNormal),
+                          boxShadow: const [
                             BoxShadow(
-                              color: const Color(0x14000000),
+                              color: Color(0x14000000),
                               offset: Offset(-1, 1),
                               blurRadius: 1,
                             ),
@@ -399,13 +409,13 @@ class _DigitalProductCardState extends State<DigitalProductCard> {
                         child: Center(
                           child: Text(
                             widget.discount ?? '',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               height: 1.8,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
+                            textHeightBehavior: const TextHeightBehavior(
                                 applyHeightToFirstAscent: false),
                             softWrap: false,
                           ),

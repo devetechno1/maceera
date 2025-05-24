@@ -8,9 +8,9 @@ import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 class FileRepository {
   Future<dynamic> getSimpleImageUploadResponse(
       String image, String filename) async {
-    var post_body = jsonEncode({"image": "${image}", "filename": "$filename"});
+    final postBody = jsonEncode({"image": "$image", "filename": "$filename"});
 
-    String url = ("${AppConfig.BASE_URL}/file/image-upload");
+    const String url = ("${AppConfig.BASE_URL}/file/image-upload");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -18,7 +18,7 @@ class FileRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
 
     return simpleImageUploadResponseFromJson(response.body);

@@ -1,12 +1,16 @@
+import "package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart";
 import "package:active_ecommerce_cms_demo_app/my_theme.dart";
 import "package:flutter/material.dart";
 
 class Btn {
   static Widget basic(
       {Color color = const Color.fromARGB(0, 0, 0, 0),
-      OutlinedBorder shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+      OutlinedBorder shape = const RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.all(Radius.circular(AppDimensions.radiusNormal))),
       Widget child = const SizedBox(),
-      EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 9,vertical: 3),
+      EdgeInsetsGeometry padding =
+          const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       double? minWidth,
       void Function()? onPressed}) {
     //if (width != null && height != null)

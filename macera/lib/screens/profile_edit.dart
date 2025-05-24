@@ -29,11 +29,15 @@ class ProfileEdit extends StatefulWidget {
 
 class _ProfileEditState extends State<ProfileEdit> {
   final ScrollController _mainScrollController = ScrollController();
-  final TextEditingController _nameController = TextEditingController(text: "${user_name.$}");
-  final TextEditingController _phoneController = TextEditingController(text: "${user_phone.$}");
-  final TextEditingController _emailController = TextEditingController(text: "${user_email.$}");
+  final TextEditingController _nameController =
+      TextEditingController(text: "${user_name.$}");
+  final TextEditingController _phoneController =
+      TextEditingController(text: "${user_phone.$}");
+  final TextEditingController _emailController =
+      TextEditingController(text: "${user_email.$}");
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
 
   bool _showPassword = false;
   bool _showConfirmPassword = false;
@@ -47,7 +51,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   final ImagePicker _picker = ImagePicker();
   XFile? _file;
 
-  chooseAndUploadImage(context) async {
+  Future<void> chooseAndUploadImage(context) async {
     await Permission.camera.request();
     // var status = await Permission.photos.request();
     //
@@ -89,10 +93,10 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
 
     //return;
-    String base64Image = FileHelper.getBase64FormateFile(_file!.path);
-    String fileName = _file!.path.split("/").last;
+    final String base64Image = FileHelper.getBase64FormateFile(_file!.path);
+    final String fileName = _file!.path.split("/").last;
 
-    var profileImageUpdateResponse =
+    final profileImageUpdateResponse =
         await ProfileRepository().getProfileImageUpdateResponse(
       base64Image,
       fileName,
@@ -116,7 +120,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   Future<void> _onPageRefresh() async {}
 
   Future<void> onPressUpdate() async {
-    var name = _nameController.text.toString();
+    final name = _nameController.text.toString();
 
     if (name == "") {
       ToastComponent.showDialog(
@@ -126,33 +130,27 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
     if (_phone.trim().isEmpty) {
       ToastComponent.showDialog(
-        AppLocalizations.of(context)!.enter_phone_number,
-        color: Theme.of(context).colorScheme.error
-      );
+          AppLocalizations.of(context)!.enter_phone_number,
+          color: Theme.of(context).colorScheme.error);
       return;
-    }else if(!_isValidPhoneNumber){
+    } else if (!_isValidPhoneNumber) {
       ToastComponent.showDialog(
-        AppLocalizations.of(context)!.invalid_phone_number,
-        color: Theme.of(context).colorScheme.error
-      );
+          AppLocalizations.of(context)!.invalid_phone_number,
+          color: Theme.of(context).colorScheme.error);
       return;
     }
 
-    var post_body = jsonEncode({"name": "${name}", "phone": _phone.trim()});
+    final postBody = jsonEncode({"name": "$name", "phone": _phone.trim()});
 
-    var profileUpdateResponse = await ProfileRepository()
-        .getProfileUpdateResponse(post_body: post_body);
+    final profileUpdateResponse =
+        await ProfileRepository().getProfileUpdateResponse(post_body: postBody);
 
     if (profileUpdateResponse.result == false) {
-      ToastComponent.showDialog(
-        profileUpdateResponse.message,
-        color: Theme.of(context).colorScheme.error
-      );
+      ToastComponent.showDialog(profileUpdateResponse.message,
+          color: Theme.of(context).colorScheme.error);
     } else {
-      ToastComponent.showDialog(
-        profileUpdateResponse.message,
-        color: Colors.green
-      );
+      ToastComponent.showDialog(profileUpdateResponse.message,
+          color: Colors.green);
 
       user_name.$ = name;
       user_phone.$ = _phone;
@@ -161,44 +159,44 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   Future<void> onPressUpdatePassword() async {
-    var password = _passwordController.text.toString();
-    var password_confirm = _passwordConfirmController.text.toString();
+    final password = _passwordController.text.toString();
+    final passwordConfirm = _passwordConfirmController.text.toString();
 
-    var change_password = password != "" ||
-        password_confirm !=
+    final changePassword = password != "" ||
+        passwordConfirm !=
             ""; // if both fields are empty we will not change user's password
 
-    if (!change_password && password == "") {
+    if (!changePassword && password == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_password,
       );
       return;
     }
-    if (!change_password && password_confirm == "") {
+    if (!changePassword && passwordConfirm == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.confirm_your_password,
       );
       return;
     }
-    if (change_password && password.length < 6) {
+    if (changePassword && password.length < 6) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!
             .password_must_contain_at_least_6_characters,
       );
       return;
     }
-    if (change_password && password != password_confirm) {
+    if (changePassword && password != passwordConfirm) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.passwords_do_not_match,
       );
       return;
     }
 
-    var post_body = jsonEncode({"password": "$password"});
+    final postBody = jsonEncode({"password": "$password"});
 
-    var profileUpdateResponse =
+    final profileUpdateResponse =
         await ProfileRepository().getProfileUpdateResponse(
-      post_body: post_body,
+      post_body: postBody,
     );
 
     if (profileUpdateResponse.result == false) {
@@ -212,13 +210,13 @@ class _ProfileEditState extends State<ProfileEdit> {
       setState(() {});
     }
   }
-  
+
   Future<void> fetch_country() async {
-    var data = await AddressRepository().getCountryList();
+    final data = await AddressRepository().getCountryList();
     data.countries?.forEach((c) => countries_code.add(c.code));
     setState(() {});
   }
-  
+
   Future<void> getInitVal() async {
     _phone = user_phone.$.trim();
     initialValue = await PhoneNumber.getRegionInfoFromPhoneNumber(_phone);
@@ -226,7 +224,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     _isValidPhoneNumber = _phoneController.text.isNotEmpty;
     setState(() {});
   }
- 
+
   @override
   void initState() {
     super.initState();
@@ -238,11 +236,11 @@ class _ProfileEditState extends State<ProfileEdit> {
   void dispose() {
     _mainScrollController.dispose();
 
-   _nameController.dispose();
-   _phoneController.dispose();
-   _emailController.dispose();
-   _passwordController.dispose();
-   _passwordConfirmController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
     super.dispose();
   }
 
@@ -276,7 +274,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       ),
       title: Text(
         AppLocalizations.of(context)!.edit_profile_ucf,
-        style: TextStyle(
+        style: const TextStyle(
             fontSize: 16,
             color: Color(0xff3E4447),
             fontWeight: FontWeight.bold),
@@ -286,18 +284,18 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 
-  buildBody(context) {
+  Widget buildBody(context) {
     if (is_logged_in.$ == false) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.please_log_in_to_see_the_profile,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     } else {
       return RefreshIndicator(
-        color: MyTheme.accent_color,
+        color: Theme.of(context).primaryColor,
         backgroundColor: Colors.white,
         onRefresh: _onPageRefresh,
         displacement: 10,
@@ -309,8 +307,8 @@ class _ProfileEditState extends State<ProfileEdit> {
             SliverList(
               delegate: SliverChildListDelegate([
                 buildTopSection(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 buildProfileForm(context)
               ]),
@@ -321,7 +319,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
   }
 
-  buildTopSection() {
+  Column buildTopSection() {
     return Column(
       children: [
         Padding(
@@ -332,7 +330,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               //     url: avatar_original.$,
               //     height: 80.0,
               //     width: 80.0,
-              //     borderRadius: BorderRadius.circular(60),
+              //     borderRadius: BorderRadius.circular(AppDimensions.radiusVeryEtraLarge),
               //     elevation: 8.0),
 
               Container(
@@ -340,15 +338,17 @@ class _ProfileEditState extends State<ProfileEdit> {
                 height: 80,
                 decoration: BoxDecoration(
                   boxShadow: [MyTheme.commonShadow()],
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusVeryExtra),
 
                   //shape: BoxShape.rectangle,
                 ),
                 child: ClipRRect(
                     clipBehavior: Clip.hardEdge,
-                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                    borderRadius: const BorderRadius.all(
+                        Radius.circular(AppDimensions.radiusVeryExtra)),
                     child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/placeholder.png',
+                      placeholder: AppImages.placeholder,
                       image: "${avatar_original.$}",
                       fit: BoxFit.fill,
                     )),
@@ -385,19 +385,20 @@ class _ProfileEditState extends State<ProfileEdit> {
                     height: 24,
                     decoration: BoxDecoration(
                       boxShadow: [MyTheme.commonShadow()],
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusVeryExtra),
 
                       //shape: BoxShape.rectangle,
                     ),
                     child: Btn.basic(
-                      padding: EdgeInsets.all(0),
-                      child: Icon(
+                      // padding: const EdgeInsets.all(0),
+                      child: const Icon(
                         Icons.edit,
                         color: Color(0xff3E4447),
                         size: 14,
                       ),
-                      shape: CircleBorder(),
-                      color: Color(0xffDBDFE2),
+                      shape: const CircleBorder(),
+                      color: const Color(0xffDBDFE2),
                       onPressed: () {
                         chooseAndUploadImage(context);
                       },
@@ -410,10 +411,13 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 
-  buildProfileForm(context) {
+  Padding buildProfileForm(context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+      padding: const EdgeInsets.only(
+          top: AppDimensions.paddingSmall,
+          bottom: AppDimensions.paddingSmall,
+          left: AppDimensions.paddingDefault,
+          right: AppDimensions.paddingDefault),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,35 +435,37 @@ class _ProfileEditState extends State<ProfileEdit> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 22.0, bottom: 10),
+          padding: const EdgeInsets.only(
+              top: AppDimensions.paddingLarge,
+              bottom: AppDimensions.paddingSupSmall),
           child: Center(
             child: Text(
               LangText(context).local.password_changes_ucf,
               style: TextStyle(
                 fontFamily: 'Public Sans',
                 fontSize: 16,
-                color: MyTheme.accent_color,
+                color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
               ),
               textHeightBehavior:
-                  TextHeightBehavior(applyHeightToFirstAscent: false),
+                  const TextHeightBehavior(applyHeightToFirstAscent: false),
               textAlign: TextAlign.center,
               softWrap: false,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
           child: Text(
             AppLocalizations.of(context)!.new_password_ucf,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xff3E4447),
                 fontWeight: FontWeight.normal),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -467,7 +473,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                 decoration: BoxDecorations.buildBoxDecoration_with_shadow(),
                 height: 36,
                 child: TextField(
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                   controller: _passwordController,
                   autofocus: false,
                   obscureText: !_showPassword,
@@ -476,11 +482,12 @@ class _ProfileEditState extends State<ProfileEdit> {
                   decoration: InputDecorations.buildInputDecoration_1(
                           hint_text: "• • • • • • • •")
                       .copyWith(
-                    enabledBorder: OutlineInputBorder(
+                    enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: MyTheme.accent_color),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     suffixIcon: InkWell(
                       onTap: () {
@@ -491,26 +498,28 @@ class _ProfileEditState extends State<ProfileEdit> {
                         _showPassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
-                        color: MyTheme.accent_color,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 4.0),
+                padding:
+                    const EdgeInsets.only(top: AppDimensions.paddingSmallExtra),
                 child: Text(
                   AppLocalizations.of(context)!
                       .password_must_contain_at_least_6_characters,
                   style: TextStyle(
-                      color: MyTheme.accent_color, fontStyle: FontStyle.italic),
+                      color: Theme.of(context).primaryColor,
+                      fontStyle: FontStyle.italic),
                 ),
               )
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
           child: Text(
             AppLocalizations.of(context)!.retype_password_ucf,
             style: TextStyle(
@@ -520,7 +529,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingDefault),
           child: Container(
             decoration: BoxDecorations.buildBoxDecoration_with_shadow(),
             height: 36,
@@ -533,11 +542,12 @@ class _ProfileEditState extends State<ProfileEdit> {
               decoration: InputDecorations.buildInputDecoration_1(
                       hint_text: "• • • • • • • •")
                   .copyWith(
-                      enabledBorder: OutlineInputBorder(
+                      enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: MyTheme.accent_color),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
                       ),
                       suffixIcon: InkWell(
                         onTap: () {
@@ -548,7 +558,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                           _showConfirmPassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: MyTheme.accent_color,
+                          color: Theme.of(context).primaryColor,
                         ),
                       )),
             ),
@@ -565,12 +575,13 @@ class _ProfileEditState extends State<ProfileEdit> {
               width: 129,
               height: 42,
               decoration: BoxDecoration(
-                  color: MyTheme.accent_color,
-                  borderRadius: BorderRadius.circular(8)),
+                  color: Theme.of(context).primaryColor,
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusSmall)),
               child: Text(
                 textAlign: TextAlign.center,
                 LangText(context).local.save_changes,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold),
@@ -587,65 +598,66 @@ class _ProfileEditState extends State<ProfileEdit> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 13.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
           child: Text(
             AppLocalizations.of(context)!.basic_information_ucf,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Color(0xff6B7377),
                 fontWeight: FontWeight.bold,
                 fontSize: 14.0),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
           child: Text(
             AppLocalizations.of(context)!.name_ucf,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xff3E4447),
                 fontWeight: FontWeight.normal),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 14.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusHalfSmall),
                 boxShadow: [MyTheme.commonShadow()]),
             height: 36,
             child: TextField(
               controller: _nameController,
               autofocus: false,
-              style: TextStyle(color: Color(0xff999999), fontSize: 12),
-              decoration:
-                  InputDecorations.buildInputDecoration_1(hint_text: LangText(context).local.name_ucf)
-                      .copyWith(
-                enabledBorder: OutlineInputBorder(
+              style: const TextStyle(color: Color(0xff999999), fontSize: 12),
+              decoration: InputDecorations.buildInputDecoration_1(
+                      hint_text: LangText(context).local.name_ucf)
+                  .copyWith(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: MyTheme.accent_color),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
           child: Text(
             AppLocalizations.of(context)!.phone_ucf,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xff3E4447),
                 fontWeight: FontWeight.normal),
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(bottom: 14.0),
+          margin: const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
             boxShadow: [MyTheme.commonShadow()],
           ),
           height: 36,
@@ -656,7 +668,8 @@ class _ProfileEditState extends State<ProfileEdit> {
             initialValue: initialValue,
             onInputChanged: (PhoneNumber number) {
               setState(() {
-                if(number.isoCode != null) AppConfig.default_country = number.isoCode!;
+                if (number.isoCode != null)
+                  AppConfig.default_country = number.isoCode!;
                 _phone = number.phoneNumber ?? '';
                 print(_phone);
               });
@@ -664,19 +677,19 @@ class _ProfileEditState extends State<ProfileEdit> {
             onInputValidated: (bool value) {
               print(value);
               _isValidPhoneNumber = value;
-              setState(() {
-                
-              });
+              setState(() {});
             },
-            selectorConfig: SelectorConfig(selectorType: PhoneInputSelectorType.DIALOG),
+            selectorConfig: const SelectorConfig(
+                selectorType: PhoneInputSelectorType.DIALOG),
             ignoreBlank: false,
             autoValidateMode: AutovalidateMode.disabled,
-            selectorTextStyle: TextStyle(color: MyTheme.font_grey),
-            textStyle: TextStyle(color: MyTheme.font_grey),
+            selectorTextStyle: const TextStyle(color: MyTheme.font_grey),
+            textStyle: const TextStyle(color: MyTheme.font_grey),
             textFieldController: _phoneController,
             formatInput: true,
-            keyboardType: TextInputType.numberWithOptions(signed: true),
-            inputDecoration: InputDecorations.buildInputDecoration_phone(hint_text: "01XXX XXX XXX"),
+            keyboardType: const TextInputType.numberWithOptions(signed: true),
+            inputDecoration: InputDecorations.buildInputDecoration_phone(
+                hint_text: "01XXX XXX XXX"),
             onSaved: (PhoneNumber number) {
               print('On Saved: $number');
             },
@@ -686,28 +699,32 @@ class _ProfileEditState extends State<ProfileEdit> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSupSmall),
               child: Text(
                 AppLocalizations.of(context)!.email_ucf,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xff3E4447),
                     fontWeight: FontWeight.normal),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 14.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingNormal),
               child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusHalfSmall),
                       boxShadow: [MyTheme.commonShadow()]),
                   height: 36,
-                  padding: EdgeInsets.symmetric(horizontal: 14),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   alignment: Alignment.centerLeft,
                   child: Text(
                     _emailController.text,
-                    style: TextStyle(fontSize: 12, color: Color(0xff999999)),
+                    style:
+                        const TextStyle(fontSize: 12, color: Color(0xff999999)),
                   )
                   /*TextField(
                         style: TextStyle(color:MyTheme.grey_153,fontSize: 12),
@@ -744,12 +761,13 @@ class _ProfileEditState extends State<ProfileEdit> {
               width: 129,
               height: 42,
               decoration: BoxDecoration(
-                  color: MyTheme.accent_color,
-                  borderRadius: BorderRadius.circular(8)),
+                  color: Theme.of(context).primaryColor,
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusSmall)),
               child: Text(
                 textAlign: TextAlign.center,
                 LangText(context).local.update_profile_ucf,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold),

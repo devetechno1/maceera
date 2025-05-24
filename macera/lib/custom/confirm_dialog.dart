@@ -6,7 +6,7 @@ import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDialog {
-  static show(BuildContext context,
+  static Future show(BuildContext context,
       {String? title,
       required String message,
       String? yesText,
@@ -23,7 +23,8 @@ class ConfirmDialog {
                 width: DeviceInfo(context).width! * 0.6,
                 child: Text(
                   message,
-                  style: TextStyle(fontSize: 14, color: MyTheme.font_grey),
+                  style:
+                      const TextStyle(fontSize: 14, color: MyTheme.font_grey),
                 ),
               )
             ],
@@ -36,7 +37,7 @@ class ConfirmDialog {
               },
               child: Text(
                 noText ?? "",
-                style: TextStyle(fontSize: 14, color: MyTheme.white),
+                style: const TextStyle(fontSize: 14, color: MyTheme.white),
               ),
             ),
             Btn.basic(
@@ -47,7 +48,7 @@ class ConfirmDialog {
               },
               child: Text(
                 LangText(context).local.yes_ucf,
-                style: TextStyle(fontSize: 14, color: MyTheme.white),
+                style: const TextStyle(fontSize: 14, color: MyTheme.white),
               ),
             ),
           ],

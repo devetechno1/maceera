@@ -9,8 +9,8 @@ class Country {
   final String? name;
 
   Country({this.id, this.name});
-  @override toString() => '$name';
-
+  @override
+  String toString() => '$name';
 }
 
 List<Country> countryList = [
@@ -34,8 +34,8 @@ List<Country> countryList = [
 Country getCountryById(String id) =>
     countryList.firstWhere((country) => country.id == id);
 
-Country getCountryByPartialName(String partial_name) =>
-    countryList.firstWhere((country) => country.name == partial_name);
+Country getCountryByPartialName(String partialName) =>
+    countryList.firstWhere((country) => country.name == partialName);
 
-List<Country> getCountriesByPartialName(String partial_name) =>
-    countryList.where((country) => country.name == partial_name).toList();
+List<Country> getCountriesByPartialName(String partialName) =>
+    countryList.where((country) => country.name == partialName).toList();

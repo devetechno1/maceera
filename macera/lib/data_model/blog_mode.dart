@@ -5,8 +5,8 @@ class BlogModel {
   String shortDescription;
   String description;
   String banner;
-  String metaTitle;
-  String metaDescription;
+  String? metaTitle;
+  String? metaDescription;
   int status;
   String category;
 

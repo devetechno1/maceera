@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
 import 'package:active_ecommerce_cms_demo_app/data_model/currency_response.dart';
@@ -10,10 +11,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'home.dart';
+import 'home/home.dart';
 
 class CurrencyChange extends StatefulWidget {
-  CurrencyChange({Key? key}) : super(key: key);
+  const CurrencyChange({Key? key}) : super(key: key);
 
   @override
   _CurrencyChangeState createState() => _CurrencyChangeState();
@@ -42,7 +43,7 @@ class _CurrencyChangeState extends State<CurrencyChange> {
           body: Stack(
             children: [
               RefreshIndicator(
-                color: MyTheme.accent_color,
+                color: Theme.of(context).primaryColor,
                 backgroundColor: Colors.white,
                 onRefresh: () {
                   return Provider.of<CurrencyPresenter>(context, listen: false)
@@ -57,7 +58,8 @@ class _CurrencyChangeState extends State<CurrencyChange> {
                     SliverList(
                       delegate: SliverChildListDelegate([
                         Padding(
-                          padding: const EdgeInsets.all(18.0),
+                          padding:
+                              const EdgeInsets.all(AppDimensions.paddingMedium),
                           child: buildLanguageMethodList(),
                         ),
                       ]),
@@ -93,20 +95,20 @@ class _CurrencyChangeState extends State<CurrencyChange> {
     );
   }
 
-  buildLanguageMethodList() {
+  Consumer<CurrencyPresenter> buildLanguageMethodList() {
     return Consumer<CurrencyPresenter>(
         builder: (context, currencyModel, child) {
       return SingleChildScrollView(
         child: ListView.separated(
           separatorBuilder: (context, index) {
-            return SizedBox(
+            return const SizedBox(
               height: 14,
               width: 10,
             );
           },
           itemCount: currencyModel.currencyList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           //padding: EdgeInsets.symmetric(horizontal: 80),
 
@@ -128,10 +130,10 @@ class _CurrencyChangeState extends State<CurrencyChange> {
         decoration: BoxDecorations.buildBoxDecoration_1().copyWith(
             border: Border.all(
                 color: currencyInfo.id == system_currency.$
-                    ? MyTheme.accent_color
+                    ? Theme.of(context).primaryColor
                     : MyTheme.noColor)),
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        duration: Duration(milliseconds: 400),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        duration: const Duration(milliseconds: 400),
         child: Row(
           children: [
             Text(
@@ -139,13 +141,13 @@ class _CurrencyChangeState extends State<CurrencyChange> {
               textAlign: TextAlign.left,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
-              style: TextStyle(
+              style: const TextStyle(
                   color: MyTheme.font_grey,
                   fontSize: 16,
                   height: 1.6,
                   fontWeight: FontWeight.w400),
             ),
-            Spacer(),
+            const Spacer(),
             if (currencyInfo.id == system_currency.$) buildCheckContainer(true)
           ],
         ),
@@ -159,9 +161,11 @@ class _CurrencyChangeState extends State<CurrencyChange> {
             height: 16,
             width: 16,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0), color: Colors.green),
-            child: Padding(
-              padding: const EdgeInsets.all(3),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusDefault),
+                color: Colors.green),
+            child: const Padding(
+              padding: EdgeInsets.all(3),
               child: Icon(Icons.check, color: Colors.white, size: 10),
             ),
           )

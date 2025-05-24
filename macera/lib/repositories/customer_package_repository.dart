@@ -9,7 +9,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class CustomerPackageRepository {
   Future<CustomerPackageResponse> getList() async {
-    String url = ('${AppConfig.BASE_URL}/customer-packages');
+    const String url = ('${AppConfig.BASE_URL}/customer-packages');
 
     final response = await ApiRequest.get(url: url, headers: {
       "Content-Type": "application/json",
@@ -21,9 +21,9 @@ class CustomerPackageRepository {
   }
 
   Future<dynamic> freePackagePayment(id) async {
-    String url = ('${AppConfig.BASE_URL}/free/packages-payment');
+    const String url = ('${AppConfig.BASE_URL}/free/packages-payment');
 
-    var post_body = jsonEncode({"package_id": "${id}"});
+    final postBody = jsonEncode({"package_id": "$id"});
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -31,20 +31,20 @@ class CustomerPackageRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return commonResponseFromJson(response.body);
   }
 
   Future<dynamic> offlinePackagePayment(
       {packageId, method, trx_id, photo}) async {
-    String url = ('${AppConfig.BASE_URL}/offline/packages-payment');
+    const String url = ('${AppConfig.BASE_URL}/offline/packages-payment');
 
-    var post_body = jsonEncode({
-      "package_id": "${packageId}",
-      "payment_option": "${method}",
-      "trx_id": "${trx_id}",
-      "photo": "${photo}",
+    final postBody = jsonEncode({
+      "package_id": "$packageId",
+      "payment_option": "$method",
+      "trx_id": "$trx_id",
+      "photo": "$photo",
     });
     final response = await ApiRequest.post(
         url: url,
@@ -53,7 +53,7 @@ class CustomerPackageRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return commonResponseFromJson(response.body);
   }

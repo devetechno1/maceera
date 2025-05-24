@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/data_model/product_mini_response.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
@@ -56,7 +57,7 @@ class _TodaysDealProductsState extends State<TodaysDealProducts> {
     );
   }
 
-  buildProductList(context) {
+  FutureBuilder<ProductMiniResponse> buildProductList(context) {
     return FutureBuilder(
       future: ProductRepository().getTodaysDealProducts(),
       builder: (context, AsyncSnapshot<ProductMiniResponse> snapshot) {
@@ -71,7 +72,7 @@ class _TodaysDealProductsState extends State<TodaysDealProducts> {
               )),
             );
           } else if (snapshot.hasData) {
-            var productResponse = snapshot.data;
+            final productResponse = snapshot.data;
             return SingleChildScrollView(
               child: MasonryGridView.count(
                 crossAxisCount: 2,
@@ -79,9 +80,12 @@ class _TodaysDealProductsState extends State<TodaysDealProducts> {
                 crossAxisSpacing: 14,
                 itemCount: productResponse!.products!.length,
                 shrinkWrap: true,
-                padding:
-                    EdgeInsets.only(top: 20.0, bottom: 10, left: 18, right: 18),
-                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    top: AppDimensions.paddingLarge,
+                    bottom: AppDimensions.paddingSupSmall,
+                    left: 18,
+                    right: 18),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return ProductCard(
                     id: productResponse.products![index].id,
@@ -94,7 +98,7 @@ class _TodaysDealProductsState extends State<TodaysDealProducts> {
                     has_discount:
                         productResponse.products![index].has_discount!,
                     discount: productResponse.products![index].discount,
-                    is_wholesale: productResponse.products![index].isWholesale,
+                    isWholesale: productResponse.products![index].isWholesale,
                   );
                 },
               ),

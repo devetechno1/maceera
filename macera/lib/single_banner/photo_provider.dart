@@ -42,48 +42,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PhotoProvider with ChangeNotifier {
-  List<SingleBanner> _singleBanner = [];
-
-  List<SingleBanner> get singleBanner => _singleBanner;
-
-  // Future<void> fetchPhotos() async {
-  //   const url =
-  //       "${AppConfig.BASE_URL}/banners-two"; // Replace with your actual API
-
-  //   try {
-  //     final response = await http.get(Uri.parse(url), headers: {
-  //       "App-Language": app_language.$ ?? 'en', // Use a default if null
-  //       "Authorization":
-  //           access_token.$ != null ? "Bearer ${access_token.$}" : '',
-  //       "Content-Type": "application/json",
-  //       "System-key": AppConfig.system_key
-  //     }).timeout(Duration(seconds: 10));
-
-  //     if (response.statusCode == 200) {
-  //       final responseData = json.decode(response.body);
-
-  //       if (responseData['success']) {
-  //         _singleBanner = (responseData['data'] as List)
-  //             .map((data) => SingleBanner.fromJson(data))
-  //             .toList();
-  //       } else {
-  //         _singleBanner = [];
-  //       }
-
-  //       notifyListeners();
-  //     } else {
-  //       throw Exception(
-  //           "Failed to load photos. Status code: ${response.statusCode}");
-  //     }
-  //   } catch (error) {
-  //     print("Error fetching photos: $error");
-  //     _singleBanner = [];
-  //     notifyListeners();
-  //   }
-  // }
-
-  Future<void> fetchPhotos() async {
-    const url = "${AppConfig.BASE_URL}/banners-two";
+  Future<List<SingleBanner>> fetchPhotos(String slug) async {
+    final url = "${AppConfig.BASE_URL}/$slug";
 
     try {
       final response = await http.get(Uri.parse(url), headers: {
@@ -92,32 +52,28 @@ class PhotoProvider with ChangeNotifier {
             access_token.$ != null ? "Bearer ${access_token.$}" : '',
         "Content-Type": "application/json",
         "System-key": AppConfig.system_key
-      }).timeout(Duration(seconds: 10));
+      }).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
         if (responseData['success']) {
-          _singleBanner = (responseData['data'] as List)
+          return (responseData['data'] as List)
               .map((data) => SingleBanner.fromJson(data))
               .toList();
         } else {
-          _singleBanner = [];
+          return [];
         }
-
-        notifyListeners();
       } else {
         throw Exception(
             "Failed to load photos. Status code: ${response.statusCode}");
       }
     } on TimeoutException catch (_) {
       print("Request timed out");
-      _singleBanner = [];
-      notifyListeners();
+      return [];
     } catch (error) {
       print("Error fetching photos: $error");
-      _singleBanner = [];
-      notifyListeners();
+      return [];
     }
   }
 }

@@ -18,22 +18,24 @@ class HomeBannerThree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (homeData!.isBannerOneInitial &&
-        homeData!.bannerOneImageList.length == 0) {
+    if (homeData!.isBannerOneInitial && homeData!.bannerOneImageList.isEmpty) {
       return Padding(
-          padding:
-              const EdgeInsets.only(left: 18.0, right: 18, top: 10, bottom: 20),
+          padding: const EdgeInsets.only(
+              left: AppDimensions.paddingMedium,
+              right: AppDimensions.paddingMedium,
+              top: 10,
+              bottom: 20),
           child: ShimmerHelper().buildBasicShimmer(height: 120));
-    } else if (homeData!.bannerOneImageList.length > 0) {
+    } else if (homeData!.bannerOneImageList.isNotEmpty) {
       return Container(
         height: 160,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 30,
               spreadRadius: 0.5,
-              offset: Offset(0, 10),
+              offset: const Offset(0, 10),
             ),
           ],
         ),
@@ -46,8 +48,8 @@ class HomeBannerThree extends StatelessWidget {
             padEnds: false,
             enableInfiniteScroll: true,
             autoPlay: true,
-            autoPlayInterval: Duration(seconds: 2),
-            autoPlayAnimationDuration: Duration(milliseconds: 300),
+            autoPlayInterval: const Duration(seconds: 2),
+            autoPlayAnimationDuration: const Duration(milliseconds: 300),
             onPageChanged: (index, reason) {
               // Optionally handle page change
             },
@@ -60,7 +62,8 @@ class HomeBannerThree extends StatelessWidget {
                   height: 156,
                   child: InkWell(
                     onTap: () {
-                      var url = i.url?.split(AppConfig.DOMAIN_PATH).last ?? "";
+                      final url =
+                          i.url?.split(AppConfig.DOMAIN_PATH).last ?? "";
                       print(url);
                       GoRouter.of(context).go(url);
                     },
@@ -73,13 +76,13 @@ class HomeBannerThree extends StatelessWidget {
         ),
       );
     } else if (!homeData!.isBannerOneInitial &&
-        homeData!.bannerOneImageList.length == 0) {
+        homeData!.bannerOneImageList.isEmpty) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.no_carousel_image_found,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     } else {
       // should not be happening

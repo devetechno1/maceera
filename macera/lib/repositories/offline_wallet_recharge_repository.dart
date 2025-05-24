@@ -12,13 +12,13 @@ class OfflineWalletRechargeRepository {
       required String name,
       required String trx_id,
       required int? photo}) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "amount": "$amount",
       "payment_option": "Offline Payment",
       "trx_id": "$trx_id",
       "photo": "$photo",
     });
-    String url = ("${AppConfig.BASE_URL}/wallet/offline-recharge");
+    const String url = ("${AppConfig.BASE_URL}/wallet/offline-recharge");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -28,7 +28,7 @@ class OfflineWalletRechargeRepository {
           "Accept": "application/json",
           "System-Key": AppConfig.system_key
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
 
     return offlineWalletRechargeResponseFromJson(response.body);

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:one_context/one_context.dart';
@@ -57,7 +58,8 @@ class AuctionPurchaseHistory extends StatefulWidget {
 }
 
 class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
-  ScrollController _scrollController = ScrollController(initialScrollOffset: 0);
+  final ScrollController _scrollController =
+      ScrollController(initialScrollOffset: 0);
   int _page = 1;
   bool _isDataFetch = false;
   bool _showMoreProductLoadingContainer = false;
@@ -65,8 +67,9 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   String _defaultPaymentStatusKey = '';
   String _defaultDeliveryStatusKey = '';
 
-  List<PaymentStatus> _paymentStatusList = PaymentStatus.getPaymentStatusList();
-  List<DeliveryStatus> _deliveryStatusList =
+  final List<PaymentStatus> _paymentStatusList =
+      PaymentStatus.getPaymentStatusList();
+  final List<DeliveryStatus> _deliveryStatusList =
       DeliveryStatus.getDeliveryStatusList();
 
   PaymentStatus? _selectedPaymentStatus;
@@ -126,7 +129,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
 
   List<DropdownMenuItem<PaymentStatus>> buildDropdownPaymentStatusItems(
       List _paymentStatusList) {
-    List<DropdownMenuItem<PaymentStatus>> items = [];
+    final List<DropdownMenuItem<PaymentStatus>> items = [];
     for (PaymentStatus item in _paymentStatusList as Iterable<PaymentStatus>) {
       items.add(
         DropdownMenuItem(
@@ -140,7 +143,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
 
   List<DropdownMenuItem<DeliveryStatus>> buildDropdownDeliveryStatusItems(
       List _deliveryStatusList) {
-    List<DropdownMenuItem<DeliveryStatus>> items = [];
+    final List<DropdownMenuItem<DeliveryStatus>> items = [];
     for (DeliveryStatus item
         in _deliveryStatusList as Iterable<DeliveryStatus>) {
       items.add(
@@ -163,7 +166,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   }
 
   getPurchaseList() async {
-    var purchaseListResponse = await AuctionProductsRepository()
+    final purchaseListResponse = await AuctionProductsRepository()
         .getAuctionPurchaseHistory(
             page: _page,
             payment_status: _selectedPaymentStatus!.option_key,
@@ -220,9 +223,9 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
     );
   }
 
-  buildAuctionPurchaseList() {
+  RefreshIndicator buildAuctionPurchaseList() {
     return RefreshIndicator(
-      color: MyTheme.accent_color,
+      color: Theme.of(context).primaryColor,
       backgroundColor: MyTheme.mainColor,
       displacement: 0,
       onRefresh: _onRefresh,
@@ -241,7 +244,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                               height: 14,
                             );
                           },
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                             top: 3,
                             left: 20,
                             right: 20,
@@ -306,7 +309,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //             children: [
   //               Padding(
-  //                 padding: const EdgeInsets.only(left: 8),
+  //                 padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmall),
   //                 child: Text(
   //                   _purchaseList[index].code!,
   //                   style: const TextStyle(
@@ -321,7 +324,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   //                   children: [
   //                     Padding(
   //                       padding: app_language_rtl.$!
-  //                           ? const EdgeInsets.only(left: 8.0)
+  //                           ? const EdgeInsets.only(left: AppDimensions.paddingsmall)
   //                           : const EdgeInsets.only(right: 8.0),
   //                       // child: const Icon(
   //                       //   Icons.calendar_today_outlined,
@@ -338,12 +341,12 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   //                 ),
   //               ),
   //               Padding(
-  //                 padding: const EdgeInsets.only(bottom: 4.0),
+  //                 padding: const EdgeInsets.only(bottom: AppDimensions.paddingsmallExtra),
   //                 child: Row(
   //                   children: [
   //                     Padding(
   //                       padding: app_language_rtl.$!
-  //                           ? const EdgeInsets.only(left: 8.0)
+  //                           ? const EdgeInsets.only(left: AppDimensions.paddingsmall)
   //                           : const EdgeInsets.only(right: 8.0),
   //                       // child: const Icon(
   //                       //   Icons.credit_card,
@@ -386,7 +389,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
   //                 children: [
   //                   Padding(
   //                     padding: app_language_rtl.$!
-  //                         ? const EdgeInsets.only(left: 8.0)
+  //                         ? const EdgeInsets.only(left: AppDimensions.paddingsmall)
   //                         : const EdgeInsets.only(right: 8.0),
   //                     // child: const Icon(
   //                     //   Icons.local_shipping_outlined,
@@ -426,7 +429,8 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 14, 21, 12),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(6.0)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -436,11 +440,12 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
                 child: Text(
                   _purchaseList[index].code!,
-                  style: const TextStyle(
-                      color: MyTheme.accent_color,
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
                       fontSize: 13,
                       fontWeight: FontWeight.bold),
                 ),
@@ -451,7 +456,8 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                   children: [
                     Padding(
                       padding: app_language_rtl.$!
-                          ? const EdgeInsets.only(left: 8.0)
+                          ? const EdgeInsets.only(
+                              left: AppDimensions.paddingSmall)
                           : const EdgeInsets.only(right: 8.0),
                       // child: const Icon(
                       //   Icons.calendar_today_outlined,
@@ -468,12 +474,14 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
+                padding: const EdgeInsets.only(
+                    bottom: AppDimensions.paddingSmallExtra),
                 child: Row(
                   children: [
                     Padding(
                       padding: app_language_rtl.$!
-                          ? const EdgeInsets.only(left: 8.0)
+                          ? const EdgeInsets.only(
+                              left: AppDimensions.paddingSmall)
                           : const EdgeInsets.only(right: 8.0),
                       // child: const Icon(
                       //   Icons.credit_card,
@@ -516,7 +524,8 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                 children: [
                   Padding(
                     padding: app_language_rtl.$!
-                        ? const EdgeInsets.only(left: 8.0)
+                        ? const EdgeInsets.only(
+                            left: AppDimensions.paddingSmall)
                         : const EdgeInsets.only(right: 8.0),
                     // child: const Icon(
                     //   Icons.local_shipping_outlined,
@@ -540,8 +549,8 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
           ),
           Text(
             convertPrice(_purchaseList[index].amount!),
-            style: const TextStyle(
-                color: MyTheme.accent_color,
+            style: TextStyle(
+                color: Theme.of(context).primaryColor,
                 fontSize: 16,
                 fontWeight: FontWeight.bold),
           )
@@ -604,16 +613,16 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
     );
   }
 
-  buildAppBar(BuildContext context) {
+  PreferredSize buildAppBar(BuildContext context) {
     return PreferredSize(
-      preferredSize: Size.fromHeight(98.0),
+      preferredSize: const Size.fromHeight(98.0),
       child: AppBar(
           centerTitle: false,
           backgroundColor: MyTheme.mainColor,
           automaticallyImplyLeading: false,
           scrolledUnderElevation: 0.0,
           actions: [
-            new Container(),
+            Container(),
           ],
           elevation: 0.0,
           titleSpacing: 0,
@@ -624,7 +633,8 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                 Padding(
                   padding: MediaQuery.of(context).viewPadding.top >
                           30 //MediaQuery.of(context).viewPadding.top is the status bar height, with a notch phone it results almost 50, without a notch it shows 24.0.For safety we have checked if its greater than thirty
-                      ? const EdgeInsets.only(top: 36.0)
+                      ? const EdgeInsets.only(
+                          top: AppDimensions.paddingVeryLarge)
                       : const EdgeInsets.only(top: 14.0),
                   child: buildTopAppBarContainer(),
                 ),
@@ -635,7 +645,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
     );
   }
 
-  buildBottomAppBar(BuildContext context) {
+  Padding buildBottomAppBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 2),
       child: Row(
@@ -643,22 +653,24 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(3)),
-            padding: EdgeInsets.symmetric(horizontal: 14),
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusSmallExtra)),
+            padding: const EdgeInsets.symmetric(horizontal: 14),
             height: 36,
             width: MediaQuery.of(context).size.width * .35,
-            child: new DropdownButton<PaymentStatus>(
+            child: DropdownButton<PaymentStatus>(
               isExpanded: true,
-              icon: Icon(Icons.expand_more, color: Colors.black54),
+              icon: const Icon(Icons.expand_more, color: Colors.black54),
               hint: Text(
                 AppLocalizations.of(context)!.all_payments_ucf,
-                style: TextStyle(
+                style: const TextStyle(
                   color: MyTheme.font_grey,
                   fontSize: 12,
                 ),
               ),
               iconSize: 14,
-              underline: SizedBox(),
+              underline: const SizedBox(),
               value: _selectedPaymentStatus,
               items: _dropdownPaymentStatusItems,
               onChanged: (PaymentStatus? selectedFilter) {
@@ -673,22 +685,24 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
           Container(
             // decoration: BoxDecorations.buildBoxDecoration_1(),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(3)),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusSmallExtra)),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             height: 36,
             width: MediaQuery.of(context).size.width * .35,
-            child: new DropdownButton<DeliveryStatus>(
-              icon: Icon(Icons.expand_more, color: Colors.black54),
+            child: DropdownButton<DeliveryStatus>(
+              icon: const Icon(Icons.expand_more, color: Colors.black54),
               isExpanded: true,
               hint: Text(
                 AppLocalizations.of(context)!.all_deliveries_ucf,
-                style: TextStyle(
+                style: const TextStyle(
                   color: MyTheme.font_grey,
                   fontSize: 12,
                 ),
               ),
               iconSize: 14,
-              underline: SizedBox(),
+              underline: const SizedBox(),
               value: _selectedDeliveryStatus,
               items: _dropdownDeliveryStatusItems,
               onChanged: (DeliveryStatus? selectedFilter) {

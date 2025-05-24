@@ -5,7 +5,7 @@ import '../repositories/addons_repository.dart';
 
 class AddonsHelper {
   setAddonsData() async {
-    List<AddonsListResponse> addonsList =
+    final List<AddonsListResponse> addonsList =
         await AddonsRepository().getAddonsListResponse();
 
     addonsList.forEach((element) {

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/toast_component.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
@@ -17,9 +19,9 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../custom/lang_text.dart';
 
 class ProductReviews extends StatefulWidget {
-  int? id;
+  final int? id;
 
-  ProductReviews({Key? key, this.id}) : super(key: key);
+  const ProductReviews({Key? key, this.id}) : super(key: key);
 
   @override
   _ProductReviewsState createState() => _ProductReviewsState();
@@ -27,12 +29,12 @@ class ProductReviews extends StatefulWidget {
 
 class _ProductReviewsState extends State<ProductReviews> {
   final TextEditingController _myReviewTextController = TextEditingController();
-  ScrollController _xcrollController = ScrollController();
+  final ScrollController _xcrollController = ScrollController();
   ScrollController scrollController = ScrollController();
 
   double _my_rating = 0.0;
 
-  List<dynamic> _reviewList = [];
+  final List<dynamic> _reviewList = [];
   bool _isInitial = true;
   int _page = 1;
   int? _totalData = 0;
@@ -58,7 +60,7 @@ class _ProductReviewsState extends State<ProductReviews> {
   }
 
   fetchData() async {
-    var reviewResponse = await ReviewRepository().getReviewResponse(
+    final reviewResponse = await ReviewRepository().getReviewResponse(
       widget.id,
       page: _page,
     );
@@ -85,7 +87,7 @@ class _ProductReviewsState extends State<ProductReviews> {
     fetchData();
   }
 
-  onTapReviewSubmit(context) async {
+  Future<void> onTapReviewSubmit(context) async {
     if (is_logged_in.$ == false) {
       ToastComponent.showDialog(
         LangText(context).local.you_need_to_login_to_give_a_review,
@@ -94,7 +96,7 @@ class _ProductReviewsState extends State<ProductReviews> {
     }
 
     //return;
-    var myReviewText = _myReviewTextController.text.toString();
+    final myReviewText = _myReviewTextController.text.toString();
     //print(chatText);
     if (myReviewText == "") {
       ToastComponent.showDialog(
@@ -108,7 +110,7 @@ class _ProductReviewsState extends State<ProductReviews> {
       return;
     }
 
-    var reviewSubmitResponse = await ReviewRepository()
+    final reviewSubmitResponse = await ReviewRepository()
         .getReviewSubmitResponse(widget.id, _my_rating.toInt(), myReviewText);
 
     if (reviewSubmitResponse.result == false) {
@@ -144,7 +146,7 @@ class _ProductReviewsState extends State<ProductReviews> {
           body: Stack(
             children: [
               RefreshIndicator(
-                color: MyTheme.accent_color,
+                color: Theme.of(context).primaryColor,
                 backgroundColor: Colors.white,
                 onRefresh: _onRefresh,
                 displacement: 0,
@@ -156,7 +158,8 @@ class _ProductReviewsState extends State<ProductReviews> {
                     SliverList(
                       delegate: SliverChildListDelegate([
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(
+                              AppDimensions.paddingDefault),
                           child: buildProductReviewsList(),
                         ),
                         Container(
@@ -180,12 +183,13 @@ class _ProductReviewsState extends State<ProductReviews> {
     );
   }
 
-  buildBottomBar(BuildContext context) {
+  ClipRRect buildBottomBar(BuildContext context) {
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
-          decoration: new BoxDecoration(color: Colors.white54.withOpacity(0.6)),
+          decoration:
+              BoxDecoration(color: Colors.white54.withValues(alpha: 0.6)),
           height: 120,
           //color: Colors.white,
           child: Padding(
@@ -214,25 +218,25 @@ class _ProductReviewsState extends State<ProductReviews> {
       ),
       title: Text(
         AppLocalizations.of(context)!.reviews_ucf,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,
     );
   }
 
-  buildProductReviewsList() {
-    if (_isInitial && _reviewList.length == 0) {
+  Widget? buildProductReviewsList() {
+    if (_isInitial && _reviewList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 10, item_height: 75.0));
-    } else if (_reviewList.length > 0) {
+    } else if (_reviewList.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.builder(
           controller: scrollController,
           itemCount: _reviewList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return Padding(
@@ -254,9 +258,9 @@ class _ProductReviewsState extends State<ProductReviews> {
     }
   }
 
-  buildProductReviewsItem(index) {
+  Padding buildProductReviewsItem(index) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -265,15 +269,17 @@ class _ProductReviewsState extends State<ProductReviews> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(35),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusVeryLarge),
                 border: Border.all(
-                    color: Color.fromRGBO(112, 112, 112, .3), width: 1),
+                    color: const Color.fromRGBO(112, 112, 112, .3), width: 1),
                 //shape: BoxShape.rectangle,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(35),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusVeryLarge),
                 child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/placeholder.png',
+                  placeholder: AppImages.placeholder,
                   image: _reviewList[index].avatar,
                   fit: BoxFit.cover,
                 ),
@@ -284,7 +290,8 @@ class _ProductReviewsState extends State<ProductReviews> {
                 Container(
                   width: 180,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 16.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingDefault),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -295,14 +302,15 @@ class _ProductReviewsState extends State<ProductReviews> {
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: MyTheme.font_grey,
                               fontSize: 13,
                               height: 1.6,
                               fontWeight: FontWeight.w600),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
+                          padding: const EdgeInsets.only(
+                              bottom: AppDimensions.paddingSmallExtra),
                           child: Text(
                             _reviewList[index].time,
                             style: TextStyle(color: MyTheme.medium_grey),
@@ -314,10 +322,10 @@ class _ProductReviewsState extends State<ProductReviews> {
                 ),
               ],
             ),
-            Spacer(),
+            const Spacer(),
             Padding(
-                padding:
-                    const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 16.0),
+                padding: const EdgeInsets.only(
+                    top: 0.0, bottom: 0.0, left: AppDimensions.paddingDefault),
                 child: Container(
                   child: RatingBar(
                     itemSize: 12.0,
@@ -327,12 +335,12 @@ class _ProductReviewsState extends State<ProductReviews> {
                     allowHalfRating: false,
                     itemCount: 5,
                     ratingWidget: RatingWidget(
-                      full: Icon(Icons.star, color: Colors.amber),
-                      half: Icon(Icons.star_half, color: Colors.amber),
-                      empty: Icon(Icons.star,
+                      full: const Icon(Icons.star, color: Colors.amber),
+                      half: const Icon(Icons.star_half, color: Colors.amber),
+                      empty: const Icon(Icons.star,
                           color: Color.fromRGBO(224, 224, 225, 1)),
                     ),
-                    itemPadding: EdgeInsets.only(right: 1.0),
+                    itemPadding: const EdgeInsets.only(right: 1.0),
                     onRatingUpdate: (rating) {
                       //print(rating);
                     },
@@ -358,10 +366,10 @@ class _ProductReviewsState extends State<ProductReviews> {
             collapsed: Container(
                 height: _reviewList[index].comment.length > 100 ? 32 : 16,
                 child: Text(_reviewList[index].comment,
-                    style: TextStyle(color: MyTheme.font_grey))),
+                    style: const TextStyle(color: MyTheme.font_grey))),
             expanded: Container(
                 child: Text(_reviewList[index].comment,
-                    style: TextStyle(color: MyTheme.font_grey))),
+                    style: const TextStyle(color: MyTheme.font_grey))),
           ),
           _reviewList[index].comment.length > 100
               ? Row(
@@ -369,13 +377,13 @@ class _ProductReviewsState extends State<ProductReviews> {
                   children: <Widget>[
                     Builder(
                       builder: (context) {
-                        var controller = ExpandableController.of(context)!;
+                        final controller = ExpandableController.of(context)!;
                         return Btn.basic(
                           child: Text(
                             !controller.expanded
                                 ? AppLocalizations.of(context)!.view_more
                                 : AppLocalizations.of(context)!.show_less_ucf,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 11),
                           ),
                           onPressed: () {
@@ -405,11 +413,13 @@ class _ProductReviewsState extends State<ProductReviews> {
     );
   }
 
-  buildGiveReviewSection(BuildContext context) {
+  Column buildGiveReviewSection(BuildContext context) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          padding: const EdgeInsets.only(
+              top: AppDimensions.paddingSmall,
+              bottom: AppDimensions.paddingSmall),
           child: RatingBar.builder(
             itemSize: 20.0,
             initialRating: _my_rating,
@@ -418,9 +428,9 @@ class _ProductReviewsState extends State<ProductReviews> {
             allowHalfRating: false,
             itemCount: 5,
             glowColor: Colors.amber,
-            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
             itemBuilder: (context, _) {
-              return Icon(Icons.star, color: Colors.amber);
+              return const Icon(Icons.star, color: Colors.amber);
             },
             onRatingUpdate: (rating) {
               setState(() {
@@ -444,30 +454,31 @@ class _ProductReviewsState extends State<ProductReviews> {
                 controller: _myReviewTextController,
                 decoration: InputDecoration(
                     filled: true,
-                    fillColor: Color.fromRGBO(251, 251, 251, 1),
+                    fillColor: const Color.fromRGBO(251, 251, 251, 1),
                     hintText:
                         AppLocalizations.of(context)!.type_your_review_here,
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                         fontSize: 14.0, color: MyTheme.textfield_grey),
-                    enabledBorder: OutlineInputBorder(
+                    enabledBorder: const OutlineInputBorder(
                       borderSide:
                           BorderSide(color: MyTheme.textfield_grey, width: 0.5),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(35.0),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(AppDimensions.radiusVeryLarge),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
                           BorderSide(color: MyTheme.medium_grey, width: 0.5),
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(35.0),
+                        Radius.circular(AppDimensions.radiusVeryLarge),
                       ),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0)),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16.0)),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(AppDimensions.paddingSmall),
               child: GestureDetector(
                 onTap: () {
                   onTapReviewSubmit(context);
@@ -475,15 +486,18 @@ class _ProductReviewsState extends State<ProductReviews> {
                 child: Container(
                   width: 40,
                   height: 40,
-                  margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 4.0, horizontal: 2.0),
                   decoration: BoxDecoration(
-                    color: MyTheme.accent_color,
-                    borderRadius: BorderRadius.circular(35),
+                    color: Theme.of(context).primaryColor,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusVeryLarge),
                     border: Border.all(
-                        color: Color.fromRGBO(112, 112, 112, .3), width: 1),
+                        color: const Color.fromRGBO(112, 112, 112, .3),
+                        width: 1),
                     //shape: BoxShape.rectangle,
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Icon(
                       Icons.send,
                       color: Colors.white,

@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
+
 class Messenger {
   String? id;
   String? image;
@@ -8,62 +10,62 @@ class Messenger {
 final List<Messenger> messengerList = [
   Messenger(
     id: "1",
-    image: "dummy_assets/s1.jpg",
+    image: AppImages.s1,
     name: "Fashion Vendor",
   ),
   Messenger(
     id: "2",
-    image: "assets/login_registration_form_logo.png",
+    image: AppImages.loginRegisteration,
     name: "Macera",
   ),
   Messenger(
     id: "3",
-    image: "dummy_assets/s3.jpg",
+    image: AppImages.s3,
     name: "Computer Zone",
   ),
   Messenger(
     id: "4",
-    image: "dummy_assets/s4.jpg",
+    image: AppImages.s4,
     name: "New Women Fashion",
   ),
   Messenger(
     id: "5",
-    image: "dummy_assets/s5.jpg",
+    image: AppImages.s5,
     name: "Motorcycle Club",
   ),
   Messenger(
     id: "6",
-    image: "dummy_assets/s4.jpg",
+    image: AppImages.s4,
     name: "New Balance",
   ),
   Messenger(
     id: "7",
-    image: "dummy_assets/s7.jpg",
+    image: AppImages.s7,
     name: "Tiffany and Co.",
   ),
   Messenger(
     id: "8",
-    image: "dummy_assets/s8.jpg",
+    image: AppImages.s8,
     name: "Ugg Australia",
   ),
   Messenger(
     id: "9",
-    image: "dummy_assets/s9.jpg",
+    image: AppImages.s9,
     name: "Vans of The wall",
   ),
   Messenger(
     id: "10",
-    image: "dummy_assets/s10.jpg",
+    image: AppImages.s10,
     name: "Newman Fashion",
   ),
   Messenger(
     id: "11",
-    image: "dummy_assets/s11.jpg",
+    image: AppImages.s11,
     name: "Reddis Fashion",
   ),
   Messenger(
     id: "12",
-    image: "dummy_assets/s12.jpg",
+    image: AppImages.s12,
     name: "FASHION ZARIS",
   ),
 ];

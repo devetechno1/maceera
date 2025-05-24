@@ -25,6 +25,8 @@ environment:
 
 dependencies:
   app_links: ^6.3.3
+  device_info_plus: ^11.3.0
+  device_preview: ^1.2.0
   flutter:
     sdk: flutter
   flutter_localizations:

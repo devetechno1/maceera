@@ -43,10 +43,10 @@
 //                 constraints: BoxConstraints(maxHeight: itemWidth - 28),
 //                 child: ClipRRect(
 //                   borderRadius: BorderRadius.only(
-//                       topRight: Radius.circular(6),
-//                       topLeft: Radius.circular(6)),
+//                       topRight: Radius.circular(AppDimensions.radiusaHalfsmall),
+//                       topLeft: Radius.circular(AppDimensions.radiusaHalfsmall)),
 //                   child: FadeInImage.assetNetwork(
-//                     placeholder: 'assets/placeholder.png',
+//                     placeholder: 'AppImages.placeholder',
 //                     image: categoryResponse.categories![index].banner!,
 //                     fit: BoxFit.cover,
 //                     height: itemWidth,
@@ -80,6 +80,7 @@
 //   }
 // }
 
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 
 import '../data_model/category_response.dart';
@@ -100,7 +101,7 @@ class CategoryItemCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var itemWidth =
+    final itemWidth =
         ((DeviceInfo(context).width! - 48) / 3); // Adjust spacing between items
     return Container(
       // decoration: BoxDecorations.buildBoxDecoration_1(),
@@ -123,13 +124,15 @@ class CategoryItemCardWidget extends StatelessWidget {
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusNormal),
+                  color: Colors.white),
               width: itemWidth,
               height: itemWidth,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
                 child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/placeholder.png',
+                  placeholder: AppImages.placeholder,
                   image: categoryResponse.categories![index].coverImage ?? '',
                   //  image: categoryResponse.categories![index].banner!,
                   fit: BoxFit.cover,
@@ -145,7 +148,7 @@ class CategoryItemCardWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
-                style: TextStyle(
+                style: const TextStyle(
                   color: MyTheme.font_grey,
                   fontSize: 10,
                   height: 1.4,
@@ -172,7 +175,7 @@ class CategoryGrid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: GridView.builder(
         itemCount: categoryResponse.categories!.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,

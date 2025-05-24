@@ -41,7 +41,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String _login_by = otp_addon_installed.$? "phone" : "email"; //phone or email
+  String _login_by = otp_addon_installed.$ ? "phone" : "email"; //phone or email
   String initialCountry = 'US';
 
   // PhoneNumber phoneCode = PhoneNumber(isoCode: 'US', dialCode: "+1");
@@ -50,9 +50,9 @@ class _LoginState extends State<Login> {
   String? _phone = "";
 
   //controllers
-  TextEditingController _phoneNumberController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -64,7 +64,7 @@ class _LoginState extends State<Login> {
   }
 
   fetch_country() async {
-    var data = await AddressRepository().getCountryList();
+    final data = await AddressRepository().getCountryList();
     data.countries?.forEach((c) => countries_code.add(c.code));
     setState(() {});
   }
@@ -77,12 +77,12 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  onPressedLogin(ctx) async {
+  Future<void> onPressedLogin(ctx) async {
     FocusScope.of(context).unfocus();
 
     Loading.show(context);
-    var email = _emailController.text.toString();
-    var password = _passwordController.text.toString();
+    final email = _emailController.text.toString();
+    final password = _passwordController.text.toString();
 
     if (_login_by == 'email' && email == "") {
       ToastComponent.showDialog(
@@ -101,7 +101,7 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    var loginResponse = await AuthRepository().getLoginResponse(
+    final loginResponse = await AuthRepository().getLoginResponse(
         _login_by == 'email' ? email : _phone, password, _login_by);
     Loading.close();
 
@@ -161,14 +161,15 @@ class _LoginState extends State<Login> {
       if (loginResponse.user!.emailVerified!) {
         context.push("/");
       } else {
-        if ((mail_verification_status.$ && _login_by == "email") ||
-            (must_otp.$ && _login_by == "phone")) {
+        if ((AppConfig.businessSettingsData.mailVerificationStatus &&
+                _login_by == "email") ||
+            (AppConfig.businessSettingsData.mustOtp && _login_by == "phone")) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Otp(
-              fromRegistration: false ,
-                // verify_by: _register_by,
-                // user_id: signupResponse.user_id,
-                );
+            return const Otp(
+              fromRegistration: false,
+              // verify_by: _register_by,
+              // user_id: signupResponse.user_id,
+            );
           }));
         } else {
           context.push("/");
@@ -186,7 +187,7 @@ class _LoginState extends State<Login> {
         // get the user data
         // by default we get the userId, email,name and picture
         final userData = await FacebookAuth.instance.getUserData();
-        var loginResponse = await AuthRepository().getSocialLoginResponse(
+        final loginResponse = await AuthRepository().getSocialLoginResponse(
             "facebook",
             userData['name'].toString(),
             userData['email'].toString(),
@@ -204,7 +205,7 @@ class _LoginState extends State<Login> {
 
           AuthHelper().setUserData(loginResponse);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Main();
+            return const Main();
           }));
           FacebookAuth.instance.logOut();
         }
@@ -226,15 +227,15 @@ class _LoginState extends State<Login> {
 
       print(googleUser.toString());
 
-      GoogleSignInAuthentication googleSignInAuthentication =
+      final GoogleSignInAuthentication googleSignInAuthentication =
           await googleUser.authentication;
-      String? accessToken = googleSignInAuthentication.accessToken;
+      final String? accessToken = googleSignInAuthentication.accessToken;
 
       // print("displayName ${googleUser.displayName}");
       // print("email ${googleUser.email}");
       // print("googleUser.id ${googleUser.id}");
 
-      var loginResponse = await AuthRepository().getSocialLoginResponse(
+      final loginResponse = await AuthRepository().getSocialLoginResponse(
           "google", googleUser.displayName, googleUser.email, googleUser.id,
           access_token: accessToken);
 
@@ -248,7 +249,7 @@ class _LoginState extends State<Login> {
         );
         AuthHelper().setUserData(loginResponse);
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return Main();
+          return const Main();
         }));
       }
       GoogleSignIn().disconnect();
@@ -300,7 +301,7 @@ class _LoginState extends State<Login> {
   // }
 
   String generateNonce([int length = 32]) {
-    final charset =
+    const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)])
@@ -332,7 +333,7 @@ class _LoginState extends State<Login> {
         nonce: nonce,
       );
 
-      var loginResponse = await AuthRepository().getSocialLoginResponse(
+      final loginResponse = await AuthRepository().getSocialLoginResponse(
           "apple",
           appleCredential.givenName,
           appleCredential.email,
@@ -349,7 +350,7 @@ class _LoginState extends State<Login> {
         );
         AuthHelper().setUserData(loginResponse);
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return Main();
+          return const Main();
         }));
       }
     } on Exception catch (e) {
@@ -374,7 +375,8 @@ class _LoginState extends State<Login> {
     final _screen_width = MediaQuery.of(context).size.width;
     return AuthScreen.buildScreen(
         context,
-        "${AppLocalizations.of(context)!.login_to} " + AppConfig.appNameOnAppLang(context),
+        "${AppLocalizations.of(context)!.login_to} " +
+            AppConfig.appNameOnAppLang(context),
         buildBody(context, _screen_width));
   }
 
@@ -388,18 +390,21 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
+                padding: const EdgeInsets.only(
+                    bottom: AppDimensions.paddingSmallExtra),
                 child: Text(
                   _login_by == "email"
                       ? AppLocalizations.of(context)!.email_ucf
                       : AppLocalizations.of(context)!.login_screen_phone,
                   style: TextStyle(
-                      color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
               if (_login_by == "email")
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding:
+                      const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -423,7 +428,7 @@ class _LoginState extends State<Login> {
                                 AppLocalizations.of(context)!
                                     .or_login_with_a_phone,
                                 style: TextStyle(
-                                  color: MyTheme.accent_color,
+                                  color: Theme.of(context).primaryColor,
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),
@@ -434,7 +439,8 @@ class _LoginState extends State<Login> {
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding:
+                      const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -443,30 +449,33 @@ class _LoginState extends State<Login> {
                         child: CustomInternationalPhoneNumberInput(
                           countries: countries_code,
                           hintText: LangText(context).local.phone_number_ucf,
-                          errorMessage: LangText(context).local.invalid_phone_number,
-                          initialValue: PhoneNumber(isoCode: AppConfig.default_country),
+                          errorMessage:
+                              LangText(context).local.invalid_phone_number,
+                          initialValue:
+                              PhoneNumber(isoCode: AppConfig.default_country),
                           onInputChanged: (PhoneNumber number) {
                             setState(() {
-                              if(number.isoCode != null)  AppConfig.default_country = number.isoCode!;
+                              if (number.isoCode != null)
+                                AppConfig.default_country = number.isoCode!;
                               _phone = number.phoneNumber;
                             });
                           },
                           onInputValidated: (bool value) {
                             print(value);
                           },
-                          selectorConfig: SelectorConfig(
+                          selectorConfig: const SelectorConfig(
                             selectorType: PhoneInputSelectorType.DIALOG,
                           ),
                           ignoreBlank: false,
                           autoValidateMode: AutovalidateMode.disabled,
                           selectorTextStyle:
-                              TextStyle(color: MyTheme.font_grey),
-                          textStyle: TextStyle(color: MyTheme.font_grey),
+                              const TextStyle(color: MyTheme.font_grey),
+                          textStyle: const TextStyle(color: MyTheme.font_grey),
                           // initialValue: PhoneNumber(
                           //     isoCode: countries_code[0].toString()),
                           textFieldController: _phoneNumberController,
                           formatInput: true,
-                          keyboardType: TextInputType.numberWithOptions(
+                          keyboardType: const TextInputType.numberWithOptions(
                               signed: true, decimal: true),
                           inputDecoration:
                               InputDecorations.buildInputDecoration_phone(
@@ -485,7 +494,7 @@ class _LoginState extends State<Login> {
                         child: Text(
                           AppLocalizations.of(context)!.or_login_with_an_email,
                           style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -494,15 +503,18 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
+                padding: const EdgeInsets.only(
+                    bottom: AppDimensions.paddingSmallExtra),
                 child: Text(
                   AppLocalizations.of(context)!.password_ucf,
                   style: TextStyle(
-                      color: MyTheme.accent_color, fontWeight: FontWeight.w600),
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -529,7 +541,7 @@ class _LoginState extends State<Login> {
                         AppLocalizations.of(context)!
                             .login_screen_forgot_password,
                         style: TextStyle(
-                          color: MyTheme.accent_color,
+                          color: Theme.of(context).primaryColor,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -538,24 +550,25 @@ class _LoginState extends State<Login> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 30.0),
+                padding:
+                    const EdgeInsets.only(top: AppDimensions.paddingExtraLarge),
                 child: Container(
                   height: 45,
                   decoration: BoxDecoration(
                       border:
                           Border.all(color: MyTheme.textfield_grey, width: 1),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(12.0))),
+                      borderRadius: const BorderRadius.all(
+                          Radius.circular(AppDimensions.radiusNormal))),
                   child: Btn.minWidthFixHeight(
                     minWidth: MediaQuery.of(context).size.width,
                     height: 50,
-                    color: MyTheme.accent_color,
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(6.0))),
+                    color: Theme.of(context).primaryColor,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(AppDimensions.radiusHalfSmall))),
                     child: Text(
                       AppLocalizations.of(context)!.login_screen_log_in,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w600),
@@ -572,7 +585,8 @@ class _LoginState extends State<Login> {
                     child: Text(
                   AppLocalizations.of(context)!
                       .login_screen_or_create_new_account,
-                  style: TextStyle(color: MyTheme.font_grey, fontSize: 12),
+                  style:
+                      const TextStyle(color: MyTheme.font_grey, fontSize: 12),
                 )),
               ),
               Container(
@@ -581,13 +595,13 @@ class _LoginState extends State<Login> {
                   minWidth: MediaQuery.of(context).size.width,
                   height: 50,
                   color: MyTheme.amber,
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(6.0))),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(AppDimensions.radiusHalfSmall))),
                   child: Text(
                     AppLocalizations.of(context)!.login_screen_sign_up,
                     style: TextStyle(
-                        color: MyTheme.accent_color,
+                        color: Theme.of(context).primaryColor,
                         fontSize: 13,
                         fontWeight: FontWeight.w600),
                   ),
@@ -599,9 +613,11 @@ class _LoginState extends State<Login> {
                   },
                 ),
               ),
-              if (Platform.isIOS && allow_apple_login.$)
+              if (Platform.isIOS &&
+                  AppConfig.businessSettingsData.allowAppleLogin)
                 Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+                  padding:
+                      const EdgeInsets.only(top: AppDimensions.paddingLarge),
                   child: SignInWithAppleButton(
                     onPressed: () async {
                       signInWithApple();
@@ -609,13 +625,16 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               Visibility(
-                visible: allow_google_login.$ || allow_facebook_login.$,
+                visible: AppConfig.businessSettingsData.allowGoogleLogin ||
+                    AppConfig.businessSettingsData.allowFacebookLogin,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+                  padding:
+                      const EdgeInsets.only(top: AppDimensions.paddingLarge),
                   child: Center(
                       child: Text(
                     AppLocalizations.of(context)!.login_screen_login_with,
-                    style: TextStyle(color: MyTheme.font_grey, fontSize: 12),
+                    style:
+                        const TextStyle(color: MyTheme.font_grey, fontSize: 12),
                   )),
                 ),
               ),
@@ -627,35 +646,38 @@ class _LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Visibility(
-                          visible: allow_google_login.$,
+                          visible:
+                              AppConfig.businessSettingsData.allowGoogleLogin,
                           child: InkWell(
                             onTap: () {
                               onPressedGoogleLogin();
                             },
                             child: Container(
                               width: 28,
-                              child: Image.asset("assets/google_logo.png"),
+                              child: Image.asset(AppImages.google),
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
+                          padding: const EdgeInsets.only(
+                              bottom: AppDimensions.paddingDefault),
                           child: Visibility(
-                            visible: allow_facebook_login.$,
+                            visible: AppConfig
+                                .businessSettingsData.allowFacebookLogin,
                             child: InkWell(
                               onTap: () {
                                 onPressedFacebookLogin();
                               },
                               child: Container(
                                 width: 28,
-                                child: Image.asset("assets/facebook_logo.png"),
+                                child: Image.asset(AppImages.facebook),
                               ),
                             ),
                           ),
                         ),
-                        // if (allow_twitter_login.$)
+                        // if (AppConfig.businessSettingsData.allow_twitter_login.$)
                         //   Padding(
-                        //     padding: const EdgeInsets.only(left: 15.0),
+                        //     padding: const EdgeInsets.only(bottom: AppDimensions.paddingDefault),
                         //     child: InkWell(
                         //       onTap: () {
                         //         onPressedTwitterLogin();
@@ -668,7 +690,7 @@ class _LoginState extends State<Login> {
                         //   ),
                         /* if (Platform.isIOS)
                           Padding(
-                            padding: const EdgeInsets.only(left: 15.0),
+                            padding: const EdgeInsets.only(bottom: AppDimensions.paddingDefault),
                             // visible: true,
                             child: A(
                               onTap: () async {

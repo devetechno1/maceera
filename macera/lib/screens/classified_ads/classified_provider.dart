@@ -85,7 +85,7 @@ class MyClassifiedProvider with ChangeNotifier {
           .getStatusChangeClassifiedProductResponse(id, newStatus);
 
       if (response.result == true) {
-        int index = _products.indexWhere((product) => product.id == id);
+        final int index = _products.indexWhere((product) => product.id == id);
         if (index != -1) {
           _products[index] = _products[index].copyWith(status: newStatus);
         }
@@ -102,7 +102,7 @@ class MyClassifiedProvider with ChangeNotifier {
   }
 
   Future<bool> updateProduct(id, product) async {
-    String url = "${AppConfig.BASE_URL}/classified/update/$id";
+    final String url = "${AppConfig.BASE_URL}/classified/update/$id";
 
     try {
       final response = await http.post(

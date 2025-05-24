@@ -16,12 +16,12 @@ import '../../helpers/shared_value_helper.dart';
 import '../profile.dart';
 
 class BkashScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
-  BkashScreen(
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
+  const BkashScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -43,7 +43,7 @@ class _BkashScreenState extends State<BkashScreen> {
   String? _token = "";
   bool showLoading = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -59,8 +59,8 @@ class _BkashScreenState extends State<BkashScreen> {
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -78,8 +78,8 @@ class _BkashScreenState extends State<BkashScreen> {
     getSetInitialUrl();
   }
 
-  getSetInitialUrl() async {
-    var bkashUrlResponse = await PaymentRepository().getBkashBeginResponse(
+  Future<void> getSetInitialUrl() async {
+    final bkashUrlResponse = await PaymentRepository().getBkashBeginResponse(
         widget.payment_type,
         _combined_order_id,
         widget.package_id,
@@ -138,7 +138,7 @@ class _BkashScreenState extends State<BkashScreen> {
   }
 
   void getData() {
-    String? payment_details = '';
+    String? paymentDetails = '';
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -153,24 +153,24 @@ class _BkashScreenState extends State<BkashScreen> {
         );
         Navigator.pop(context);
       } else if (responseJSON["result"] == true) {
-        payment_details = responseJSON['payment_details'];
+        paymentDetails = responseJSON['payment_details'];
         onPaymentSuccess(responseJSON);
       }
     });
   }
 
-  onPaymentSuccess(payment_details) async {
+  Future<void> onPaymentSuccess(paymentDetails) async {
     showLoading = true;
     setState(() {});
 
-    var bkashPaymentProcessResponse =
+    final bkashPaymentProcessResponse =
         await PaymentRepository().getBkashPaymentProcessResponse(
       amount: widget.amount,
       token: _token,
       payment_type: widget.payment_type,
       combined_order_id: _combined_order_id,
       package_id: widget.package_id,
-      payment_id: payment_details['paymentID'],
+      payment_id: paymentDetails['paymentID'],
     );
 
     if (bkashPaymentProcessResponse.result == false) {
@@ -186,24 +186,24 @@ class _BkashScreenState extends State<BkashScreen> {
     );
     if (widget.payment_type == "cart_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "order_re_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "wallet_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return Wallet(from_recharge: true);
+        return const Wallet(from_recharge: true);
       }));
     } else if (widget.payment_type == "customer_package_payment") {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Profile();
+        return const Profile();
       }));
     }
   }
 
-  buildBody() {
+  Widget? buildBody() {
     if (_order_init == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -224,7 +224,7 @@ class _BkashScreenState extends State<BkashScreen> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: showLoading
-              ? Column(
+              ? const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
@@ -258,7 +258,7 @@ class _BkashScreenState extends State<BkashScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_bkash,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

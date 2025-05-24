@@ -81,7 +81,7 @@
 //         rating: json["rating"].toInt(),
 //         sales: json["sales"],
 //         links: Links.fromJson(json["links"]),
-//         isWholesale: json["is_wholesale"],
+//         isWholesale: json["isWholesale"],
 //       );
 
 //   Map<String, dynamic> toJson() => {
@@ -96,7 +96,7 @@
 //         "rating": rating,
 //         "sales": sales,
 //         "links": links!.toJson(),
-//         "is_wholesale": isWholesale,
+//         "isWholesale": isWholesale,
 //       };
 // }
 
@@ -193,7 +193,7 @@ class ProductMiniResponse {
         status: json["status"],
       );
 
-  get data => null;
+  void get data {}
 
   Map<String, dynamic> toJson() => {
         "data": products != null
@@ -246,7 +246,7 @@ class Product {
         rating: json["rating"].toInt(),
         sales: json["sales"],
         links: Links.fromJson(json["links"]),
-        isWholesale: json["is_wholesale"],
+        isWholesale: json["isWholesale"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -261,7 +261,7 @@ class Product {
         "rating": rating,
         "sales": sales,
         "links": links!.toJson(),
-        "is_wholesale": isWholesale,
+        "isWholesale": isWholesale,
       };
 }
 

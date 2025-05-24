@@ -10,8 +10,8 @@ import '../helpers/main_helpers.dart';
 
 class WishListRepository {
   Future<dynamic> getUserWishlist() async {
-    String url = ("${AppConfig.BASE_URL}/wishlists");
-    Map<String, String> header = commonHeader;
+    const String url = ("${AppConfig.BASE_URL}/wishlists");
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);
@@ -25,7 +25,7 @@ class WishListRepository {
   Future<dynamic> delete({
     int? wishlist_id = 0,
   }) async {
-    String url = ("${AppConfig.BASE_URL}/wishlists/${wishlist_id}");
+    final String url = ("${AppConfig.BASE_URL}/wishlists/$wishlist_id");
     final response = await ApiRequest.delete(
         url: url,
         headers: {
@@ -37,7 +37,7 @@ class WishListRepository {
   }
 
   Future<dynamic> isProductInUserWishList({product_slug = ''}) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/wishlists-check-product/$product_slug");
     final response = await ApiRequest.get(
         url: url,
@@ -50,7 +50,8 @@ class WishListRepository {
   }
 
   Future<dynamic> add({product_slug = ''}) async {
-    String url = ("${AppConfig.BASE_URL}/wishlists-add-product/$product_slug");
+    final String url =
+        ("${AppConfig.BASE_URL}/wishlists-add-product/$product_slug");
     final response = await ApiRequest.get(
         url: url,
         headers: {
@@ -62,7 +63,7 @@ class WishListRepository {
   }
 
   Future<dynamic> remove({product_slug = ''}) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/wishlists-remove-product/$product_slug");
     final response = await ApiRequest.get(
         url: url,

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 
 import '../my_theme.dart';
@@ -88,7 +89,7 @@ class MyWidget {
             ? ClipRRect(
                 borderRadius: radius,
                 child: FadeInImage.assetNetwork(
-                  placeholder: "assets/placeholder.png",
+                  placeholder: AppImages.placeholder,
                   image: url,
                   height: height,
                   imageErrorBuilder: (context, object, stackTrace) {
@@ -98,7 +99,7 @@ class MyWidget {
                       decoration: BoxDecoration(
                         borderRadius: radius,
                         image: const DecorationImage(
-                          image: AssetImage("assets/placeholder.png"),
+                          image: AssetImage(AppImages.placeholder),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -114,7 +115,7 @@ class MyWidget {
                 decoration: BoxDecoration(
                   borderRadius: radius,
                   image: const DecorationImage(
-                    image: AssetImage("assets/placeholder.png"),
+                    image: AssetImage(AppImages.placeholder),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -149,7 +150,7 @@ class MyWidget {
         boxShadow: [
           BoxShadow(
             color: shadowColor,
-            offset: Offset(0, 6),
+            offset: const Offset(0, 6),
             blurRadius: blurSize,
           ),
         ],

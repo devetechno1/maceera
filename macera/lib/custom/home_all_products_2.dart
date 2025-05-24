@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -21,16 +22,27 @@ class HomeAllProducts2 extends StatelessWidget {
       return SingleChildScrollView(
           child: ShimmerHelper().buildProductGridShimmer(
               scontroller: homeData!.allProductScrollController));
-    } else if (homeData!.allProductList.length > 0) {
+    } else if (homeData!.allProductList.isNotEmpty) {
+      final bool isLoadingMore = homeData!.allProductList.length <
+          (homeData!.totalAllProductData ?? 0);
       return MasonryGridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          itemCount: homeData!.allProductList.length,
+          itemCount: isLoadingMore
+              ? homeData!.allProductList.length + 2
+              : homeData!.allProductList.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: 20.0, bottom: 10, left: 18, right: 18),
-          physics: NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(
+              top: AppDimensions.paddingLarge,
+              bottom: AppDimensions.paddingSupSmall,
+              left: 18,
+              right: 18),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
+            if (index > homeData!.allProductList.length - 1) {
+              return ShimmerHelper().buildBasicShimmer(height: 200);
+            }
             return ProductCardBlack(
               id: homeData!.allProductList[index].id,
               slug: homeData!.allProductList[index].slug,
@@ -40,7 +52,7 @@ class HomeAllProducts2 extends StatelessWidget {
               stroked_price: homeData!.allProductList[index].stroked_price,
               has_discount: homeData!.allProductList[index].has_discount,
               discount: homeData!.allProductList[index].discount,
-              is_wholesale: homeData!.allProductList[index].isWholesale,
+              isWholesale: homeData!.allProductList[index].isWholesale,
             );
           });
     } else if (homeData!.totalAllProductData == 0) {

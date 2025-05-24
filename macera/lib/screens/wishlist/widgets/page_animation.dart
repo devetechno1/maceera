@@ -9,9 +9,9 @@ class PageAnimation {
         const end = 1.0;
         const curve = Curves.easeIn;
 
-        var tween =
+        final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var opacityAnimation = animation.drive(tween);
+        final opacityAnimation = animation.drive(tween);
 
         return FadeTransition(
           opacity: opacityAnimation,
@@ -29,9 +29,9 @@ class PageAnimation {
         const end = 1.0;
         const curve = Curves.easeInOut;
 
-        var tween =
+        final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var scaleAnimation = animation.drive(tween);
+        final scaleAnimation = animation.drive(tween);
 
         return ScaleTransition(
           scale: scaleAnimation,
@@ -49,9 +49,9 @@ class PageAnimation {
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween =
+        final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var slideAnimation = animation.drive(tween);
+        final slideAnimation = animation.drive(tween);
 
         return SlideTransition(
           position: slideAnimation,
@@ -69,9 +69,9 @@ class PageAnimation {
         const end = 1.0;
         const curve = Curves.easeIn;
 
-        var tween =
+        final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var scaleAnimation = animation.drive(tween);
+        final scaleAnimation = animation.drive(tween);
 
         return ScaleTransition(
           scale: scaleAnimation,

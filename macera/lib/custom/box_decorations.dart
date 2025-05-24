@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 
 class BoxDecorations {
@@ -7,7 +8,7 @@ class BoxDecorations {
       color: Colors.white,
       // boxShadow: [
       //   BoxShadow(
-      //     color: Colors.black.withOpacity(.08),
+      //     color: Colors.black.withValues(alpha: .08),
       //     blurRadius: 20,
       //     spreadRadius: 0.0,
       //     offset: Offset(0.0, 10.0), // shadow direction: bottom right
@@ -22,10 +23,10 @@ class BoxDecorations {
       color: Colors.white,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(.08),
+          color: Colors.black.withValues(alpha: .08),
           blurRadius: 20,
           spreadRadius: 0.0,
-          offset: Offset(0.0, 10.0), // shadow direction: bottom right
+          offset: const Offset(0.0, 10.0), // shadow direction: bottom right
         )
       ],
     );
@@ -33,21 +34,21 @@ class BoxDecorations {
 
   static BoxDecoration buildCartCircularButtonDecoration() {
     return BoxDecoration(
-      borderRadius: BorderRadius.circular(16.0),
-      color: Color.fromRGBO(229, 241, 248, 1),
+      borderRadius: BorderRadius.circular(AppDimensions.radiusDefault),
+      color: const Color.fromRGBO(229, 241, 248, 1),
     );
   }
 
   static BoxDecoration buildCircularButtonDecoration_1() {
     return BoxDecoration(
-      borderRadius: BorderRadius.circular(36.0),
-      color: Colors.white.withOpacity(.80),
+      borderRadius: BorderRadius.circular(AppDimensions.radiusVeryLarge),
+      color: Colors.white.withValues(alpha: .80),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(.08),
+          color: Colors.black.withValues(alpha: .08),
           blurRadius: 20,
           spreadRadius: 0.0,
-          offset: Offset(0.0, 10.0), // shadow direction: bottom right
+          offset: const Offset(0.0, 10.0), // shadow direction: bottom right
         )
       ],
     );
@@ -56,13 +57,13 @@ class BoxDecorations {
   static BoxDecoration buildCircularButtonDecoration_for_productDetails() {
     return BoxDecoration(
       shape: BoxShape.circle,
-      color: Colors.white.withOpacity(.80),
+      color: Colors.white.withValues(alpha: .80),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(.08),
+          color: Colors.black.withValues(alpha: .08),
           blurRadius: 20,
           spreadRadius: 0,
-          offset: Offset(0.0, 10.0), // shadow direction: bottom right
+          offset: const Offset(0.0, 10.0), // shadow direction: bottom right
         )
       ],
     );

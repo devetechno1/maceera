@@ -8,9 +8,9 @@ import '../helpers/main_helpers.dart';
 
 class WalletRepository {
   Future<dynamic> getBalance() async {
-    String url = ("${AppConfig.BASE_URL}/wallet/balance");
+    const String url = ("${AppConfig.BASE_URL}/wallet/balance");
 
-    Map<String, String> header = commonHeader;
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);
@@ -21,8 +21,8 @@ class WalletRepository {
   }
 
   Future<dynamic> getRechargeList({int page = 1}) async {
-    String url = ("${AppConfig.BASE_URL}/wallet/history?page=$page");
-    Map<String, String> header = commonHeader;
+    final String url = ("${AppConfig.BASE_URL}/wallet/history?page=$page");
+    final Map<String, String> header = commonHeader;
 
     header.addAll(authHeader);
     header.addAll(currencyHeader);

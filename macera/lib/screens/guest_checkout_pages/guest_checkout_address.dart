@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/aiz_route.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
@@ -21,7 +22,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class GuestCheckoutAddress extends StatefulWidget {
-  GuestCheckoutAddress({Key? key, this.from_shipping_info = false})
+  const GuestCheckoutAddress({Key? key, this.from_shipping_info = false})
       : super(key: key);
   final bool from_shipping_info;
 
@@ -30,7 +31,7 @@ class GuestCheckoutAddress extends StatefulWidget {
 }
 
 class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
-  ScrollController _mainScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
 
   int? _default_shipping_address = 0;
   City? _selected_city;
@@ -38,7 +39,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   MyState? _selected_state;
 
   bool _isInitial = true;
-  List<dynamic> _shippingAddressList = [];
+  final List<dynamic> _shippingAddressList = [];
 
   String? name, email, address, country, state, city, postalCode, phone;
   bool? emailValid;
@@ -54,25 +55,25 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   }
 
   //controllers for add purpose
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _postalCodeController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _cityController = TextEditingController();
-  TextEditingController _stateController = TextEditingController();
-  TextEditingController _countryController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _postalCodeController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
 
   //for update purpose
-  List<TextEditingController> _addressControllerListForUpdate = [];
-  List<TextEditingController> _postalCodeControllerListForUpdate = [];
-  List<TextEditingController> _phoneControllerListForUpdate = [];
-  List<TextEditingController> _cityControllerListForUpdate = [];
-  List<TextEditingController> _stateControllerListForUpdate = [];
-  List<TextEditingController> _countryControllerListForUpdate = [];
-  List<City?> _selected_city_list_for_update = [];
-  List<MyState?> _selected_state_list_for_update = [];
-  List<Country> _selected_country_list_for_update = [];
+  final List<TextEditingController> _addressControllerListForUpdate = [];
+  final List<TextEditingController> _postalCodeControllerListForUpdate = [];
+  final List<TextEditingController> _phoneControllerListForUpdate = [];
+  final List<TextEditingController> _cityControllerListForUpdate = [];
+  final List<TextEditingController> _stateControllerListForUpdate = [];
+  final List<TextEditingController> _countryControllerListForUpdate = [];
+  final List<City?> _selected_city_list_for_update = [];
+  final List<MyState?> _selected_state_list_for_update = [];
+  final List<Country> _selected_country_list_for_update = [];
 
   @override
   void initState() {
@@ -92,12 +93,12 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
 
   fetchShippingAddressList() async {
     // print("enter fetchShippingAddressList");
-    var addressResponse = await AddressRepository().getAddressList();
+    final addressResponse = await AddressRepository().getAddressList();
     _shippingAddressList.addAll(addressResponse.addresses ?? []);
     setState(() {
       _isInitial = false;
     });
-    if (_shippingAddressList.length > 0) {
+    if (_shippingAddressList.isNotEmpty) {
       // var count = 0;
       _shippingAddressList.forEach((address) {
         if (address.set_default == 1) {
@@ -182,8 +183,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     fetchAll();
   }
 
-  onAddressSwitch(index) async {
-    var addressMakeDefaultResponse =
+  Future<void> onAddressSwitch(index) async {
+    final addressMakeDefaultResponse =
         await AddressRepository().getAddressMakeDefaultResponse(index);
 
     if (addressMakeDefaultResponse.result == false) {
@@ -318,13 +319,13 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     Loading.show(context);
     await setValues();
 
-    Map<String, String> postValue = {
+    final Map<String, String> postValue = {
       "email": email!,
       "phone": phone!,
     };
 
     var postBody = jsonEncode(postValue);
-    var response =
+    final response =
         await GuestCheckoutRepository().guestCustomerInfoCheck(postBody);
 
     Loading.close();
@@ -358,7 +359,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     }
   }
 
-  onSelectCountryDuringAdd(country, setModalState) {
+  void onSelectCountryDuringAdd(country, setModalState) {
     if (_selected_country != null && country.id == _selected_country!.id) {
       setModalState(() {
         _countryController.text = country.name;
@@ -377,7 +378,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     });
   }
 
-  onSelectStateDuringAdd(state, setModalState) {
+  void onSelectStateDuringAdd(state, setModalState) {
     if (_selected_state != null && state.id == _selected_state!.id) {
       setModalState(() {
         _stateController.text = state.name;
@@ -393,7 +394,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     });
   }
 
-  onSelectCityDuringAdd(city, setModalState) {
+  void onSelectCityDuringAdd(city, setModalState) {
     if (_selected_city != null && city.id == _selected_city!.id) {
       setModalState(() {
         _cityController.text = city.name;
@@ -419,7 +420,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         appBar: buildAppBar(context),
         bottomNavigationBar: buildBottomAppBar(context),
         body: RefreshIndicator(
-          color: MyTheme.accent_color,
+          color: Theme.of(context).primaryColor,
           backgroundColor: Colors.white,
           onRefresh: _onRefresh,
           displacement: 0,
@@ -435,9 +436,10 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                   child: Btn.minWidthFixHeight(
                     minWidth: MediaQuery.of(context).size.width - 16,
                     height: 90,
-                    color: Color(0xffFEF0D7),
+                    color: const Color(0xffFEF0D7),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusSmall),
                         side: BorderSide(
                             color: Colors.amber.shade600, width: 1.0)),
                     child: Column(
@@ -451,7 +453,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                         Icon(
                           Icons.add_sharp,
-                          color: MyTheme.accent_color,
+                          color: Theme.of(context).primaryColor,
                           size: 30,
                         ),
                       ],
@@ -465,7 +467,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: buildAddressList(),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 100,
                 )
               ]))
@@ -484,9 +486,10 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
             return AlertDialog(
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              insetPadding: EdgeInsets.symmetric(horizontal: 10),
-              contentPadding: EdgeInsets.only(
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusDefault)),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10),
+              contentPadding: const EdgeInsets.only(
                   top: 23.0, left: 20.0, right: 20.0, bottom: 2.0),
               content: Container(
                 width: 400,
@@ -497,16 +500,18 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     children: [
 //////////////////////////////////////////////name
                       Padding(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingSmallExtra),
                         child: Text(
                             "${AppLocalizations.of(context)!.name_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingNormal),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -523,16 +528,18 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                       ////
                       //////////////////////////////////////////////email
                       Padding(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingSmallExtra),
                         child: Text(
                             "${AppLocalizations.of(context)!.email_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingNormal),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -548,16 +555,18 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                       //////////////////////////////////
 
                       Padding(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingSmallExtra),
                         child: Text(
                             "${AppLocalizations.of(context)!.address_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingNormal),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -573,16 +582,18 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.country_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 14.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingNormal),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
@@ -599,7 +610,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                               );
                             },
                             suggestionsCallback: (name) async {
-                              var countryResponse = await AddressRepository()
+                              final countryResponse = await AddressRepository()
                                   .getCountryList(name: name);
                               return countryResponse.countries;
                             },
@@ -619,7 +630,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   country.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -630,16 +642,18 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.state_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
@@ -657,11 +671,11 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                             controller: _stateController,
                             suggestionsCallback: (name) async {
                               if (_selected_country == null) {
-                                var stateResponse = await AddressRepository()
+                                final stateResponse = await AddressRepository()
                                     .getStateListByCountry(); // blank response
                                 return stateResponse.states;
                               }
-                              var stateResponse = await AddressRepository()
+                              final stateResponse = await AddressRepository()
                                   .getStateListByCountry(
                                       country_id: _selected_country!.id,
                                       name: name);
@@ -683,7 +697,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   state.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -694,27 +709,29 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.city_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
                             controller: _cityController,
                             suggestionsCallback: (name) async {
                               if (_selected_state == null) {
-                                var cityResponse = await AddressRepository()
+                                final cityResponse = await AddressRepository()
                                     .getCityListByState(); // blank response
                                 return cityResponse.cities;
                               }
-                              var cityResponse = await AddressRepository()
+                              final cityResponse = await AddressRepository()
                                   .getCityListByState(
                                       state_id: _selected_state!.id,
                                       name: name);
@@ -737,7 +754,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   city.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -759,15 +777,17 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(AppLocalizations.of(context)!.postal_code,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -781,15 +801,17 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(AppLocalizations.of(context)!.phone_ucf,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -811,19 +833,21 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 40,
-                        color: Color.fromRGBO(253, 253, 253, 1),
+                        color: const Color.fromRGBO(253, 253, 253, 1),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6.0),
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusHalfSmall),
                             side: BorderSide(
                                 color: MyTheme.light_grey, width: 1)),
                         child: Text(
                           LangText(context).local.close_ucf,
                           style: TextStyle(
-                            color: MyTheme.accent_color,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -833,21 +857,23 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         },
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 1,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 28.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingExtraLarge),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 40,
-                        color: MyTheme.accent_color,
+                        color: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.0),
+                          borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusHalfSmall),
                         ),
                         child: Text(
                           LangText(context).local.add_ucf,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -869,22 +895,23 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   InputDecoration buildAddressInputDecoration(BuildContext context, hintText) {
     return InputDecoration(
         filled: true,
-        fillColor: Color(0xffF6F7F8),
+        fillColor: const Color(0xffF6F7F8),
         hintText: hintText,
-        hintStyle: TextStyle(fontSize: 12.0, color: Color(0xff999999)),
+        hintStyle: const TextStyle(fontSize: 12.0, color: Color(0xff999999)),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: MyTheme.noColor, width: 0.5),
           borderRadius: const BorderRadius.all(
-            const Radius.circular(6.0),
+            Radius.circular(AppDimensions.radiusHalfSmall),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: MyTheme.noColor, width: 1.0),
           borderRadius: const BorderRadius.all(
-            const Radius.circular(6.0),
+            Radius.circular(AppDimensions.radiusHalfSmall),
           ),
         ),
-        contentPadding: EdgeInsets.only(left: 8.0, top: 6.0, bottom: 6.0));
+        contentPadding: const EdgeInsets.only(
+            left: AppDimensions.paddingSmall, top: 6.0, bottom: 6.0));
   }
 
   Future buildShowUpdateFormDialog(BuildContext context, index) {
@@ -894,8 +921,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
           return StatefulBuilder(builder: (BuildContext context,
               StateSetter setModalState /*You can rename this!*/) {
             return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 10),
-              contentPadding: EdgeInsets.only(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10),
+              contentPadding: const EdgeInsets.only(
                   top: 36.0, left: 36.0, right: 36.0, bottom: 2.0),
               content: Container(
                 width: 400,
@@ -905,14 +932,16 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.address_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 55,
                           child: TextField(
@@ -928,20 +957,22 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.country_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
                             controller: _countryControllerListForUpdate[index],
                             suggestionsCallback: (name) async {
-                              var countryResponse = await AddressRepository()
+                              final countryResponse = await AddressRepository()
                                   .getCountryList(name: name);
                               return countryResponse.countries;
                             },
@@ -962,7 +993,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   country.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -971,20 +1003,22 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.state_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
                             controller: _stateControllerListForUpdate[index],
                             suggestionsCallback: (name) async {
-                              var stateResponse = await AddressRepository()
+                              final stateResponse = await AddressRepository()
                                   .getStateListByCountry(
                                       country_id:
                                           _selected_country_list_for_update[
@@ -1010,7 +1044,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   state.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -1019,14 +1054,16 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                             "${AppLocalizations.of(context)!.city_ucf} *",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TypeAheadField(
@@ -1034,11 +1071,11 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                             suggestionsCallback: (name) async {
                               if (_selected_state_list_for_update[index] ==
                                   null) {
-                                var cityResponse = await AddressRepository()
+                                final cityResponse = await AddressRepository()
                                     .getCityListByState(); // blank response
                                 return cityResponse.cities;
                               }
-                              var cityResponse = await AddressRepository()
+                              final cityResponse = await AddressRepository()
                                   .getCityListByState(
                                       state_id: _selected_state_list_for_update[
                                               index]!
@@ -1063,7 +1100,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                                 dense: true,
                                 title: Text(
                                   city.name,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               );
                             },
@@ -1072,13 +1110,15 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(AppLocalizations.of(context)!.postal_code,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingDefault),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -1093,13 +1133,15 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(AppLocalizations.of(context)!.phone_ucf,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey, fontSize: 12)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Container(
                           height: 40,
                           child: TextField(
@@ -1121,40 +1163,45 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 40,
-                        color: Color.fromRGBO(253, 253, 253, 1),
+                        color: const Color.fromRGBO(253, 253, 253, 1),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6.0),
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusHalfSmall),
                             side: BorderSide(
                                 color: MyTheme.light_grey, width: 1.0)),
                         child: Text(
                           AppLocalizations.of(context)!.close_all_capital,
                           style: TextStyle(
-                              color: MyTheme.accent_color, fontSize: 13),
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 13),
                         ),
                         onPressed: () {
                           Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 1,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 28.0),
+                      padding: const EdgeInsets.only(
+                          bottom: AppDimensions.paddingExtraLarge),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 40,
-                        color: MyTheme.accent_color,
+                        color: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.0),
+                          borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusHalfSmall),
                         ),
                         child: Text(
                           AppLocalizations.of(context)!.update_all_capital,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.w600),
@@ -1190,14 +1237,14 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         children: [
           Text(
             AppLocalizations.of(context)!.addresses_of_user,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xff3E4447),
                 fontWeight: FontWeight.bold),
           ),
           Text(
             "* ${AppLocalizations.of(context)!.tap_on_an_address_to_make_it_default}",
-            style: TextStyle(fontSize: 12, color: Color(0xff6B7377)),
+            style: const TextStyle(fontSize: 12, color: Color(0xff6B7377)),
           ),
         ],
       ),
@@ -1206,7 +1253,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     );
   }
 
-  buildAddressList() {
+  Widget? buildAddressList() {
     // print("is Initial: ${_isInitial}");
     if (is_logged_in == false) {
       return Container(
@@ -1214,38 +1261,39 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.you_need_to_log_in,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
-    } else if (_isInitial && _shippingAddressList.length == 0) {
+    } else if (_isInitial && _shippingAddressList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 5, item_height: 100.0));
-    } else if (_shippingAddressList.length > 0) {
+    } else if (_shippingAddressList.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.separated(
           separatorBuilder: (context, index) {
-            return SizedBox(
+            return const SizedBox(
               height: 16,
             );
           },
           itemCount: _shippingAddressList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return buildAddressItemCard(index);
           },
         ),
       );
-    } else if (!_isInitial && _shippingAddressList.length == 0) {
+    } else if (!_isInitial && _shippingAddressList.isEmpty) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.no_address_is_added,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
+    return null;
   }
 
   GestureDetector buildAddressItemCard(index) {
@@ -1256,12 +1304,12 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         }
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 400),
         decoration: BoxDecorations.buildBoxDecoration_1().copyWith(
             border: Border.all(
                 color:
                     _default_shipping_address == _shippingAddressList[index].id
-                        ? MyTheme.accent_color
+                        ? Theme.of(context).primaryColor
                         : MyTheme.light_grey,
                 width:
                     _default_shipping_address == _shippingAddressList[index].id
@@ -1270,12 +1318,13 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(AppDimensions.paddingDefault),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1283,8 +1332,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.address_ucf,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1302,7 +1351,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1310,8 +1360,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.city_ucf,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1329,7 +1379,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1337,8 +1388,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.state_ucf,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1356,7 +1407,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1364,8 +1416,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.country_ucf,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1383,7 +1435,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1391,8 +1444,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.postal_code,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1410,7 +1463,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingSmall),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1418,8 +1472,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           width: 75,
                           child: Text(
                             AppLocalizations.of(context)!.phone_ucf,
-                            style: TextStyle(
-                                color: const Color(0xff6B7377),
+                            style: const TextStyle(
+                                color: Color(0xff6B7377),
                                 fontWeight: FontWeight.normal),
                           ),
                         ),
@@ -1456,7 +1510,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     );
   }
 
-  buildBottomAppBar(BuildContext context) {
+  Visibility buildBottomAppBar(BuildContext context) {
     return Visibility(
       visible: widget.from_shipping_info,
       child: BottomAppBar(
@@ -1466,13 +1520,13 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
           child: Btn.minWidthFixHeight(
             minWidth: MediaQuery.of(context).size.width,
             height: 50,
-            color: MyTheme.accent_color,
+            color: Theme.of(context).primaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(0.0),
             ),
             child: Text(
               AppLocalizations.of(context)!.back_to_shipping_info,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600),
@@ -1490,14 +1544,14 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     return Container(
       width: 45,
       child: PopupMenuButton<MenuOptions>(
-        offset: Offset(-25, 0),
+        offset: const Offset(-25, 0),
         child: Padding(
           padding: EdgeInsets.zero,
           child: Container(
             width: 45,
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             alignment: Alignment.topRight,
-            child: Image.asset("assets/more.png",
+            child: Image.asset(AppImages.more,
                 width: 4,
                 height: 16,
                 fit: BoxFit.contain,

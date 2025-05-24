@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
+
 class SingleProduct {
   String? image;
   List<String>? product_images;
@@ -27,7 +29,8 @@ class SingleProduct {
       this.in_user_wishlist,
       this.club_point,
       this.seller,
-      this.is_inhouse_product,this.description});
+      this.is_inhouse_product,
+      this.description});
 }
 
 class Seller {
@@ -37,14 +40,13 @@ class Seller {
   Seller({this.shop_name, this.shop_image});
 }
 
-Seller seller =
-    Seller(shop_name: "UGG Australia", shop_image: "dummy_assets/s8.jpg");
+Seller seller = Seller(shop_name: "UGG Australia", shop_image: AppImages.s8);
 
 List<String> my_product_images = [
-  'dummy_assets/pi1.jpg',
-  'dummy_assets/pi2.jpg',
-  'dummy_assets/pi3.jpg',
-  'dummy_assets/pi4.jpg',
+  AppImages.pi1,
+  AppImages.pi2,
+  AppImages.pi3,
+  AppImages.pi4,
 ];
 
 String description = """ Brand: Apple
@@ -133,4 +135,5 @@ SingleProduct singleProduct = SingleProduct(
     has_disocunt: true,
     club_point: 120.00,
     seller: seller,
-    is_inhouse_product: true,description: description);
+    is_inhouse_product: true,
+    description: description);

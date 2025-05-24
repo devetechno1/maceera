@@ -8,32 +8,40 @@ import 'dart:convert';
 class BlogProvider with ChangeNotifier {
   List<BlogModel> _blogs = [];
 
-  List<BlogModel> get blogs {
-    return _blogs;
-  }
+  List<BlogModel> get blogs => List.unmodifiable(_blogs);
 
-  Future<void> fetchBlogs() async {
-    final url = ("${AppConfig.BASE_URL}/blog-list");
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${access_token.$}",
-        "System-Key": AppConfig.system_key
-      },
-    );
-    print(response.body);
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
+  bool isLoading = false;
 
-      final List<BlogModel> loadedBlogs = [];
-      jsonData['blogs']['data'].forEach((blogData) {
-        loadedBlogs.add(BlogModel.fromJson(blogData));
-      });
-      _blogs = loadedBlogs;
-      notifyListeners();
-    } else {
-      print('Failed to load blogs');
+  Future<void> fetchBlogs([bool refresh = true]) async {
+    isLoading = true;
+
+    if (refresh) notifyListeners();
+
+    try {
+      const String url = ("${AppConfig.BASE_URL}/blog-list");
+      final http.Response response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${access_token.$}",
+          "System-Key": AppConfig.system_key
+        },
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+
+        final List<BlogModel> loadedBlogs = [];
+        jsonData['blogs']['data'].forEach((blogData) {
+          loadedBlogs.add(BlogModel.fromJson(blogData));
+        });
+        _blogs = loadedBlogs;
+      } else {
+        throw 'Failed to load blogs';
+      }
+    } catch (e) {
+      print(e);
     }
+    isLoading = false;
+    notifyListeners();
   }
 }

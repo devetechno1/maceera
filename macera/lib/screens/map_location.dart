@@ -36,14 +36,15 @@ class MapLocationState extends State<MapLocation>
     super.dispose();
   }
 
-
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).unfocus();
-    },);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        FocusScope.of(context).unfocus();
+      },
+    );
 
     if (widget.address.location_available ?? false) {
       setInitialLocation();
@@ -53,7 +54,9 @@ class MapLocationState extends State<MapLocation>
   }
 
   setInitialLocation() {
-    kInitialPosition = LatLng(widget.address.lat ?? AppConfig.initPlace.latitude, widget.address.lang ?? AppConfig.initPlace.longitude);
+    kInitialPosition = LatLng(
+        widget.address.lat ?? AppConfig.initPlace.latitude,
+        widget.address.lang ?? AppConfig.initPlace.longitude);
     setState(() {});
   }
 
@@ -63,11 +66,9 @@ class MapLocationState extends State<MapLocation>
   }
 
   Future<void> onTapPickHere() async {
-    var addressUpdateLocationResponse = await AddressRepository()
+    final addressUpdateLocationResponse = await AddressRepository()
         .getAddressUpdateLocationResponse(
-            widget.address.id,
-            selectedPlace.latitude,
-            selectedPlace.longitude);
+            widget.address.id, selectedPlace.latitude, selectedPlace.longitude);
 
     if (addressUpdateLocationResponse.result == false) {
       ToastComponent.showDialog(
@@ -89,7 +90,6 @@ class MapLocationState extends State<MapLocation>
   String? formattedAddress;
   final FocusNode fieldNode = FocusNode();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +107,7 @@ class MapLocationState extends State<MapLocation>
             compassEnabled: false,
             indoorViewEnabled: true,
             mapToolbarEnabled: true,
-            onCameraIdle: ()async{ 
+            onCameraIdle: () async {
               // locationController.updateMapPosition(_cameraPosition, false, null, context);
               // await onTapPickHere();
 
@@ -116,48 +116,49 @@ class MapLocationState extends State<MapLocation>
               setState(() {});
 
               try {
-                final List<Placemark> temp = await placemarkFromCoordinates(selectedPlace.latitude, selectedPlace.longitude);
-                formattedAddress = '${temp.first.street}, ${temp.first.locality}, ${temp.first.administrativeArea}, ${temp.first.country}';
+                final List<Placemark> temp = await placemarkFromCoordinates(
+                    selectedPlace.latitude, selectedPlace.longitude);
+                formattedAddress =
+                    '${temp.first.street}, ${temp.first.locality}, ${temp.first.administrativeArea}, ${temp.first.country}';
               } catch (e) {}
 
-          
               isLoadingFormattedAddress = false;
               // print("onPlacePicked..."+result.toString());
               // Navigator.of(context).pop();
               setState(() {});
             },
-            onCameraMove: (position){ 
+            onCameraMove: (position) {
               selectedPlace = position.target;
               isCameraIdle = false;
               setState(() {});
             },
             myLocationEnabled: !(widget.address.location_available ?? false),
-            onMapCreated: (GoogleMapController controller) => _controller = controller,
+            onMapCreated: (GoogleMapController controller) =>
+                _controller = controller,
           ),
-      
           Positioned(
             height: 50,
             bottom: 40.0,
             // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
             left: 16.0,
             right: 16.0,
-            child: 
-            // state == SearchingState.Searching
-            //   ? Center(
-            //       child: Text(
-            //       LangText(context).local.calculating,
-            //       style: TextStyle(color: MyTheme.font_grey),
-            //     ))
-            //   : 
-            Container(
-              padding: EdgeInsets.all(8),
+            child:
+                // state == SearchingState.Searching
+                //   ? Center(
+                //       child: Text(
+                //       LangText(context).local.calculating,
+                //       style: TextStyle(color: MyTheme.font_grey),
+                //     ))
+                //   :
+                Container(
+              padding: const EdgeInsets.all(AppDimensions.paddingSmall),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.only(
-                  topLeft: const Radius.circular(8.0),
-                  bottomLeft: const Radius.circular(8.0),
-                  topRight: const Radius.circular(8.0),
-                  bottomRight: const Radius.circular(8.0),
+                  topLeft: Radius.circular(AppDimensions.radiusSmall),
+                  bottomLeft: Radius.circular(AppDimensions.radiusSmall),
+                  topRight: Radius.circular(AppDimensions.radiusSmall),
+                  bottomRight: Radius.circular(AppDimensions.radiusSmall),
                 ),
               ),
               child: Row(
@@ -166,35 +167,38 @@ class MapLocationState extends State<MapLocation>
                     flex: 2,
                     child: Container(
                       child: Center(
-                        child: formattedAddress == null 
-                        ? CircularProgressIndicator() 
-                        : Padding(
-                          padding: const EdgeInsets.only(
-                              left: 2.0, right: 2.0),
-                          child: Text(
-                            formattedAddress!,
-                            maxLines: 2,
-                            style:
-                                TextStyle(color: MyTheme.medium_grey),
-                          ),
-                        ),
+                        child: formattedAddress == null
+                            ? const CircularProgressIndicator()
+                            : Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 2.0, right: 2.0),
+                                child: Text(
+                                  formattedAddress!,
+                                  maxLines: 2,
+                                  style: TextStyle(color: MyTheme.medium_grey),
+                                ),
+                              ),
                       ),
                     ),
                   ),
                   Expanded(
                     flex: 1,
                     child: Btn.basic(
-                      color: MyTheme.accent_color,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: const BorderRadius.only(
-                        topLeft: const Radius.circular(4.0),
-                        bottomLeft: const Radius.circular(4.0),
-                        topRight: const Radius.circular(4.0),
-                        bottomRight: const Radius.circular(4.0),
+                      color: Theme.of(context).primaryColor,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                        topLeft:
+                            Radius.circular(AppDimensions.radiusSmallExtra),
+                        bottomLeft:
+                            Radius.circular(AppDimensions.radiusSmallExtra),
+                        topRight:
+                            Radius.circular(AppDimensions.radiusSmallExtra),
+                        bottomRight:
+                            Radius.circular(AppDimensions.radiusSmallExtra),
                       )),
                       child: Text(
                         LangText(context).local.pick_here,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                       onPressed: onTapPickHere,
                     ),
@@ -203,26 +207,27 @@ class MapLocationState extends State<MapLocation>
               ),
             ),
           ),
-
           SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(AppDimensions.paddingDefault),
                 child: TypeAheadField<Results>(
                   // controller: _countryController,
-                  debounceDuration: Duration(milliseconds: 500),
+                  debounceDuration: const Duration(milliseconds: 500),
                   emptyBuilder: (context) {
-                    return SizedBox();
+                    return const SizedBox();
                   },
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.7
-                  ),
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.7),
                   focusNode: fieldNode,
                   builder: (context, controller, focusNode) {
-                    final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-                      borderSide: BorderSide(color: MyTheme.textfield_grey, width: 0.5),
-                      borderRadius: BorderRadius.circular(6),
+                    final OutlineInputBorder outlineInputBorder =
+                        OutlineInputBorder(
+                      borderSide: const BorderSide(
+                          color: MyTheme.textfield_grey, width: 0.5),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusHalfSmall),
                     );
                     return TextField(
                       controller: controller,
@@ -230,17 +235,23 @@ class MapLocationState extends State<MapLocation>
                       obscureText: false,
                       onTapOutside: (event) => FocusScope.of(context).unfocus(),
                       decoration: InputDecoration(
-                        hintText: LangText(context).local.your_delivery_location,
-                        hintStyle: TextStyle(fontSize: 12.0, color: MyTheme.textfield_grey),
-                        enabledBorder: outlineInputBorder,
-                        focusedBorder: outlineInputBorder,
-                        border: outlineInputBorder,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                        filled: true,
-                        fillColor: Theme.of(context).scaffoldBackgroundColor,
-                        prefixIcon: Icon(Icons.location_on,color: FocusScope.of(context).hasFocus? Theme.of(context).primaryColor : MyTheme.textfield_grey),
-                        suffixIcon: Icon(Icons.search_rounded,color: MyTheme.textfield_grey)
-                      ),
+                          hintText:
+                              LangText(context).local.your_delivery_location,
+                          hintStyle: const TextStyle(
+                              fontSize: 12.0, color: MyTheme.textfield_grey),
+                          enabledBorder: outlineInputBorder,
+                          focusedBorder: outlineInputBorder,
+                          border: outlineInputBorder,
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 16.0),
+                          filled: true,
+                          fillColor: Theme.of(context).scaffoldBackgroundColor,
+                          prefixIcon: Icon(Icons.location_on,
+                              color: FocusScope.of(context).hasFocus
+                                  ? Theme.of(context).primaryColor
+                                  : MyTheme.textfield_grey),
+                          suffixIcon: const Icon(Icons.search_rounded,
+                              color: MyTheme.textfield_grey)),
                     );
                   },
                   suggestionsCallback: getSuggestion,
@@ -260,14 +271,16 @@ class MapLocationState extends State<MapLocation>
                       dense: true,
                       title: Row(
                         children: [
-                          Icon(Icons.location_on,color: MyTheme.font_grey),
-                          SizedBox(width: 5),
+                          const Icon(Icons.location_on,
+                              color: MyTheme.font_grey),
+                          const SizedBox(width: 5),
                           Expanded(
                             child: Text(
                               result.formattedAddress ?? '',
                               maxLines: 1,
-                              style: TextStyle(color: MyTheme.font_grey,fontSize: 14),
-                              overflow: TextOverflow.ellipsis ,
+                              style: const TextStyle(
+                                  color: MyTheme.font_grey, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -279,13 +292,12 @@ class MapLocationState extends State<MapLocation>
               ),
             ),
           ),
-      
           Align(
             child: AnimatedScale(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               scale: isCameraIdle ? 1 : 1.3,
               child: Image.asset(
-                'assets/delivery_map_icon.png',
+                AppImages.deliveryMapIcon,
                 height: 60,
               ),
             ),
@@ -297,15 +309,16 @@ class MapLocationState extends State<MapLocation>
 
   void onSelectSearchedLocation(Results result) {
     // formattedAddress = result.formattedAddress;
-    _controller?.animateCamera(CameraUpdate.newLatLng(result.geometry!.latLang!));
+    _controller
+        ?.animateCamera(CameraUpdate.newLatLng(result.geometry!.latLang!));
     print(result.formattedAddress);
   }
 
-
-  Future<List<Results>> getSuggestion(String query) async{
+  Future<List<Results>> getSuggestion(String query) async {
     print("query $query");
     try {
-      final String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=$query&key=${OtherConfig.GOOGLE_MAP_API_KEY}";
+      final String url =
+          "https://maps.googleapis.com/maps/api/place/textsearch/json?query=$query&key=${OtherConfig.GOOGLE_MAP_API_KEY}";
       final http.Response response = await http.get(Uri.parse(url));
       final PlaceRes placeRes = PlaceRes.fromJson(jsonDecode(response.body));
       return placeRes.results ?? [];
@@ -360,10 +373,10 @@ class MapLocationState extends State<MapLocation>
                 rightPosition: 16.0,
                 width: 500,
                 borderRadius: const BorderRadius.only(
-                  topLeft: const Radius.circular(8.0),
-                  bottomLeft: const Radius.circular(8.0),
-                  topRight: const Radius.circular(8.0),
-                  bottomRight: const Radius.circular(8.0),
+                  topLeft: const Radius.circular(AppDimensions.radiusSmall),
+                  bottomLeft: const Radius.circular(AppDimensions.radiusSmall),
+                  topRight: const Radius.circular(AppDimensions.radiusSmall),
+                  bottomRight: const Radius.circular(AppDimensions.radiusSmall),
                 ),
                 child: state == SearchingState.Searching
                     ? Center(
@@ -398,10 +411,10 @@ class MapLocationState extends State<MapLocation>
                                 color: MyTheme.accent_color,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: const BorderRadius.only(
-                                  topLeft: const Radius.circular(4.0),
-                                  bottomLeft: const Radius.circular(4.0),
-                                  topRight: const Radius.circular(4.0),
-                                  bottomRight: const Radius.circular(4.0),
+                                  topLeft: const Radius.circular(AppDimensions.radiusSmallExtra),
+                                  bottomLeft: const Radius.circular(AppDimensions.radiusSmallExtra),
+                                  topRight: const Radius.circular(AppDimensions.radiusSmallExtra),
+                                  bottomRight: const Radius.circular(AppDimensions.radiusSmallExtra),
                                 )),
                                 child: Text(
                                   AppLocalizations.of(context)!.pick_here,
@@ -435,8 +448,6 @@ class MapLocationState extends State<MapLocation>
         );
       },
     );*/
-
-
 
 class PlaceRes {
   List? htmlAttributions;
@@ -486,9 +497,8 @@ class Results {
 
   Results.fromJson(Map<String, dynamic> json) {
     formattedAddress = json['formatted_address'];
-    geometry = json['geometry'] != null
-        ? Geometry.fromJson(json['geometry'])
-        : null;
+    geometry =
+        json['geometry'] != null ? Geometry.fromJson(json['geometry']) : null;
     icon = json['icon'];
     iconBackgroundColor = json['icon_background_color'];
     iconMaskBaseUri = json['icon_mask_base_uri'];
@@ -507,13 +517,12 @@ class Geometry {
   Geometry({this.latLang, this.viewport});
 
   Geometry.fromJson(Map<String, dynamic> json) {
-    if(json['location'] != null){
+    if (json['location'] != null) {
       _location = Location.fromJson(json['location']);
       latLang = LatLng(_location?.lat ?? 0, _location?.lng ?? 0);
     }
-    viewport = json['viewport'] != null
-        ? Viewport.fromJson(json['viewport'])
-        : null;
+    viewport =
+        json['viewport'] != null ? Viewport.fromJson(json['viewport']) : null;
   }
 }
 
@@ -530,8 +539,8 @@ class Location {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['lat'] = this.lat;
-    data['lng'] = this.lng;
+    data['lat'] = lat;
+    data['lng'] = lng;
     return data;
   }
 }
@@ -543,21 +552,19 @@ class Viewport {
   Viewport({this.northeast, this.southwest});
 
   Viewport.fromJson(Map<String, dynamic> json) {
-    northeast = json['northeast'] != null
-        ? Location.fromJson(json['northeast'])
-        : null;
-    southwest = json['southwest'] != null
-        ? Location.fromJson(json['southwest'])
-        : null;
+    northeast =
+        json['northeast'] != null ? Location.fromJson(json['northeast']) : null;
+    southwest =
+        json['southwest'] != null ? Location.fromJson(json['southwest']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    if (this.northeast != null) {
-      data['northeast'] = this.northeast!.toJson();
+    if (northeast != null) {
+      data['northeast'] = northeast!.toJson();
     }
-    if (this.southwest != null) {
-      data['southwest'] = this.southwest!.toJson();
+    if (southwest != null) {
+      data['southwest'] = southwest!.toJson();
     }
     return data;
   }

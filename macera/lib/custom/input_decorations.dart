@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -7,51 +8,54 @@ class InputDecorations {
         hintText: hint_text,
         filled: true,
         fillColor: MyTheme.white,
-        hintStyle: TextStyle(fontSize: 12.0, color: Color(0xffA8AFB3)),
+        hintStyle: const TextStyle(fontSize: 12.0, color: Color(0xffA8AFB3)),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: MyTheme.noColor, width: 0.2),
           borderRadius: const BorderRadius.all(
-            const Radius.circular(6.0),
+            Radius.circular(AppDimensions.radiusHalfSmall),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: MyTheme.accent_color, width: 0.5),
+          borderSide: BorderSide(color: MyTheme.primaryColor, width: 0.5),
           borderRadius: const BorderRadius.all(
-            const Radius.circular(6.0),
+            Radius.circular(AppDimensions.radiusHalfSmall),
           ),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 14.0));
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14.0));
   }
 
   static InputDecoration buildInputDecoration_phone({hint_text = ""}) {
     return InputDecoration(
         hintText: hint_text,
-        hintStyle: TextStyle(fontSize: 12.0, color: MyTheme.textfield_grey),
-        enabledBorder: OutlineInputBorder(
+        hintStyle:
+            const TextStyle(fontSize: 12.0, color: MyTheme.textfield_grey),
+        enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: MyTheme.textfield_grey, width: 0.5),
           borderRadius: BorderRadius.only(
-              topRight: Radius.circular(6.0),
-              bottomRight: Radius.circular(6.0)),
+              topRight: Radius.circular(AppDimensions.radiusHalfSmall),
+              bottomRight: Radius.circular(AppDimensions.radiusHalfSmall)),
         ),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: MyTheme.accent_color, width: 0.5),
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(6.0),
-                bottomRight: Radius.circular(6.0))),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.0));
+            borderSide: BorderSide(color: MyTheme.primaryColor, width: 0.5),
+            borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(AppDimensions.radiusHalfSmall),
+                bottomRight: Radius.circular(AppDimensions.radiusHalfSmall))),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingDefault));
   }
 
-  static InputDecoration buildInputDecoration_with_border(String hint_text) {
+  static InputDecoration buildInputDecoration_with_border(String hintText) {
     final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: MyTheme.textfield_grey, width: 0.5),
-      borderRadius: BorderRadius.circular(6),
+      borderSide: const BorderSide(color: MyTheme.textfield_grey, width: 0.5),
+      borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
     );
     return InputDecoration(
-        hintText: hint_text,
-        hintStyle: TextStyle(fontSize: 12.0, color: MyTheme.textfield_grey),
+        hintText: hintText,
+        hintStyle:
+            const TextStyle(fontSize: 12.0, color: MyTheme.textfield_grey),
         enabledBorder: outlineInputBorder,
         focusedBorder: outlineInputBorder,
         border: outlineInputBorder,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.0));
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0));
   }
 }

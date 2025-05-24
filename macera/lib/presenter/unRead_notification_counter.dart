@@ -5,7 +5,7 @@ class UnReadNotificationCounter extends ChangeNotifier {
   int unReadNotificationCounter = 0;
 
   getCount() async {
-    var res = await NotificationRepository().getUnreadNotification();
+    final res = await NotificationRepository().getUnreadNotification();
     unReadNotificationCounter = res.count ?? 0;
     notifyListeners();
   }

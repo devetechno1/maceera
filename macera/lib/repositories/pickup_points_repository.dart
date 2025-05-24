@@ -4,7 +4,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class PickupPointRepository {
   Future<PickupPointListResponse> getPickupPointListResponse() async {
-    String url = ('${AppConfig.BASE_URL}/pickup-list');
+    const String url = ('${AppConfig.BASE_URL}/pickup-list');
 
     final response = await ApiRequest.get(url: url);
 

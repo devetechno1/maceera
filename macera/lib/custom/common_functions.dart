@@ -37,12 +37,12 @@ class CommonFunctions {
   }
 
   static TextStyle dashboardBoxNumber(context) {
-    return TextStyle(
+    return const TextStyle(
         fontSize: 16, color: MyTheme.white, fontWeight: FontWeight.bold);
   }
 
   static TextStyle dashboardBoxText(context) {
-    return TextStyle(
+    return const TextStyle(
         fontSize: 12, color: MyTheme.white, fontWeight: FontWeight.bold);
   }
 }

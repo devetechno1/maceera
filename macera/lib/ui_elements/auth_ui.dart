@@ -57,7 +57,7 @@
 //                               height: 72,
 //                               decoration: BoxDecoration(
 //                                   color: MyTheme.white,
-//                                   borderRadius: BorderRadius.circular(8)),
+//                                   borderRadius: BorderRadius.circular(AppDimensions.radiusSmall)),
 //                               child: Image.asset(
 //                                   'assets/login_registration_form_logo.png'),
 //                             ),
@@ -96,6 +96,8 @@
 //     );
 //   }
 // }
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/device_info.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
@@ -116,10 +118,10 @@ class AuthScreen {
             Container(
               height: DeviceInfo(context).height! / 3,
               width: DeviceInfo(context).width,
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               alignment: Alignment.topRight,
               child: Image.asset(
-                "assets/background_1.png",
+                AppImages.backgroundOne,
               ),
             ),
             // CustomScrollView
@@ -136,24 +138,26 @@ class AuthScreen {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 12),
                               width: 72,
                               height: 72,
                               decoration: BoxDecoration(
                                   color: MyTheme.white,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Image.asset(
-                                  'assets/login_registration_form_logo.png'),
+                                  borderRadius: BorderRadius.circular(
+                                      AppDimensions.radiusSmall)),
+                              child: Image.asset(AppImages.loginRegisteration),
                             ),
                           ],
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingLarge,
+                            top: AppDimensions.paddingSupSmall),
                         child: Text(
                           headerText,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: MyTheme.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600),
@@ -163,7 +167,7 @@ class AuthScreen {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 20),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
                           decoration:
                               BoxDecorations.buildBoxDecoration_1(radius: 16),
                           child: child,
@@ -183,13 +187,13 @@ class AuthScreen {
                   Navigator.of(context).pop();
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppDimensions.paddingSmall),
                   decoration: BoxDecoration(
                     color: Colors.red
-                        .withOpacity(0.7), // Optional background color
+                        .withValues(alpha: 0.7), // Optional background color
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
                     color: Colors.white,
                     size: 24,

@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/presenter/home_presenter.dart';
 import 'package:active_ecommerce_cms_demo_app/screens/category_list_n_product/category_products.dart';
@@ -22,12 +24,15 @@ class FeaturedCategoriesWidget extends StatelessWidget {
           controller: homeData.featuredCategoryScrollController);
     } else if (homeData.featuredCategoryList.isNotEmpty) {
       return GridView.builder(
-        padding:
-            const EdgeInsets.only(left: 20, right: 20, top: 11, bottom: 24),
+        padding: const EdgeInsets.only(
+            left: AppDimensions.paddingLarge,
+            right: AppDimensions.paddingLarge,
+            top: 11,
+            bottom: 24),
         scrollDirection: Axis.horizontal,
         controller: homeData.featuredCategoryScrollController,
         itemCount: homeData.featuredCategoryList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             childAspectRatio: 1, // Ensures square boxes
             crossAxisSpacing: 12,
@@ -42,7 +47,7 @@ class FeaturedCategoriesWidget extends StatelessWidget {
                     builder: (context) {
                       return CategoryProducts(
                         name: homeData.featuredCategoryList[index].name ?? '',
-                        slug: homeData.featuredCategoryList[index].slug,
+                        slug: homeData.featuredCategoryList[index].slug ?? '',
                       );
                     },
                   ),
@@ -57,19 +62,22 @@ class FeaturedCategoriesWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Color(0xff000000).withOpacity(0.1),
+                                color: const Color(0xff000000)
+                                    .withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 15,
-                                offset: Offset(0, 6),
+                                offset: const Offset(0, 6),
                               ),
                             ],
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusNormal),
                             child: FadeInImage.assetNetwork(
-                              placeholder: 'assets/placeholder.png',
+                              placeholder: AppImages.placeholder,
                               image: homeData
-                                  .featuredCategoryList[index].coverImage ??'',
+                                      .featuredCategoryList[index].coverImage ??
+                                  '',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -77,15 +85,15 @@ class FeaturedCategoriesWidget extends StatelessWidget {
                           //      image: DecorationImage(
                           //          image: AssetImage('assets/p1.PNG'),
                         )),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Flexible(
                       child: Text(
-                        homeData.featuredCategoryList[index].name,
+                        homeData.featuredCategoryList[index].name ?? '',
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                         softWrap: true,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: MyTheme.font_grey,
                         ),
@@ -103,7 +111,7 @@ class FeaturedCategoriesWidget extends StatelessWidget {
         child: Center(
           child: Text(
             LangText(context).local.no_category_found,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           ),
         ),
       );

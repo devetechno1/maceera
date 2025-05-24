@@ -10,7 +10,7 @@ import '../data_model/popup_banner_model.dart';
 
 class SlidersRepository {
   Future<SliderResponse> getSliders() async {
-    String url = ("${AppConfig.BASE_URL}/sliders");
+    const String url = ("${AppConfig.BASE_URL}/sliders");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -21,7 +21,7 @@ class SlidersRepository {
   }
 
   Future<SliderResponse> getBannerOneImages() async {
-    String url = ("${AppConfig.BASE_URL}/banners-one");
+    const String url = ("${AppConfig.BASE_URL}/banners-one");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -32,7 +32,7 @@ class SlidersRepository {
   }
 
   Future<SliderResponse> getFlashDealBanner() async {
-    String url = ("${AppConfig.BASE_URL}/flash-deals-banners");
+    const String url = ("${AppConfig.BASE_URL}/flash-deals-banners");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -43,7 +43,7 @@ class SlidersRepository {
   }
 
   Future<SliderResponse> getBannerTwoImages() async {
-    String url = ("${AppConfig.BASE_URL}/banners-two");
+    const String url = ("${AppConfig.BASE_URL}/banners-two");
 
     final response = await ApiRequest.get(
       url: url,
@@ -56,7 +56,7 @@ class SlidersRepository {
   }
 
   Future<SliderResponse> getBannerThreeImages() async {
-    String url = ("${AppConfig.BASE_URL}/banners-three");
+    const String url = ("${AppConfig.BASE_URL}/banners-three");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -68,14 +68,13 @@ class SlidersRepository {
   }
 
   Future<List<FlashDealResponseDatum>> fetchBanners() async {
-    String url = ("${AppConfig.BASE_URL}/flash-deals");
+    const String url = ("${AppConfig.BASE_URL}/flash-deals");
     final response = await ApiRequest.get(
       url: url,
       headers: {
         "App-Language": app_language.$!,
       },
     );
-
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -90,6 +89,7 @@ class SlidersRepository {
       throw Exception('Failed to load banners: Status code not 200');
     }
   }
+
   Future<List<PopupBannerModel>> fetchBannerPopupData() async {
     const String url = '${AppConfig.BASE_URL}/banners-popup';
 
@@ -107,6 +107,4 @@ class SlidersRepository {
       rethrow;
     }
   }
-
 }
- 

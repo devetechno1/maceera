@@ -6,7 +6,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 class SearchRepository {
   Future<List<SearchSuggestionResponse>> getSearchSuggestionListResponse(
       {query_key = "", type = "product"}) async {
-    String url =
+    final String url =
         ("${AppConfig.BASE_URL}/get-search-suggestions?query_key=$query_key&type=$type");
     final response = await ApiRequest.get(
       url: url,

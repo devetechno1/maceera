@@ -22,8 +22,9 @@ class WishListGridView extends StatelessWidget {
         crossAxisSpacing: 14,
         itemCount: _wishlistItems.length,
         shrinkWrap: true,
-        padding: EdgeInsets.only(top: 0.0, bottom: 10, left: 18, right: 18),
-        physics: NeverScrollableScrollPhysics(),
+        padding:
+            const EdgeInsets.only(top: 0.0, bottom: 10, left: 18, right: 18),
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return ProductCard(
             onPopFromProduct: onPopFromProduct,
@@ -32,9 +33,9 @@ class WishListGridView extends StatelessWidget {
             image: _wishlistItems[index].product.thumbnail_image,
             name: _wishlistItems[index].product.name,
             main_price: _wishlistItems[index].product.base_price,
-            // is_wholesale: _wishlistItems[index].product.isWholesale,
+            // isWholesale: _wishlistItems[index].product.isWholesale,
             stroked_price: "0",
-            has_discount: false, is_wholesale: null,
+            has_discount: false, isWholesale: null,
           );
         },
       ),

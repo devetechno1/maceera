@@ -16,13 +16,13 @@ import '../../helpers/main_helpers.dart';
 import '../profile.dart';
 
 class PaypalScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
 
-  PaypalScreen(
+  const PaypalScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -41,7 +41,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
   String? _initial_url = "";
   bool _initial_url_fetched = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -57,8 +57,8 @@ class _PaypalScreenState extends State<PaypalScreen> {
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -76,8 +76,8 @@ class _PaypalScreenState extends State<PaypalScreen> {
     getSetInitialUrl();
   }
 
-  getSetInitialUrl() async {
-    var paypalUrlResponse = await PaymentRepository().getPaypalUrlResponse(
+  Future<void> getSetInitialUrl() async {
+    final paypalUrlResponse = await PaymentRepository().getPaypalUrlResponse(
         widget.payment_type,
         _combined_order_id,
         widget.package_id,
@@ -112,8 +112,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
               getData();
             } else if (page.contains("/paypal/payment/cancel")) {
               ToastComponent.showDialog(
-                LangText(context).local.payment_cancelled_ucf
-              );
+                  LangText(context).local.payment_cancelled_ucf);
               Navigator.of(context).pop();
               return;
             }
@@ -162,27 +161,27 @@ class _PaypalScreenState extends State<PaypalScreen> {
 
         if (widget.payment_type == "cart_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "order_re_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "wallet_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Wallet(from_recharge: true);
+            return const Wallet(from_recharge: true);
           }));
         } else if (widget.payment_type == "customer_package_payment") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return Profile();
+            return const Profile();
           }));
         }
       }
     });
   }
 
-  buildBody() {
+  Widget? buildBody() {
     if (_order_init == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -226,7 +225,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_paypal,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

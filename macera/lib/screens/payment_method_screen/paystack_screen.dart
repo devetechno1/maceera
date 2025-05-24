@@ -38,7 +38,7 @@ class _PaystackScreenState extends State<PaystackScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -52,8 +52,8 @@ class _PaystackScreenState extends State<PaystackScreen> {
   }
 
   payStack() {
-    String initial_url =
-        "${AppConfig.BASE_URL}/paystack/init?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
+    final String initialUrl =
+        "${AppConfig.BASE_URL}/paystack/init?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
     _webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
@@ -66,11 +66,11 @@ class _PaystackScreenState extends State<PaystackScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(initial_url), headers: commonHeader);
+      ..loadRequest(Uri.parse(initialUrl), headers: commonHeader);
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -101,7 +101,7 @@ class _PaystackScreenState extends State<PaystackScreen> {
   }
 
   void getData() {
-    Map<String, dynamic> payment_details;
+    Map<String, dynamic> paymentDetails;
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -116,21 +116,21 @@ class _PaystackScreenState extends State<PaystackScreen> {
         Navigator.pop(context);
       } else if (widget.payment_type == "order_re_payment") {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return OrderList(from_checkout: true);
+          return const OrderList(from_checkout: true);
         }));
       } else if (responseJSON["result"] == true) {
         // print("payment details ${responseJSON['payment_details']}");
-        payment_details = responseJSON['payment_details'];
+        paymentDetails = responseJSON['payment_details'];
         // print("payment details $payment_details}");
-        onPaymentSuccess(payment_details);
+        onPaymentSuccess(paymentDetails);
       }
     });
   }
 
-  onPaymentSuccess(payment_details) async {
-    var paystackPaymentSuccessResponse = await PaymentRepository()
+  Future<void> onPaymentSuccess(paymentDetails) async {
+    final paystackPaymentSuccessResponse = await PaymentRepository()
         .getPaystackPaymentSuccessResponse(widget.payment_type, widget.amount,
-            _combined_order_id, payment_details);
+            _combined_order_id, paymentDetails);
 
     if (paystackPaymentSuccessResponse.result == false) {
       ToastComponent.showDialog(
@@ -145,24 +145,24 @@ class _PaystackScreenState extends State<PaystackScreen> {
     );
     if (widget.payment_type == "cart_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "wallet_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return Wallet(from_recharge: true);
+        return const Wallet(from_recharge: true);
       }));
     } else if (widget.payment_type == "order_re_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "customer_package_payment") {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Profile();
+        return const Profile();
       }));
     }
   }
 
-  buildBody() {
+  Widget buildBody() {
     //print("init url");
     //print(initial_url);
 
@@ -201,7 +201,7 @@ class _PaystackScreenState extends State<PaystackScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_paystack,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

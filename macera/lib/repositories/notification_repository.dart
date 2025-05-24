@@ -11,8 +11,8 @@ import 'api-request.dart';
 
 class NotificationRepository {
   Future<AllNotificationListResponse> getAllNotification() async {
-    String url = ("${AppConfig.BASE_URL}/all-notification");
-    Map<String, String> header = commonHeader;
+    const String url = ("${AppConfig.BASE_URL}/all-notification");
+    final Map<String, String> header = commonHeader;
     header.addAll(authHeader);
     final response = await ApiRequest.get(
         url: url, headers: header, middleware: BannedUser());
@@ -21,8 +21,8 @@ class NotificationRepository {
   }
 
   Future<UnreadNotificationListResponse> getUnreadNotification() async {
-    String url = ("${AppConfig.BASE_URL}/unread-notifications");
-    Map<String, String> header = commonHeader;
+    const String url = ("${AppConfig.BASE_URL}/unread-notifications");
+    final Map<String, String> header = commonHeader;
     header.addAll(authHeader);
     final response = await ApiRequest.get(
         url: url, headers: header, middleware: BannedUser());
@@ -34,14 +34,14 @@ class NotificationRepository {
   }
 
   Future<CommonResponse> notificationBulkDelete(notificationIds) async {
-    var post_body = jsonEncode({"notification_ids": "$notificationIds"});
+    final postBody = jsonEncode({"notification_ids": "$notificationIds"});
 
-    print(post_body);
-    String url = ("${AppConfig.BASE_URL}/notifications/bulk-delete");
-    Map<String, String> header = commonHeader;
+    print(postBody);
+    const String url = ("${AppConfig.BASE_URL}/notifications/bulk-delete");
+    final Map<String, String> header = commonHeader;
     header.addAll(authHeader);
     final response = await ApiRequest.post(
-        url: url, headers: header, middleware: BannedUser(), body: post_body);
+        url: url, headers: header, middleware: BannedUser(), body: postBody);
 
     // print('response body for notification');
     // print(response.body);

@@ -1,6 +1,5 @@
-
-class BottomAppbarIndex{
-  int currentIndex=0;
-   setter(index)=> currentIndex=index;
-  get getter=>currentIndex;
+class BottomAppbarIndex {
+  int currentIndex = 0;
+  dynamic setter(index) => currentIndex = index;
+  int get getter => currentIndex;
 }

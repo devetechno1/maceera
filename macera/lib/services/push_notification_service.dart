@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/profile_repository.dart';
@@ -40,76 +41,88 @@ class PushNotificationService {
       sound: true,
     );
 
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
 
     updateDeviceToken();
 
-    FirebaseMessaging.onMessage.listen((event) async{
+    FirebaseMessaging.onMessage.listen((event) async {
       print("onLaunch: ${jsonEncode(event.toMap())}");
-      if(Platform.isIOS) {
+      if (Platform.isIOS) {
         _showIosMessage(event);
         return;
       }
       //(Map<String, dynamic> message) async => _showMessage(message);
-      RemoteNotification? notification = event.notification;
+      final RemoteNotification? notification = event.notification;
 
-      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
+      flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
 
-      final DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
+      const DarwinInitializationSettings initializationSettingsIOS =
+          DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
       );
 
-
       final AndroidNotification? android = notification?.android;
-      final AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@drawable/notification_icon'); 
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@drawable/notification_icon');
 
-      final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
+              android: initializationSettingsAndroid,
+              iOS: initializationSettingsIOS);
 
       BigPictureStyleInformation? bigPictureStyle;
       FilePathAndroidBitmap? image;
-      if(android?.imageUrl != null){
-        final String largeIconPath = await _downloadAndSaveFile(android!.imageUrl!, 'largeIcon');
+      if (android?.imageUrl != null) {
+        final String largeIconPath =
+            await _downloadAndSaveFile(android!.imageUrl!, 'largeIcon');
         image = FilePathAndroidBitmap(largeIconPath);
         bigPictureStyle = BigPictureStyleInformation(
-            image, 
-            contentTitle: notification?.title,
-            summaryText: notification?.body,
-            hideExpandedLargeIcon: true,
-          );
-
-      }
-      
-      final AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          importance: Importance.max,
-          priority: Priority.max,
-          icon: android?.smallIcon,
-          styleInformation: bigPictureStyle,
-          largeIcon: image,
+          image,
+          contentTitle: notification?.title,
+          summaryText: notification?.body,
+          hideExpandedLargeIcon: true,
         );
-      
-      final DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails();
+      }
 
-      
+      final AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+        channel.id,
+        channel.name,
+        importance: Importance.max,
+        priority: Priority.max,
+        icon: android?.smallIcon,
+        styleInformation: bigPictureStyle,
+        largeIcon: image,
+      );
+
+      const DarwinNotificationDetails darwinNotificationDetails =
+          DarwinNotificationDetails();
 
       flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onDidReceiveNotificationResponse: (details) {
-          _serialiseAndNavigate(jsonDecode(details.payload ??'{}'));
+          _serialiseAndNavigate(jsonDecode(details.payload ?? '{}'));
         },
       );
-
 
       if (notification != null) {
         return flutterLocalNotificationsPlugin.show(
           notification.hashCode,
           notification.title,
           notification.body,
-          NotificationDetails(android: androidNotificationDetails, iOS: darwinNotificationDetails),
+          NotificationDetails(
+              android: androidNotificationDetails,
+              iOS: darwinNotificationDetails),
           payload: jsonEncode(event.toMap()),
         );
       }
@@ -120,7 +133,9 @@ class PushNotificationService {
       _serialiseAndNavigate(message.toMap());
     });
   }
-  static Future<String> _downloadAndSaveFile(String url, String fileName) async {
+
+  static Future<String> _downloadAndSaveFile(
+      String url, String fileName) async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final String filePath = '${directory.path}/$fileName';
     final http.Response response = await http.get(Uri.parse(url));
@@ -131,9 +146,9 @@ class PushNotificationService {
 
   static Future<void> updateDeviceToken() async {
     if (is_logged_in.$) {
-      String fcmToken = await _fcm.getToken() ?? '';
+      final String fcmToken = await _fcm.getToken() ?? '';
       print("fcmToken $fcmToken");
-    
+
       await ProfileRepository().getDeviceTokenUpdateResponse(fcmToken);
     }
   }
@@ -147,7 +162,9 @@ class PushNotificationService {
       builder: (context) => AlertDialog(
         content: ListTile(
           title: Text(message.notification!.title!),
-          subtitle:message.notification?.apple?.imageUrl == null ? Text(message.notification!.body!) : _dialogImageBody(message),
+          subtitle: message.notification?.apple?.imageUrl == null
+              ? Text(message.notification!.body!)
+              : _dialogImageBody(message),
         ),
         actions: <Widget>[
           Btn.basic(
@@ -171,8 +188,8 @@ class PushNotificationService {
       OneContext().showDialog(
           // barrierDismissible: false,
           builder: (context) => AlertDialog(
-                title:  Text(LangText(context).local.you_are_not_logged_in),
-                content:  Text(LangText(context).local.please_log_in),
+                title: Text(LangText(context).local.you_are_not_logged_in),
+                content: Text(LangText(context).local.please_log_in),
                 actions: <Widget>[
                   Btn.basic(
                     child: Text(LangText(context).local.close_ucf),
@@ -196,8 +213,8 @@ class PushNotificationService {
             id: int.parse(message['data']['item_type_id']),
             from_notification: true);
       }));
-    }else{
-      NavigationService.handleUrls(message['data']['link']); 
+    } else {
+      NavigationService.handleUrls(message['data']['link']);
     }
   }
 }
@@ -211,19 +228,18 @@ class _dialogImageBody extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Text(message.notification!.body!),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            message.notification!.apple!.imageUrl!,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return ShimmerHelper().buildBasicShimmer(height: 120.0);
-            },
-          )
-        ),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusNormal),
+            child: Image.network(
+              message.notification!.apple!.imageUrl!,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return ShimmerHelper().buildBasicShimmer(height: 120.0);
+              },
+            )),
       ],
     );
   }

@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class BannedUser extends Middleware {
   @override
   bool next(http.Response response) {
-    var jsonData = jsonDecode(response.body);
+    final jsonData = jsonDecode(response.body);
     if (jsonData.runtimeType != List &&
         jsonData.containsKey("result") &&
         !jsonData['result']) {

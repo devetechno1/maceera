@@ -1,3 +1,5 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/system_config.dart';
 import 'package:active_ecommerce_cms_demo_app/screens/product/product_details.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return ProductDetails(
@@ -45,12 +47,12 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
         height: 90,
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 16,
-                  offset: Offset(0, 0))
+                  offset: const Offset(0, 0))
             ]),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
@@ -58,17 +60,18 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
               width: 90,
               height: 90,
               child: ClipRRect(
-                  borderRadius: BorderRadius.horizontal(
-                      left: Radius.circular(6), right: Radius.zero),
+                  borderRadius: const BorderRadius.horizontal(
+                      left: Radius.circular(AppDimensions.radiusHalfSmall),
+                      right: Radius.zero),
                   child: FadeInImage.assetNetwork(
-                    placeholder: 'assets/placeholder.png',
+                    placeholder: AppImages.placeholder,
                     image: widget.image!,
                     fit: BoxFit.cover,
                   ))),
           Flexible(
             child: Container(
-              padding:
-                  EdgeInsets.only(top: 14, left: 14, right: 34, bottom: 14),
+              padding: const EdgeInsets.only(
+                  top: 14, left: 14, right: 34, bottom: 14),
               //width: 240,
               height: 90,
               //color: Colors.red,
@@ -82,7 +85,7 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
                       widget.name!,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Color(0xff6B7377),
                           fontFamily: 'Public Sans',
                           fontSize: 12,
@@ -105,11 +108,11 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
                           textAlign: TextAlign.left,
                           maxLines: 1,
                           style: TextStyle(
-                              color: MyTheme.accent_color,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 18,
                         ),
                         widget.has_discount!
@@ -121,7 +124,7 @@ class _TopSellingProductsCardState extends State<TopSellingProductsCard> {
                                     : widget.stroked_price!,
                                 textAlign: TextAlign.left,
                                 maxLines: 1,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     decoration: TextDecoration.lineThrough,
                                     fontFamily: 'Public Sans',
                                     color: Color(0xffA8AFB3),

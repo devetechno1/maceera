@@ -4,7 +4,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class BusinessSettingRepository {
   Future<BusinessSettingListResponse> getBusinessSettingList() async {
-    String url = ("${AppConfig.BASE_URL}/business-settings");
+    const String url = ("${AppConfig.BASE_URL}/business-settings");
 
     // var businessSettings = [
     //   "facebook_login",
@@ -24,7 +24,7 @@ class BusinessSettingRepository {
     // ];
     // String params = businessSettings.join(',');
     // var body = {"keys": params};
-    var response = await ApiRequest.get(
+    final response = await ApiRequest.get(
       url: url,
     );
 

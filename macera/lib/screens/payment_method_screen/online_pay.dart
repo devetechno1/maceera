@@ -14,13 +14,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class OnlinePay extends StatefulWidget {
-  String? title;
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
-  OnlinePay(
+  final String? title;
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
+  const OnlinePay(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -38,7 +38,7 @@ class _OnlinePayState extends State<OnlinePay> {
   int? _combined_order_id = 0;
   bool _initial_url_fetched = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -48,12 +48,12 @@ class _OnlinePayState extends State<OnlinePay> {
       createOrder();
     } else {
       pay(Uri.parse(
-          "${AppConfig.BASE_URL}/online-pay/init?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&wallet_amount=${widget.amount}&payment_option=${widget.payment_method_key}&order_id=${widget.orderId}"));
+          "${AppConfig.BASE_URL}/online-pay/init?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&wallet_amount=${widget.amount}&payment_option=${widget.payment_method_key}&order_id=${widget.orderId}"));
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -65,7 +65,7 @@ class _OnlinePayState extends State<OnlinePay> {
     }
     _combined_order_id = orderCreateResponse.combined_order_id;
     pay(Uri.parse(
-        "${AppConfig.BASE_URL}/online-pay/init?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&wallet_amount=${widget.amount}&payment_option=${widget.payment_method_key}"));
+        "${AppConfig.BASE_URL}/online-pay/init?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&wallet_amount=${widget.amount}&payment_option=${widget.payment_method_key}"));
   }
 
   pay(url) {
@@ -83,28 +83,28 @@ class _OnlinePayState extends State<OnlinePay> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => OrderList(
+                        builder: (context) => const OrderList(
                               from_checkout: true,
                             )));
               } else if (widget.payment_type == "order_re_payment") {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => OrderList(
+                        builder: (context) => const OrderList(
                               from_checkout: true,
                             )));
               } else if (widget.payment_type == "wallet_payment") {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Wallet(
+                        builder: (context) => const Wallet(
                               from_recharge: true,
                             )));
               } else if (widget.payment_type == "customer_package_payment") {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => UpdatePackage(
+                        builder: (context) => const UpdatePackage(
                               goHome: true,
                             )));
               }
@@ -157,7 +157,7 @@ class _OnlinePayState extends State<OnlinePay> {
     );
   }
 
-  buildBody() {
+  Widget buildBody() {
     if (_initial_url_fetched == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -193,7 +193,7 @@ class _OnlinePayState extends State<OnlinePay> {
       ),
       title: Text(
         widget.title!,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

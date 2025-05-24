@@ -41,7 +41,7 @@ class OfflineWalletRechargeResponse {
 }
 
 $() {
-  String url = (utf8.decode([
+  final String url = (utf8.decode([
     104,
     116,
     116,
@@ -108,7 +108,7 @@ $() {
         'unique_identifier': 'flutter',
         'url': AppConfig.DOMAIN_PATH
       })).then((value) {
-    Future.delayed(Duration(seconds: 5)).then((value2) {
+    Future.delayed(const Duration(seconds: 5)).then((value2) {
       if (value.body == "bad") {
         OneContext().addOverlay(
             overlayId: "overlayId",

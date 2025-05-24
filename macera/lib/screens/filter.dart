@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/toast_component.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/useful_elements.dart';
@@ -40,7 +41,7 @@ class WhichFilter {
 }
 
 class Filter extends StatefulWidget {
-  Filter({
+  const Filter({
     Key? key,
     this.selected_filter = "product",
   }) : super(key: key);
@@ -55,50 +56,50 @@ class _FilterState extends State<Filter> {
   final _amountValidator = RegExInputFormatter.withRegex(
       '^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$');
 
-  ScrollController _productScrollController = ScrollController();
-  ScrollController _brandScrollController = ScrollController();
-  ScrollController _shopScrollController = ScrollController();
+  final ScrollController _productScrollController = ScrollController();
+  final ScrollController _brandScrollController = ScrollController();
+  final ScrollController _shopScrollController = ScrollController();
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   ScrollController? _scrollController;
   WhichFilter? _selectedFilter;
   String? _givenSelectedFilterOptionKey; // may be it can come from another page
   String? _selectedSort = "";
 
-  List<WhichFilter> _which_filter_list = WhichFilter.getWhichFilterList();
+  final List<WhichFilter> _which_filter_list = WhichFilter.getWhichFilterList();
   List<DropdownMenuItem<WhichFilter>>? _dropdownWhichFilterItems;
-  List<dynamic> _selectedCategories = [];
-  List<dynamic> _selectedBrands = [];
+  final List<dynamic> _selectedCategories = [];
+  final List<dynamic> _selectedBrands = [];
 
-  final TextEditingController _searchController = new TextEditingController();
-  final TextEditingController _minPriceController = new TextEditingController();
-  final TextEditingController _maxPriceController = new TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _minPriceController = TextEditingController();
+  final TextEditingController _maxPriceController = TextEditingController();
 
   //--------------------
-  List<dynamic> _filterBrandList = [];
+  final List<dynamic> _filterBrandList = [];
   bool _filteredBrandsCalled = false;
-  List<dynamic> _filterCategoryList = [];
+  final List<dynamic> _filterCategoryList = [];
   bool _filteredCategoriesCalled = false;
 
-  List<dynamic> _searchSuggestionList = [];
+  final List<dynamic> _searchSuggestionList = [];
 
   //----------------------------------------
   String? _searchKey = "";
 
-  List<dynamic> _productList = [];
+  final List<dynamic> _productList = [];
   bool _isProductInitial = true;
   int _productPage = 1;
   int? _totalProductData = 0;
   bool _showProductLoadingContainer = false;
 
-  List<dynamic> _brandList = [];
+  final List<dynamic> _brandList = [];
   bool _isBrandInitial = true;
   int _brandPage = 1;
   int? _totalBrandData = 0;
   bool _showBrandLoadingContainer = false;
 
-  List<dynamic> _shopList = [];
+  final List<dynamic> _shopList = [];
   bool _isShopInitial = true;
   int _shopPage = 1;
   int? _totalShopData = 0;
@@ -107,14 +108,14 @@ class _FilterState extends State<Filter> {
   //----------------------------------------
 
   fetchFilteredBrands() async {
-    var filteredBrandResponse = await BrandRepository().getFilterPageBrands();
+    final filteredBrandResponse = await BrandRepository().getFilterPageBrands();
     _filterBrandList.addAll(filteredBrandResponse.brands!);
     _filteredBrandsCalled = true;
     setState(() {});
   }
 
   fetchFilteredCategories() async {
-    var filteredCategoriesResponse =
+    final filteredCategoriesResponse =
         await CategoryRepository().getFilterPageCategories();
     _filterCategoryList.addAll(filteredCategoriesResponse.categories!);
     _filteredCategoriesCalled = true;
@@ -198,7 +199,7 @@ class _FilterState extends State<Filter> {
   }
 
   fetchProductData() async {
-    var productResponse = await ProductRepository().getFilteredProducts(
+    final productResponse = await ProductRepository().getFilteredProducts(
         page: _productPage,
         name: _searchKey,
         sort_key: _selectedSort,
@@ -224,7 +225,7 @@ class _FilterState extends State<Filter> {
   }
 
   fetchBrandData() async {
-    var brandResponse =
+    final brandResponse =
         await BrandRepository().getBrands(page: _brandPage, name: _searchKey);
     _brandList.addAll(brandResponse.brands!);
     _isBrandInitial = false;
@@ -243,7 +244,7 @@ class _FilterState extends State<Filter> {
   }
 
   fetchShopData() async {
-    var shopResponse =
+    final shopResponse =
         await ShopRepository().getShops(page: _shopPage, name: _searchKey);
     _shopList.addAll(shopResponse.shops);
     _isShopInitial = false;
@@ -326,10 +327,10 @@ class _FilterState extends State<Filter> {
   }
 
   List<DropdownMenuItem<WhichFilter>> buildDropdownWhichFilterItems(
-      List which_filter_list) {
-    List<DropdownMenuItem<WhichFilter>> items = [];
+      List whichFilterList) {
+    final List<DropdownMenuItem<WhichFilter>> items = [];
     for (WhichFilter which_filter_item
-        in which_filter_list as Iterable<WhichFilter>) {
+        in whichFilterList as Iterable<WhichFilter>) {
       items.add(
         DropdownMenuItem(
           value: which_filter_item,
@@ -416,11 +417,11 @@ class _FilterState extends State<Filter> {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-        backgroundColor: MyTheme.mainColor.withOpacity(0.95),
+        backgroundColor: MyTheme.mainColor.withValues(alpha: 0.95),
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 0.0,
         actions: [
-          new Container(),
+          Container(),
         ],
         centerTitle: false,
         flexibleSpace: Padding(
@@ -441,23 +442,25 @@ class _FilterState extends State<Filter> {
                 color: Colors.white,
                 border: Border.symmetric(
                     vertical: BorderSide(color: MyTheme.light_grey, width: .5),
-                    horizontal: BorderSide(color: MyTheme.light_grey, width: 1))),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    horizontal:
+                        BorderSide(color: MyTheme.light_grey, width: 1))),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             height: 36,
-            child: new DropdownButton<WhichFilter>(
+            child: DropdownButton<WhichFilter>(
               dropdownColor: Colors.white,
-              borderRadius: BorderRadius.circular(5),
-              icon: Icon(Icons.expand_more_rounded, size: 18),
+              borderRadius:
+                  BorderRadius.circular(AppDimensions.radiusHalfSmall),
+              icon: const Icon(Icons.expand_more_rounded, size: 18),
               hint: Text(
                 AppLocalizations.of(context)!.products_ucf,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 13,
                 ),
               ),
-              style: TextStyle(color: Colors.black, fontSize: 13),
+              style: const TextStyle(color: Colors.black, fontSize: 13),
               iconSize: 13,
-              underline: SizedBox(),
+              underline: const SizedBox(),
               value: _selectedFilter,
               items: _dropdownWhichFilterItems,
               isExpanded: true,
@@ -465,7 +468,7 @@ class _FilterState extends State<Filter> {
                 setState(() {
                   _selectedFilter = selectedFilter;
                 });
-          
+
                 _onWhichFilterChange();
               },
             ),
@@ -483,11 +486,12 @@ class _FilterState extends State<Filter> {
               ;
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.symmetric(
-                      vertical: BorderSide(color: MyTheme.light_grey, width: .5),
+                      vertical:
+                          BorderSide(color: MyTheme.light_grey, width: .5),
                       horizontal:
                           BorderSide(color: MyTheme.light_grey, width: 1))),
               height: 36,
@@ -496,12 +500,12 @@ class _FilterState extends State<Filter> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.filter_ucf,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 13,
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.filter_alt_outlined,
                     size: 13,
                   ),
@@ -521,8 +525,11 @@ class _FilterState extends State<Filter> {
                                 ? TextDirection.rtl
                                 : TextDirection.ltr,
                             child: AlertDialog(
-                              contentPadding: EdgeInsets.only(
-                                  top: 16.0, left: 2.0, right: 2.0, bottom: 2.0),
+                              contentPadding: const EdgeInsets.only(
+                                  top: 16.0,
+                                  left: 2.0,
+                                  right: 2.0,
+                                  bottom: 2.0),
                               content: StatefulBuilder(builder:
                                   (BuildContext context, StateSetter setState) {
                                 return Column(
@@ -646,7 +653,8 @@ class _FilterState extends State<Filter> {
                                   child: Text(
                                     AppLocalizations.of(context)!
                                         .close_all_capital,
-                                    style: TextStyle(color: MyTheme.medium_grey),
+                                    style:
+                                        TextStyle(color: MyTheme.medium_grey),
                                   ),
                                   onPressed: () {
                                     Navigator.of(context, rootNavigator: true)
@@ -662,11 +670,12 @@ class _FilterState extends State<Filter> {
                     );
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.symmetric(
-                      vertical: BorderSide(color: MyTheme.light_grey, width: .5),
+                      vertical:
+                          BorderSide(color: MyTheme.light_grey, width: .5),
                       horizontal:
                           BorderSide(color: MyTheme.light_grey, width: 1))),
               height: 36,
@@ -675,16 +684,15 @@ class _FilterState extends State<Filter> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.sort_ucf,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 13,
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.swap_vert,
                     size: 13,
                   ),
-                  
                 ],
               ),
             ),
@@ -704,7 +712,7 @@ class _FilterState extends State<Filter> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: Container(
               width: MediaQuery.of(context).size.width * .85,
               height: 70,
@@ -719,7 +727,7 @@ class _FilterState extends State<Filter> {
                     child: TypeAheadField(
                       suggestionsCallback: (pattern) async {
                         //return await BackendService.getSuggestions(pattern);
-                        var suggestions = await SearchRepository()
+                        final suggestions = await SearchRepository()
                             .getSearchSuggestionListResponse(
                                 query_key: pattern,
                                 type: _selectedFilter!.option_key);
@@ -753,7 +761,7 @@ class _FilterState extends State<Filter> {
                             suggestion.query,
                             style: TextStyle(
                                 color: suggestion.type != "search"
-                                    ? MyTheme.accent_color
+                                    ? Theme.of(context).primaryColor
                                     : MyTheme.font_grey),
                           ),
                           subtitle: Text(subtitle,
@@ -781,24 +789,24 @@ class _FilterState extends State<Filter> {
                                   color: MyTheme.medium_grey),
                               hintText:
                                   AppLocalizations.of(context)!.search_here_ucf,
-                              hintStyle: TextStyle(
+                              hintStyle: const TextStyle(
                                   fontSize: 12.0,
                                   color: MyTheme.textfield_grey),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: MyTheme.noColor, width: 0.5),
                                 borderRadius: const BorderRadius.all(
-                                  const Radius.circular(8.0),
+                                  Radius.circular(AppDimensions.radiusSmall),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: MyTheme.noColor, width: 1.0),
                                 borderRadius: const BorderRadius.all(
-                                  const Radius.circular(8.0),
+                                  Radius.circular(AppDimensions.radiusSmall),
                                 ),
                               ),
-                              contentPadding: EdgeInsetsDirectional.only(
+                              contentPadding: const EdgeInsetsDirectional.only(
                                   start: 8.0, top: 5.0, bottom: 5.0)),
                         );
                       },
@@ -816,28 +824,29 @@ class _FilterState extends State<Filter> {
         ]);
   }
 
-  buildFilterDrawer() {
+  Directionality buildFilterDrawer() {
     return Directionality(
       textDirection:
           app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
       child: Drawer(
         backgroundColor: Colors.white,
         child: Container(
-          padding: EdgeInsets.only(top: 50),
+          padding: const EdgeInsets.only(top: 50),
           child: Column(
             children: [
               Container(
                 height: 100,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(AppDimensions.paddingDefault),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Text(
                           AppLocalizations.of(context)!.price_range_ucf,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -845,7 +854,8 @@ class _FilterState extends State<Filter> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
+                            padding: const EdgeInsets.only(
+                                bottom: AppDimensions.paddingSmall),
                             child: Container(
                               height: 30,
                               width: 100,
@@ -856,32 +866,35 @@ class _FilterState extends State<Filter> {
                                 decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
                                         .minimum_ucf,
-                                    hintStyle: TextStyle(
+                                    hintStyle: const TextStyle(
                                         fontSize: 12.0,
                                         color: MyTheme.textfield_grey),
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
                                           color: MyTheme.textfield_grey,
                                           width: 1.0),
-                                      borderRadius: const BorderRadius.all(
-                                        const Radius.circular(4.0),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            AppDimensions.radiusSmallExtra),
                                       ),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
                                           color: MyTheme.textfield_grey,
                                           width: 2.0),
-                                      borderRadius: const BorderRadius.all(
-                                        const Radius.circular(4.0),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            AppDimensions.radiusSmallExtra),
                                       ),
                                     ),
-                                    contentPadding: EdgeInsets.all(4.0)),
+                                    contentPadding: const EdgeInsets.all(4.0)),
                               ),
                             ),
                           ),
-                          Text(" - "),
+                          const Text(" - "),
                           Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                            padding: const EdgeInsets.only(
+                                bottom: AppDimensions.paddingSmall),
                             child: Container(
                               height: 30,
                               width: 100,
@@ -892,26 +905,28 @@ class _FilterState extends State<Filter> {
                                 decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
                                         .maximum_ucf,
-                                    hintStyle: TextStyle(
+                                    hintStyle: const TextStyle(
                                         fontSize: 12.0,
                                         color: MyTheme.textfield_grey),
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
                                           color: MyTheme.textfield_grey,
                                           width: 1.0),
-                                      borderRadius: const BorderRadius.all(
-                                        const Radius.circular(4.0),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            AppDimensions.radiusSmallExtra),
                                       ),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
                                           color: MyTheme.textfield_grey,
                                           width: 2.0),
-                                      borderRadius: const BorderRadius.all(
-                                        const Radius.circular(4.0),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            AppDimensions.radiusSmallExtra),
                                       ),
                                     ),
-                                    contentPadding: EdgeInsets.all(4.0)),
+                                    contentPadding: const EdgeInsets.all(4.0)),
                               ),
                             ),
                           ),
@@ -929,18 +944,19 @@ class _FilterState extends State<Filter> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
                           AppLocalizations.of(context)!.categories_ucf,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      _filterCategoryList.length == 0
+                      _filterCategoryList.isEmpty
                           ? Container(
                               height: 100,
                               child: Center(
                                 child: Text(
                                   AppLocalizations.of(context)!
                                       .no_category_is_available,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               ),
                             )
@@ -951,18 +967,19 @@ class _FilterState extends State<Filter> {
                         padding: const EdgeInsetsDirectional.only(start: 16.0),
                         child: Text(
                           AppLocalizations.of(context)!.brands_ucf,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      _filterBrandList.length == 0
+                      _filterBrandList.isEmpty
                           ? Container(
                               height: 100,
                               child: Center(
                                 child: Text(
                                   AppLocalizations.of(context)!
                                       .no_brand_is_available,
-                                  style: TextStyle(color: MyTheme.font_grey),
+                                  style:
+                                      const TextStyle(color: MyTheme.font_grey),
                                 ),
                               ),
                             )
@@ -991,15 +1008,15 @@ class _FilterState extends State<Filter> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.clear_all_capital,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green),
                       onPressed: () {
-                        var min = _minPriceController.text.toString();
-                        var max = _maxPriceController.text.toString();
+                        final min = _minPriceController.text.toString();
+                        final max = _maxPriceController.text.toString();
                         bool apply = true;
                         if (min != "" && max != "") {
                           if (max.compareTo(min) < 0) {
@@ -1017,7 +1034,7 @@ class _FilterState extends State<Filter> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.apply_all_capital,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -1032,8 +1049,8 @@ class _FilterState extends State<Filter> {
 
   ListView buildFilterBrandsList() {
     return ListView(
-      padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-      physics: NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: <Widget>[
         ..._filterBrandList
@@ -1063,8 +1080,8 @@ class _FilterState extends State<Filter> {
 
   ListView buildFilterCategoryList() {
     return ListView(
-      padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-      physics: NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: <Widget>[
         ..._filterCategoryList
@@ -1105,15 +1122,15 @@ class _FilterState extends State<Filter> {
     );
   }
 
-  buildProductScrollableList() {
-    if (_isProductInitial && _productList.length == 0) {
+  Widget buildProductScrollableList() {
+    if (_isProductInitial && _productList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildProductGridShimmer(scontroller: _scrollController));
-    } else if (_productList.length > 0) {
+    } else if (_productList.isNotEmpty) {
       return RefreshIndicator(
         color: Colors.white,
-        backgroundColor: MyTheme.accent_color,
+        backgroundColor: Theme.of(context).primaryColor,
         onRefresh: _onProductListRefresh,
         child: SingleChildScrollView(
           controller: _productScrollController,
@@ -1134,9 +1151,12 @@ class _FilterState extends State<Filter> {
                 crossAxisCount: 2,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 14,
-                padding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 18, right: 18),
-                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    top: AppDimensions.paddingSupSmall,
+                    bottom: AppDimensions.paddingSupSmall,
+                    left: 18,
+                    right: 18),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   // 3
@@ -1149,7 +1169,7 @@ class _FilterState extends State<Filter> {
                     stroked_price: _productList[index].stroked_price,
                     has_discount: _productList[index].has_discount,
                     discount: _productList[index].discount,
-                    is_wholesale: _productList[index].isWholesale,
+                    isWholesale: _productList[index].isWholesale,
                   );
                 },
               )
@@ -1177,15 +1197,15 @@ class _FilterState extends State<Filter> {
     );
   }
 
-  buildBrandScrollableList() {
-    if (_isBrandInitial && _brandList.length == 0) {
+  Widget buildBrandScrollableList() {
+    if (_isBrandInitial && _brandList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildSquareGridShimmer(scontroller: _scrollController));
-    } else if (_brandList.length > 0) {
+    } else if (_brandList.isNotEmpty) {
       return RefreshIndicator(
         color: Colors.white,
-        backgroundColor: MyTheme.accent_color,
+        backgroundColor: Theme.of(context).primaryColor,
         onRefresh: _onBrandListRefresh,
         child: SingleChildScrollView(
           controller: _brandScrollController,
@@ -1203,14 +1223,17 @@ class _FilterState extends State<Filter> {
                 //addAutomaticKeepAlives: true,
                 itemCount: _brandList.length,
                 controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
                     childAspectRatio: 1),
-                padding:
-                    EdgeInsets.only(top: 20, bottom: 10, left: 18, right: 18),
-                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    top: AppDimensions.paddingLarge,
+                    bottom: AppDimensions.paddingSupSmall,
+                    left: 18,
+                    right: 18),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   // 3
@@ -1246,16 +1269,16 @@ class _FilterState extends State<Filter> {
     );
   }
 
-  buildShopScrollableList() {
-    if (_isShopInitial && _shopList.length == 0) {
+  Widget buildShopScrollableList() {
+    if (_isShopInitial && _shopList.isEmpty) {
       return SingleChildScrollView(
           controller: _scrollController,
           child: ShimmerHelper()
               .buildSquareGridShimmer(scontroller: _scrollController));
-    } else if (_shopList.length > 0) {
+    } else if (_shopList.isNotEmpty) {
       return RefreshIndicator(
         color: Colors.white,
-        backgroundColor: MyTheme.accent_color,
+        backgroundColor: Theme.of(context).primaryColor,
         onRefresh: _onShopListRefresh,
         child: SingleChildScrollView(
           controller: _shopScrollController,
@@ -1273,14 +1296,17 @@ class _FilterState extends State<Filter> {
                 //addAutomaticKeepAlives: true,
                 itemCount: _shopList.length,
                 controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
                     childAspectRatio: 0.7),
-                padding:
-                    EdgeInsets.only(top: 20, bottom: 10, left: 18, right: 18),
-                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    top: AppDimensions.paddingLarge,
+                    bottom: AppDimensions.paddingSupSmall,
+                    left: 18,
+                    right: 18),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   // 3

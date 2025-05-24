@@ -15,12 +15,12 @@ import '../../helpers/main_helpers.dart';
 import '../profile.dart';
 
 class FlutterwaveScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
-  FlutterwaveScreen(
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
+  const FlutterwaveScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -39,7 +39,7 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
   String? _initial_url = "";
   bool _initial_url_fetched = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -55,8 +55,8 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -74,8 +74,8 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
     getSetInitialUrl();
   }
 
-  getSetInitialUrl() async {
-    var flutterwaveUrlResponse = await PaymentRepository()
+  Future<void> getSetInitialUrl() async {
+    final flutterwaveUrlResponse = await PaymentRepository()
         .getFlutterwaveUrlResponse(widget.payment_type, _combined_order_id,
             widget.package_id, widget.amount, widget.orderId!);
 
@@ -149,27 +149,27 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
 
         if (widget.payment_type == "cart_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "order_re_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return OrderList(from_checkout: true);
+            return const OrderList(from_checkout: true);
           }));
         } else if (widget.payment_type == "wallet_payment") {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Wallet(from_recharge: true);
+            return const Wallet(from_recharge: true);
           }));
         } else if (widget.payment_type == "customer_package_payment") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return Profile();
+            return const Profile();
           }));
         }
       }
     });
   }
 
-  buildBody() {
+  Widget? buildBody() {
     if (_order_init == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -180,7 +180,7 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
       );
     } else if (_initial_url_fetched == false) {
       return Container(
-        child: Center(
+        child: const Center(
           child: Text("Fetching Flutterwave url ..."),
         ),
       );
@@ -213,7 +213,7 @@ class _FlutterwaveScreenState extends State<FlutterwaveScreen> {
       ),
       title: Text(
         LangText(context).local.pay_with_flutterwave,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

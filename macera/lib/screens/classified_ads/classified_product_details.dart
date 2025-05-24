@@ -28,9 +28,9 @@ import '../../custom/lang_text.dart';
 import '../../repositories/classified_product_repository.dart';
 
 class ClassifiedAdsDetails extends StatefulWidget {
-  String slug;
+  final String? slug;
 
-  ClassifiedAdsDetails({Key? key, required this.slug}) : super(key: key);
+  const ClassifiedAdsDetails({Key? key, required this.slug}) : super(key: key);
 
   @override
   _ClassifiedAdsDetailsState createState() => _ClassifiedAdsDetailsState();
@@ -41,30 +41,31 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
   bool _showCopied = false;
   bool showPhone = false;
   int _currentImage = 0;
-  ScrollController _mainScrollController =
+  final ScrollController _mainScrollController =
       ScrollController(initialScrollOffset: 0.0);
 
-  ScrollController _variantScrollController = ScrollController();
-  ScrollController _imageScrollController = ScrollController();
+  final ScrollController _variantScrollController = ScrollController();
+  final ScrollController _imageScrollController = ScrollController();
 
   double _scrollPosition = 0.0;
 
   Animation? _colorTween;
   late AnimationController _ColorAnimationController;
 
-  CarouselSliderController _carouselController = CarouselSliderController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   //init values
 
-  bool _isInWishList = false;
+  final bool _isInWishList = false;
   var _productDetailsFetched = false;
   ClassifiedProductDetailsResponseDatum? _productDetails = null;
 
-  var _productImageList = [];
+  final _productImageList = [];
 
   double opacity = 0;
 
-  List<ClassifiedAdsMiniData> _relatedProducts = [];
+  final List<ClassifiedAdsMiniData> _relatedProducts = [];
   bool _relatedProductInit = false;
 
   // @override
@@ -76,17 +77,17 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
   //   super.dispose();
   // }
 
-  fetchAll() {
+  void fetchAll() {
     fetchProductDetails();
 
     fetchRelatedProducts();
   }
 
-  fetchProductDetails() async {
-    var productDetailsResponse = await ClassifiedProductRepository()
+  Future<void> fetchProductDetails() async {
+    final productDetailsResponse = await ClassifiedProductRepository()
         .getClassifiedProductsDetails(widget.slug);
 
-    if (productDetailsResponse.data!.length > 0) {
+    if (productDetailsResponse.data!.isNotEmpty) {
       _productDetails = productDetailsResponse.data!.first;
       _productDetails!.photos!.data!.forEach((element) {
         _productImageList.add(element.url);
@@ -96,8 +97,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     setState(() {});
   }
 
-  fetchRelatedProducts() async {
-    var relatedProductResponse = await ClassifiedProductRepository()
+  Future<void> fetchRelatedProducts() async {
+    final relatedProductResponse = await ClassifiedProductRepository()
         .getClassifiedOtherAds(slug: widget.slug);
 
     _relatedProducts.addAll(relatedProductResponse.data!);
@@ -107,7 +108,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     setState(() {});
   }
 
-  reset() {
+  void reset() {
     _currentImage = 0;
     _productImageList.clear();
     _relatedProducts.clear();
@@ -125,21 +126,21 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     setState(() {
       _showCopied = true;
     });
-    Timer timer = Timer(Duration(seconds: 3), () {
+    final Timer timer = Timer(const Duration(seconds: 3), () {
       setState(() {
         _showCopied = false;
       });
     });
   }
 
-  onPressShare(context) {
+  Future onPressShare(context) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return StatefulBuilder(builder: (context, StateSetter setState) {
             return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 10),
-              contentPadding: EdgeInsets.only(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10),
+              contentPadding: const EdgeInsets.only(
                   top: 36.0, left: 36.0, right: 36.0, bottom: 2.0),
               content: Container(
                 width: 400,
@@ -149,15 +150,17 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Btn.minWidthFixHeight(
                           minWidth: 75.0,
                           height: 26.0,
-                          color: Color.fromRGBO(253, 253, 253, 1),
+                          color: const Color.fromRGBO(253, 253, 253, 1),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              side:
-                                  BorderSide(color: Colors.black, width: 1.0)),
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusSmall),
+                              side: const BorderSide(
+                                  color: Colors.black, width: 1.0)),
                           child: Text(
                             AppLocalizations.of(context)!.copy_product_link_ucf,
                             style: TextStyle(
@@ -174,7 +177,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                       ),
                       _showCopied
                           ? Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: AppDimensions.paddingSmall),
                               child: Text(
                                 AppLocalizations.of(context)!.copied_ucf,
                                 style: TextStyle(
@@ -183,18 +187,20 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                             )
                           : Container(),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingSmall),
                         child: Btn.minWidthFixHeight(
                           minWidth: 75.0,
                           height: 26.0,
                           color: Colors.blue,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              side:
-                                  BorderSide(color: Colors.black, width: 1.0)),
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusSmall),
+                              side: const BorderSide(
+                                  color: Colors.black, width: 1.0)),
                           child: Text(
                             AppLocalizations.of(context)!.share_options_ucf,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                           onPressed: () {
                             // print("share links ${_productDetails!.link}");
@@ -212,19 +218,21 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                   children: [
                     Padding(
                       padding: app_language_rtl.$!
-                          ? EdgeInsets.only(left: 8.0)
-                          : EdgeInsets.only(right: 8.0),
+                          ? const EdgeInsets.only(
+                              left: AppDimensions.paddingSmall)
+                          : const EdgeInsets.only(right: 8.0),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 30,
-                        color: Color.fromRGBO(253, 253, 253, 1),
+                        color: const Color.fromRGBO(253, 253, 253, 1),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            side: BorderSide(
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusSmall),
+                            side: const BorderSide(
                                 color: MyTheme.font_grey, width: 1.0)),
                         child: Text(
                           LangText(context).local.close_all_capital,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: MyTheme.font_grey,
                           ),
                         ),
@@ -244,7 +252,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
   @override
   void initState() {
     _ColorAnimationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 0));
+        AnimationController(vsync: this, duration: const Duration(seconds: 0));
 
     _colorTween = ColorTween(begin: Colors.transparent, end: Colors.white)
         .animate(_ColorAnimationController);
@@ -279,15 +287,13 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-
     return Directionality(
       textDirection:
           app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
           extendBody: true,
           body: RefreshIndicator(
-            color: MyTheme.accent_color,
+            color: Theme.of(context).primaryColor,
             backgroundColor: Colors.white,
             onRefresh: _onPageRefresh,
             child: CustomScrollView(
@@ -297,7 +303,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               slivers: <Widget>[
                 SliverAppBar(
                   elevation: 0,
-                  backgroundColor: Colors.white.withOpacity(opacity),
+                  backgroundColor: Colors.white.withValues(alpha: opacity),
                   pinned: true,
                   automaticallyImplyLeading: false,
                   title: Row(
@@ -324,7 +330,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                       ),
                       AnimatedOpacity(
                           opacity: _scrollPosition > 350 ? 1 : 0,
-                          duration: Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 200),
                           child: Container(
                               width: DeviceInfo(context).width! / 1.8,
                               child: Text(
@@ -334,7 +340,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold),
                               ))),
-                      Spacer(),
+                      const Spacer(),
                       InkWell(
                         onTap: () {
                           onPressShare(context);
@@ -353,7 +359,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                     ],
                   ),
                   expandedHeight: 375.0,
@@ -365,13 +371,13 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                   child: Container(
                     //padding: EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecorations.buildBoxDecoration_1(),
-                    margin: EdgeInsets.symmetric(horizontal: 18),
+                    margin: const EdgeInsets.symmetric(horizontal: 18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding:
-                              EdgeInsets.only(top: 14, left: 14, right: 14),
+                          padding: const EdgeInsets.only(
+                              top: 14, left: 14, right: 14),
                           child: _productDetails != null
                               ? Text(
                                   _productDetails!.name!,
@@ -383,8 +389,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                 ),
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.only(top: 14, left: 14, right: 14),
+                          padding: const EdgeInsets.only(
+                              top: 14, left: 14, right: 14),
                           child: _productDetails != null
                               ? buildMainPriceRow()
                               : ShimmerHelper().buildBasicShimmer(
@@ -392,8 +398,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                 ),
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.only(top: 14, left: 14, right: 14),
+                          padding: const EdgeInsets.only(
+                              top: 14, left: 14, right: 14),
                           child: _productDetails != null
                               ? buildBrandRow()
                               : ShimmerHelper().buildBasicShimmer(
@@ -401,7 +407,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                 ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 14),
+                          padding: const EdgeInsets.only(
+                              top: AppDimensions.paddingNormal),
                           child: _productDetails != null
                               ? buildSellerRow(context)
                               : ShimmerHelper().buildBasicShimmer(
@@ -409,8 +416,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                 ),
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.only(top: 14, left: 10, right: 14),
+                          padding: const EdgeInsets.only(
+                              top: 14, left: 10, right: 14),
                           child: _productDetails != null
                               ? buildLocationContainer(context)
                               : ShimmerHelper().buildBasicShimmer(
@@ -418,7 +425,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                 ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 14, left: 10, right: 14, bottom: 20),
                           child: _productDetails != null
                               ? buildContractContainer(context)
@@ -436,7 +443,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                       children: [
                         Container(
                           color: MyTheme.white,
-                          margin: EdgeInsets.only(top: 10),
+                          margin: const EdgeInsets.only(
+                              top: AppDimensions.paddingSupSmall),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -508,7 +516,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Image.asset(
                                     "assets/arrow.png",
                                     height: 11,
@@ -552,7 +560,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Image.asset(
                                     "assets/arrow.png",
                                     height: 11,
@@ -596,7 +604,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Image.asset(
                                     "assets/arrow.png",
                                     height: 11,
@@ -648,11 +656,11 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(
+        const Icon(
           Icons.location_on_outlined,
           size: 24,
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Container(
@@ -671,11 +679,11 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(
+        const Icon(
           Icons.phone,
           size: 24,
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Container(
@@ -691,16 +699,16 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
             ),
           ),
         ),
-        Spacer(),
+        const Spacer(),
         Material(
           elevation: 8,
-          color: MyTheme.accent_color,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(50),
           child: IconButton(
               onPressed: () {
                 launchUrl(Uri.parse("tel://${_productDetails!.phone}"));
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.phone_forwarded,
                 color: MyTheme.white,
               )),
@@ -715,7 +723,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
         Text(
           _productDetails!.unitPrice!,
           style: TextStyle(
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               fontSize: 16.0,
               fontWeight: FontWeight.w600),
         ),
@@ -727,7 +735,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     //print("sl:" +  _productDetails.shop_logo);
     return Container(
       color: MyTheme.light_grey,
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
         children: [
           Container(
@@ -736,12 +744,12 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppLocalizations.of(context)!.seller_ucf,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromRGBO(153, 153, 153, 1),
                     )),
                 Text(
                   _productDetails!.addedBy!,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: MyTheme.font_grey,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
@@ -758,30 +766,31 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     return Container(
       height: 40,
       color: MyTheme.amber,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: [
           Container(
             child: Padding(
               padding: app_language_rtl.$!
-                  ? EdgeInsets.only(left: 8.0)
-                  : EdgeInsets.only(right: 8.0),
+                  ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                  : const EdgeInsets.only(right: 8.0),
               child: Container(
                 width: 75,
                 child: Text(
                   AppLocalizations.of(context)!.total_price_ucf,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Color.fromRGBO(153, 153, 153, 1), fontSize: 10),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5.0),
+            padding:
+                const EdgeInsets.only(bottom: AppDimensions.paddingSmallExtra),
             child: Text(
               _productDetails!.unitPrice!,
               style: TextStyle(
-                  color: MyTheme.accent_color,
+                  color: Theme.of(context).primaryColor,
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600),
             ),
@@ -802,34 +811,34 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: AppDimensions.paddingSmall),
             child: Row(
               children: [
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 )
@@ -837,34 +846,34 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: AppDimensions.paddingSmall),
             child: Row(
               children: [
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 ),
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 30.0, width: 60),
                 )
@@ -876,7 +885,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
     );
   }
 
-  buildBrandRow() {
+  Widget? buildBrandRow() {
     return _productDetails!.brand!.id! > 0
         ? InkWell(
             onTap: () {
@@ -888,13 +897,13 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               children: [
                 Padding(
                   padding: app_language_rtl.$!
-                      ? EdgeInsets.only(left: 8.0)
-                      : EdgeInsets.only(right: 8.0),
+                      ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                      : const EdgeInsets.only(right: 8.0),
                   child: Container(
                     width: 75,
                     child: Text(
                       AppLocalizations.of(context)!.brand_ucf,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Color.fromRGBO(
                             153,
                             153,
@@ -909,7 +918,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: Text(
                     _productDetails!.brand!.name!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontWeight: FontWeight.bold,
                         fontSize: 10),
@@ -938,13 +947,14 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
             children: <Widget>[
               Builder(
                 builder: (context) {
-                  var controller = ExpandableController.of(context)!;
+                  final controller = ExpandableController.of(context)!;
                   return Btn.basic(
                     child: Text(
                       !controller.expanded
                           ? AppLocalizations.of(context)!.view_more
                           : AppLocalizations.of(context)!.show_less_ucf,
-                      style: TextStyle(color: MyTheme.font_grey, fontSize: 11),
+                      style: const TextStyle(
+                          color: MyTheme.font_grey, fontSize: 11),
                     ),
                     onPressed: () {
                       controller.toggle();
@@ -960,20 +970,20 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
   }
 
   Widget buildProductsMayLikeList() {
-    if (_relatedProductInit == false && _relatedProducts.length == 0) {
+    if (_relatedProductInit == false && _relatedProducts.isEmpty) {
       return Row(
         children: [
           Padding(
               padding: app_language_rtl.$!
-                  ? EdgeInsets.only(left: 8.0)
-                  : EdgeInsets.only(right: 8.0),
+                  ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                  : const EdgeInsets.only(right: 8.0),
               child: ShimmerHelper().buildBasicShimmer(
                   height: 120.0,
                   width: (MediaQuery.of(context).size.width - 32) / 3)),
           Padding(
               padding: app_language_rtl.$!
-                  ? EdgeInsets.only(left: 8.0)
-                  : EdgeInsets.only(right: 8.0),
+                  ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                  : const EdgeInsets.only(right: 8.0),
               child: ShimmerHelper().buildBasicShimmer(
                   height: 120.0,
                   width: (MediaQuery.of(context).size.width - 32) / 3)),
@@ -984,14 +994,14 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                   width: (MediaQuery.of(context).size.width - 32) / 3)),
         ],
       );
-    } else if (_relatedProductInit && _relatedProducts.length > 0) {
+    } else if (_relatedProductInit && _relatedProducts.isNotEmpty) {
       return SizedBox(
         height: 248,
         child: ListView.separated(
-          separatorBuilder: (context, index) => SizedBox(
+          separatorBuilder: (context, index) => const SizedBox(
             width: 16,
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppDimensions.paddingDefault),
           itemCount: _relatedProducts.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
@@ -1000,7 +1010,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               slug: widget.slug,
               image: _relatedProducts[index].thumbnailImage,
               name: _relatedProducts[index].name,
-              unit_price: _relatedProducts[index].unitPrice,
+              unitPrice: _relatedProducts[index].unitPrice,
               condition: _relatedProducts[index].condition,
             );
           },
@@ -1012,12 +1022,12 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.no_related_product,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
   }
 
-  openPhotoDialog(BuildContext context, path) => showDialog(
+  Future openPhotoDialog(BuildContext context, path) => showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
@@ -1034,19 +1044,19 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                   child: Container(
                     decoration: ShapeDecoration(
                       color: MyTheme.medium_grey_50,
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25),
-                          topRight: Radius.circular(25),
-                          topLeft: Radius.circular(25),
+                          bottomLeft: Radius.circular(AppDimensions.radius),
+                          bottomRight: Radius.circular(AppDimensions.radius),
+                          topRight: Radius.circular(AppDimensions.radius),
+                          topLeft: Radius.circular(AppDimensions.radius),
                         ),
                       ),
                     ),
                     width: 40,
                     height: 40,
                     child: IconButton(
-                      icon: Icon(Icons.clear, color: MyTheme.white),
+                      icon: const Icon(Icons.clear, color: MyTheme.white),
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).pop();
                       },
@@ -1059,8 +1069,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
         },
       );
 
-  buildProductImageSection() {
-    if (_productImageList.length == 0) {
+  Row buildProductImageSection() {
+    if (_productImageList.isEmpty) {
       return Row(
         children: [
           Container(
@@ -1068,22 +1078,26 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(
+                      bottom: AppDimensions.paddingSupSmall),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 40.0, width: 40.0),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(
+                      bottom: AppDimensions.paddingSupSmall),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 40.0, width: 40.0),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(
+                      bottom: AppDimensions.paddingSupSmall),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 40.0, width: 40.0),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(
+                      bottom: AppDimensions.paddingSupSmall),
                   child: ShimmerHelper()
                       .buildBasicShimmer(height: 40.0, width: 40.0),
                 ),
@@ -1092,7 +1106,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
           ),
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: ShimmerHelper().buildBasicShimmer(
                 height: 190.0,
               ),
@@ -1114,14 +1129,14 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               thickness: 4.0,
               child: Padding(
                 padding: app_language_rtl.$!
-                    ? EdgeInsets.only(left: 8.0)
-                    : EdgeInsets.only(right: 8.0),
+                    ? const EdgeInsets.only(left: AppDimensions.paddingSmall)
+                    : const EdgeInsets.only(right: 8.0),
                 child: ListView.builder(
                     itemCount: _productImageList.length,
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      int itemIndex = index;
+                      final int itemIndex = index;
                       return GestureDetector(
                         onTap: () {
                           _currentImage = itemIndex;
@@ -1131,24 +1146,26 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                         child: Container(
                           width: 50,
                           height: 50,
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 2.0),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusNormal),
                             border: Border.all(
                                 color: _currentImage == itemIndex
-                                    ? MyTheme.accent_color
-                                    : Color.fromRGBO(112, 112, 112, .3),
+                                    ? Theme.of(context).primaryColor
+                                    : const Color.fromRGBO(112, 112, 112, .3),
                                 width: _currentImage == itemIndex ? 2 : 1),
                             //shape: BoxShape.rectangle,
                           ),
                           child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusNormal),
                               child:
                                   /*Image.asset(
                                         singleProduct.product_images[index])*/
                                   FadeInImage.assetNetwork(
-                                placeholder: 'assets/placeholder.png',
+                                placeholder: AppImages.placeholder,
                                 image: _productImageList[index],
                                 fit: BoxFit.contain,
                               )),
@@ -1167,7 +1184,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
               width: MediaQuery.of(context).size.width - 96,
               child: Container(
                   child: FadeInImage.assetNetwork(
-                placeholder: 'assets/placeholder_rectangle.png',
+                placeholder: AppImages.placeholderRectangle,
                 image: _productImageList[_currentImage],
                 fit: BoxFit.scaleDown,
               )),
@@ -1179,7 +1196,7 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
   }
 
   Widget buildProductSliderImageSection() {
-    if (_productImageList.length == 0) {
+    if (_productImageList.isEmpty) {
       return ShimmerHelper().buildBasicShimmer(
         height: 190.0,
       );
@@ -1191,8 +1208,8 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
             viewportFraction: 1,
             initialPage: 0,
             autoPlay: true,
-            autoPlayInterval: Duration(seconds: 5),
-            autoPlayAnimationDuration: Duration(milliseconds: 1000),
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 1000),
             autoPlayCurve: Curves.easeInExpo,
             enlargeCenterPage: false,
             scrollDirection: Axis.horizontal,
@@ -1231,13 +1248,13 @@ class _ClassifiedAdsDetailsState extends State<ClassifiedAdsDetails>
                               (index) => Container(
                                     width: 7.0,
                                     height: 7.0,
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 4.0),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: _currentImage == index
                                           ? MyTheme.font_grey
-                                          : Colors.grey.withOpacity(0.2),
+                                          : Colors.grey.withValues(alpha: 0.2),
                                     ),
                                   ))),
                     ),

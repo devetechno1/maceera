@@ -12,7 +12,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class ProfileRepository {
   Future<dynamic> getProfileCountersResponse() async {
-    String url = ("${AppConfig.BASE_URL}/profile/counters");
+    const String url = ("${AppConfig.BASE_URL}/profile/counters");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -25,7 +25,7 @@ class ProfileRepository {
   }
 
   Future<dynamic> getProfileUpdateResponse({required String post_body}) async {
-    String url = ("${AppConfig.BASE_URL}/profile/update");
+    const String url = ("${AppConfig.BASE_URL}/profile/update");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -38,10 +38,10 @@ class ProfileRepository {
     return profileUpdateResponseFromJson(response.body);
   }
 
-  Future<dynamic> getDeviceTokenUpdateResponse(String device_token) async {
-    var post_body = jsonEncode({"device_token": "${device_token}"});
+  Future<dynamic> getDeviceTokenUpdateResponse(String deviceToken) async {
+    final postBody = jsonEncode({"device_token": "$deviceToken"});
 
-    String url = ("${AppConfig.BASE_URL}/profile/update-device-token");
+    const String url = ("${AppConfig.BASE_URL}/profile/update-device-token");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -49,16 +49,16 @@ class ProfileRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body);
+        body: postBody);
 
     return deviceTokenUpdateResponseFromJson(response.body);
   }
 
   Future<dynamic> getProfileImageUpdateResponse(
       String image, String filename) async {
-    var post_body = jsonEncode({"image": "${image}", "filename": "$filename"});
+    final postBody = jsonEncode({"image": "$image", "filename": "$filename"});
 
-    String url = ("${AppConfig.BASE_URL}/profile/update-image");
+    const String url = ("${AppConfig.BASE_URL}/profile/update-image");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -66,7 +66,7 @@ class ProfileRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body);
+        body: postBody);
 
     return profileImageUpdateResponseFromJson(response.body);
   }
@@ -74,7 +74,7 @@ class ProfileRepository {
   Future<dynamic> getPhoneEmailAvailabilityResponse() async {
     //var post_body = jsonEncode({"user_id":"${user_id.$}"});
 
-    String url = ("${AppConfig.BASE_URL}/profile/check-phone-and-email");
+    const String url = ("${AppConfig.BASE_URL}/profile/check-phone-and-email");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -87,7 +87,7 @@ class ProfileRepository {
   }
 
   Future<dynamic> getUserInfoResponse() async {
-    String url = ("${AppConfig.BASE_URL}/customer/info");
+    const String url = ("${AppConfig.BASE_URL}/customer/info");
 
     final response = await ApiRequest.get(url: url, headers: {
       "Authorization": "Bearer ${access_token.$}",

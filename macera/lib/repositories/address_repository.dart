@@ -17,8 +17,8 @@ import 'package:active_ecommerce_cms_demo_app/middlewares/banned_user.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class AddressRepository {
-  Future<AddressResponse> getAddressList() async {
-    String url = ("${AppConfig.BASE_URL}/user/shipping/address");
+  Future<dynamic> getAddressList() async {
+    const String url = ("${AppConfig.BASE_URL}/user/shipping/address");
     final response = await ApiRequest.get(
       url: url,
       headers: {
@@ -31,7 +31,7 @@ class AddressRepository {
   }
 
   Future<dynamic> getHomeDeliveryAddress() async {
-    String url = ("${AppConfig.BASE_URL}/get-home-delivery-address");
+    const String url = ("${AppConfig.BASE_URL}/get-home-delivery-address");
     final response = await ApiRequest.get(
         url: url,
         headers: {
@@ -50,7 +50,7 @@ class AddressRepository {
       required int? city_id,
       required String postal_code,
       required String phone}) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "user_id": "${user_id.$}",
       "address": "$address",
       "country_id": "$country_id",
@@ -60,7 +60,7 @@ class AddressRepository {
       "phone": "$phone"
     });
 
-    String url = ("${AppConfig.BASE_URL}/user/shipping/create");
+    const String url = ("${AppConfig.BASE_URL}/user/shipping/create");
     final response = await ApiRequest.post(
       url: url,
       headers: {
@@ -68,7 +68,7 @@ class AddressRepository {
         "Authorization": "Bearer ${access_token.$}",
         "App-Language": app_language.$!
       },
-      body: post_body,
+      body: postBody,
       middleware: BannedUser(),
     );
     return addressAddResponseFromJson(response.body);
@@ -82,8 +82,8 @@ class AddressRepository {
       required int? city_id,
       required String postal_code,
       required String phone}) async {
-    var post_body = jsonEncode({
-      "id": "${id}",
+    final postBody = jsonEncode({
+      "id": "$id",
       "user_id": "${user_id.$}",
       "address": "$address",
       "country_id": "$country_id",
@@ -93,7 +93,7 @@ class AddressRepository {
       "phone": "$phone"
     });
 
-    String url = ("${AppConfig.BASE_URL}/user/shipping/update");
+    const String url = ("${AppConfig.BASE_URL}/user/shipping/update");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -101,7 +101,7 @@ class AddressRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return addressUpdateResponseFromJson(response.body);
   }
@@ -111,14 +111,14 @@ class AddressRepository {
     double? latitude,
     double? longitude,
   ) async {
-    var post_body = jsonEncode({
-      "id": "${id}",
+    final postBody = jsonEncode({
+      "id": "$id",
       "user_id": "${user_id.$}",
       "latitude": "$latitude",
       "longitude": "$longitude"
     });
 
-    String url = ("${AppConfig.BASE_URL}/user/shipping/update-location");
+    const String url = ("${AppConfig.BASE_URL}/user/shipping/update-location");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -126,7 +126,7 @@ class AddressRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return addressUpdateLocationResponseFromJson(response.body);
   }
@@ -134,18 +134,18 @@ class AddressRepository {
   Future<dynamic> getAddressMakeDefaultResponse(
     int? id,
   ) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "id": "$id",
     });
 
-    String url = ("${AppConfig.BASE_URL}/user/shipping/make_default");
+    const String url = ("${AppConfig.BASE_URL}/user/shipping/make_default");
     final response = await ApiRequest.post(
         url: url,
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer ${access_token.$}"
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return addressMakeDefaultResponseFromJson(response.body);
   }
@@ -153,7 +153,7 @@ class AddressRepository {
   Future<dynamic> getAddressDeleteResponse(
     int? id,
   ) async {
-    String url = ("${AppConfig.BASE_URL}/user/shipping/delete/$id");
+    final String url = ("${AppConfig.BASE_URL}/user/shipping/delete/$id");
     final response = await ApiRequest.get(
         url: url,
         headers: {
@@ -166,35 +166,35 @@ class AddressRepository {
   }
 
   Future<CityResponse> getCityListByState({state_id = 0, name = ""}) async {
-    String url =
-        ("${AppConfig.BASE_URL}/cities-by-state/${state_id}?name=${name}");
+    final String url =
+        ("${AppConfig.BASE_URL}/cities-by-state/$state_id?name=$name");
     final response = await ApiRequest.get(url: url, middleware: BannedUser());
     return cityResponseFromJson(response.body);
   }
 
   Future<dynamic> getStateListByCountry({country_id = 0, name = ""}) async {
-    String url =
-        ("${AppConfig.BASE_URL}/states-by-country/${country_id}?name=${name}");
+    final String url =
+        ("${AppConfig.BASE_URL}/states-by-country/$country_id?name=$name");
     final response = await ApiRequest.get(url: url, middleware: BannedUser());
     return myStateResponseFromJson(response.body);
   }
 
   Future<CountryResponse> getCountryList({name = ""}) async {
-    String url = ("${AppConfig.BASE_URL}/countries?name=${name}");
+    final String url = ("${AppConfig.BASE_URL}/countries?name=$name");
     final response = await ApiRequest.get(url: url, middleware: BannedUser());
     return countryResponseFromJson(response.body);
   }
 
   Future<dynamic> getShippingCostResponse({shipping_type = ""}) async {
     // var post_body = jsonEncode({"seller_list": shipping_type});
-    var post_body;
+    String postBody;
 
-    String url = ("${AppConfig.BASE_URL}/shipping_cost");
-    if (guest_checkout_status.$ && !is_logged_in.$) {
-      post_body = jsonEncode(
+    const String url = ("${AppConfig.BASE_URL}/shipping_cost");
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
+      postBody = jsonEncode(
           {"temp_user_id": temp_user_id.$, "seller_list": shipping_type});
     } else {
-      post_body =
+      postBody =
           jsonEncode({"user_id": user_id.$, "seller_list": shipping_type});
     }
     final response = await ApiRequest.post(
@@ -204,20 +204,20 @@ class AddressRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!,
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return shippingCostResponseFromJson(response.body);
   }
 
   Future<dynamic> getAddressUpdateInCartResponse(
       {int? address_id = 0, int pickup_point_id = 0}) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "address_id": "$address_id",
       "pickup_point_id": "$pickup_point_id",
       "user_id": "${user_id.$}"
     });
 
-    String url = ("${AppConfig.BASE_URL}/update-address-in-cart");
+    const String url = ("${AppConfig.BASE_URL}/update-address-in-cart");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -225,7 +225,7 @@ class AddressRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
 
     return addressUpdateInCartResponseFromJson(response.body);
@@ -233,12 +233,12 @@ class AddressRepository {
 
   Future<dynamic> getShippingTypeUpdateInCartResponse(
       {required int shipping_id, shipping_type = "home_delivery"}) async {
-    var post_body = jsonEncode({
+    final postBody = jsonEncode({
       "shipping_id": "$shipping_id",
       "shipping_type": "$shipping_type",
     });
 
-    String url = ("${AppConfig.BASE_URL}/update-shipping-type-in-cart");
+    const String url = ("${AppConfig.BASE_URL}/update-shipping-type-in-cart");
 
     final response = await ApiRequest.post(
         url: url,
@@ -247,7 +247,7 @@ class AddressRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
 
     return addressUpdateInCartResponseFromJson(response.body);

@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_number_input/src/models/country_list.dart';
@@ -88,48 +89,47 @@ class CustomInternationalPhoneNumberInput extends StatefulWidget {
 
   final double? height;
 
-  CustomInternationalPhoneNumberInput(
-      {Key? key,
-      this.selectorConfig = const SelectorConfig(),
-      required this.onInputChanged,
-      this.onInputValidated,
-      this.onSubmit,
-      this.onFieldSubmitted,
-      this.validator,
-      this.onSaved,
-      this.textFieldController,
-      this.keyboardAction,
-      this.keyboardType = TextInputType.phone,
-      this.initialValue,
-      this.hintText = 'Phone number',
-      this.errorMessage = 'Invalid phone number',
-      this.selectorButtonOnErrorPadding = 24,
-      this.spaceBetweenSelectorAndTextField = 12,
-      this.maxLength = 15,
-      this.isEnabled = true,
-      this.formatInput = true,
-      this.autoFocus = false,
-      this.autoFocusSearch = false,
-      this.autoValidateMode = AutovalidateMode.disabled,
-      this.ignoreBlank = false,
-      this.countrySelectorScrollControlled = true,
-      this.locale,
-      this.textStyle,
-      this.selectorTextStyle,
-      this.inputBorder,
-      this.inputDecoration,
-      this.searchBoxDecoration,
-      this.textAlign = TextAlign.start,
-      this.textAlignVertical = TextAlignVertical.center,
-      this.scrollPadding = const EdgeInsets.all(20.0),
-      this.focusNode,
-      this.cursorColor,
-      this.autofillHints,
-      this.countries, 
-      this.backgroundColor, 
-      this.height,
-    })
-      : super(key: key);
+  const CustomInternationalPhoneNumberInput({
+    Key? key,
+    this.selectorConfig = const SelectorConfig(),
+    required this.onInputChanged,
+    this.onInputValidated,
+    this.onSubmit,
+    this.onFieldSubmitted,
+    this.validator,
+    this.onSaved,
+    this.textFieldController,
+    this.keyboardAction,
+    this.keyboardType = TextInputType.phone,
+    this.initialValue,
+    this.hintText = 'Phone number',
+    this.errorMessage = 'Invalid phone number',
+    this.selectorButtonOnErrorPadding = 24,
+    this.spaceBetweenSelectorAndTextField = 12,
+    this.maxLength = 15,
+    this.isEnabled = true,
+    this.formatInput = true,
+    this.autoFocus = false,
+    this.autoFocusSearch = false,
+    this.autoValidateMode = AutovalidateMode.disabled,
+    this.ignoreBlank = false,
+    this.countrySelectorScrollControlled = true,
+    this.locale,
+    this.textStyle,
+    this.selectorTextStyle,
+    this.inputBorder,
+    this.inputDecoration,
+    this.searchBoxDecoration,
+    this.textAlign = TextAlign.start,
+    this.textAlignVertical = TextAlignVertical.center,
+    this.scrollPadding = const EdgeInsets.all(20.0),
+    this.focusNode,
+    this.cursorColor,
+    this.autofillHints,
+    this.countries,
+    this.backgroundColor,
+    this.height,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _InputWidgetState();
@@ -153,7 +153,7 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
 
   @override
   void setState(fn) {
-    if (this.mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -177,7 +177,7 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
   }
 
   /// [initialiseWidget] sets initial values of the widget
-  void initialiseWidget() async {
+  Future<void> initialiseWidget() async {
     if (widget.initialValue != null) {
       if (widget.initialValue!.phoneNumber != null &&
           widget.initialValue!.phoneNumber!.isNotEmpty &&
@@ -194,8 +194,8 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
 
   /// loads countries from [Countries.countryList] and selected Country
   void loadCountries({Country? previouslySelectedCountry}) {
-    if (this.mounted) {
-      List<Country> countries = CountryProvider.getCountriesData(
+    if (mounted) {
+      final List<Country> countries = CountryProvider.getCountriesData(
           countries: widget.countries!.cast<String>());
 
       final CountryComparator? countryComparator =
@@ -204,7 +204,7 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
         countries.sort(countryComparator);
       }
 
-      Country country = previouslySelectedCountry ??
+      final Country country = previouslySelectedCountry ??
           Utils.getInitialSelectedCountry(
             countries,
             widget.initialValue?.isoCode ?? '',
@@ -220,35 +220,35 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
   /// Listener that validates changes from the widget, returns a bool to
   /// the `ValueCallback` [widget.onInputValidated]
   void phoneNumberControllerListener() {
-    if (this.mounted) {
-      String parsedPhoneNumberString =
+    if (mounted) {
+      final String parsedPhoneNumberString =
           controller!.text.replaceAll(RegExp(r'[^\d+]'), '');
 
-      getParsedPhoneNumber(parsedPhoneNumberString, this.country?.alpha2Code)
+      getParsedPhoneNumber(parsedPhoneNumberString, country?.alpha2Code)
           .then((phoneNumber) {
         if (phoneNumber == null) {
-          String phoneNumber =
-              '${this.country?.dialCode}$parsedPhoneNumberString';
+          final String phoneNumber =
+              '${country?.dialCode}$parsedPhoneNumberString';
 
           widget.onInputChanged(PhoneNumber(
               phoneNumber: phoneNumber,
-              isoCode: this.country?.alpha2Code,
-              dialCode: this.country?.dialCode));
+              isoCode: country?.alpha2Code,
+              dialCode: country?.dialCode));
 
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(false);
           }
-          this.isNotValid = true;
+          isNotValid = true;
         } else {
           widget.onInputChanged(PhoneNumber(
               phoneNumber: phoneNumber,
-              isoCode: this.country?.alpha2Code,
-              dialCode: this.country?.dialCode));
+              isoCode: country?.alpha2Code,
+              dialCode: country?.dialCode));
 
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(true);
           }
-          this.isNotValid = false;
+          isNotValid = false;
         }
       });
     }
@@ -260,7 +260,7 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
       String phoneNumber, String? isoCode) async {
     if (phoneNumber.isNotEmpty && isoCode != null) {
       try {
-        bool isValidPhoneNumber = (await PhoneNumberUtil.isValidNumber(
+        final bool isValidPhoneNumber = (await PhoneNumberUtil.isValidNumber(
             phoneNumber: phoneNumber, isoCode: isoCode))!;
 
         if (isValidPhoneNumber) {
@@ -276,9 +276,9 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
 
   /// Creates or Select [InputDecoration]
   InputDecoration getInputDecoration(InputDecoration? decoration) {
-    InputDecoration value = decoration ??
+    final InputDecoration value = decoration ??
         InputDecoration(
-          border: widget.inputBorder ?? UnderlineInputBorder(),
+          border: widget.inputBorder ?? const UnderlineInputBorder(),
           hintText: widget.hintText,
         );
 
@@ -312,17 +312,16 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
   ///
   /// Also updates [selectorButtonBottomPadding]
   String? validator(String? value) {
-    bool isValid =
-        this.isNotValid && (value!.isNotEmpty || widget.ignoreBlank == false);
+    final bool isValid =
+        isNotValid && (value!.isNotEmpty || widget.ignoreBlank == false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (isValid) {
         setState(() {
-          this.selectorButtonBottomPadding =
-              widget.selectorButtonOnErrorPadding;
+          selectorButtonBottomPadding = widget.selectorButtonOnErrorPadding;
         });
       } else {
         setState(() {
-          this.selectorButtonBottomPadding = 0;
+          selectorButtonBottomPadding = 0;
         });
       }
     });
@@ -339,17 +338,16 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
   }
 
   void _phoneNumberSaved() {
-    if (this.mounted) {
-      String parsedPhoneNumberString =
+    if (mounted) {
+      final String parsedPhoneNumberString =
           controller!.text.replaceAll(RegExp(r'[^\d+]'), '');
 
-      getParsedPhoneNumber(parsedPhoneNumberString, this.country?.alpha2Code)
-          .then(
+      getParsedPhoneNumber(parsedPhoneNumberString, country?.alpha2Code).then(
         (phoneNumber) => widget.onSaved?.call(
           PhoneNumber(
               phoneNumber: phoneNumber,
-              isoCode: this.country?.alpha2Code,
-              dialCode: this.country?.dialCode),
+              isoCode: country?.alpha2Code,
+              dialCode: country?.dialCode),
         ),
       );
     }
@@ -374,9 +372,10 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
 
 class _InputWidgetView
     extends WidgetView<CustomInternationalPhoneNumberInput, _InputWidgetState> {
+  @override
   final _InputWidgetState state;
 
-  _InputWidgetView({Key? key, required this.state})
+  const _InputWidgetView({Key? key, required this.state})
       : super(key: key, state: state);
 
   @override
@@ -414,7 +413,7 @@ class _InputWidgetView
           ),
           Flexible(
             child: TextFormField(
-              key: Key(TestHelper.TextInputKeyValue),
+              key: const Key(TestHelper.TextInputKeyValue),
               textDirection: TextDirection.ltr,
               controller: state.controller,
               focusNode: widget.focusNode,
@@ -481,8 +480,8 @@ class CustomSelectorButton extends StatelessWidget {
     required this.locale,
     required this.onCountryChanged,
     required this.isEnabled,
-    required this.isScrollControlled, 
-    required this.backgroundColor, 
+    required this.isScrollControlled,
+    required this.backgroundColor,
     required this.height,
   }) : super(key: key);
 
@@ -492,7 +491,7 @@ class CustomSelectorButton extends StatelessWidget {
         ? countries.isNotEmpty && countries.length > 1
             ? DropdownButtonHideUnderline(
                 child: DropdownButton<Country>(
-                  key: Key(TestHelper.DropdownButtonKeyValue),
+                  key: const Key(TestHelper.DropdownButtonKeyValue),
                   hint: Item(
                     country: country,
                     showFlag: selectorConfig.showFlags,
@@ -515,19 +514,20 @@ class CustomSelectorButton extends StatelessWidget {
             decoration: BoxDecoration(
                 color: backgroundColor ?? Colors.white,
                 border: Border.all(color: MyTheme.textfield_grey, width: .5),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5.0),
-                    bottomLeft: Radius.circular(5.0))),
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(AppDimensions.radiusHalfSmall),
+                    bottomLeft:
+                        Radius.circular(AppDimensions.radiusHalfSmall))),
             child: TextButton(
-              key: Key(TestHelper.DropdownButtonKeyValue),
+              key: const Key(TestHelper.DropdownButtonKeyValue),
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
-                minimumSize: Size(0, 20),
+                minimumSize: const Size(0, 20),
                 backgroundColor: backgroundColor ?? Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.only(
-                  topLeft: const Radius.circular(5.0),
-                  bottomLeft: const Radius.circular(5.0),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AppDimensions.radiusHalfSmall),
+                  bottomLeft: Radius.circular(AppDimensions.radiusHalfSmall),
                 )),
               ),
               onPressed: countries.isNotEmpty &&
@@ -556,7 +556,7 @@ class CustomSelectorButton extends StatelessWidget {
                     showFlag: selectorConfig.showFlags,
                     trailingSpace: false,
                     useEmoji: selectorConfig.useEmoji,
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                         color: MyTheme.textfield_grey) //selectorTextStyle,
                     ),
               ),
@@ -612,9 +612,10 @@ class CustomSelectorButton extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       isScrollControlled: isScrollControlled,
       backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+              topLeft: Radius.circular(AppDimensions.radiusNormal),
+              topRight: Radius.circular(AppDimensions.radiusNormal))),
       builder: (BuildContext context) {
         return AnimatedPadding(
           padding:
@@ -629,10 +630,10 @@ class CustomSelectorButton extends StatelessWidget {
                 return Container(
                   decoration: ShapeDecoration(
                     color: Theme.of(context).canvasColor,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                        topLeft: Radius.circular(AppDimensions.radiusNormal),
+                        topRight: Radius.circular(AppDimensions.radiusNormal),
                       ),
                     ),
                   ),

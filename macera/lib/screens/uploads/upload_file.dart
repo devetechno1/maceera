@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
+import 'package:active_ecommerce_cms_demo_app/constants/app_images.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/lang_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -91,8 +93,8 @@ class _UploadFileState extends State<UploadFile> {
     ]);
   }
 
-  chooseAndUploadFile(context) async {
-    FilePickerResult? file = await pickSingleFile();
+  Future<void> chooseAndUploadFile(context) async {
+    final FilePickerResult? file = await pickSingleFile();
     if (file == null) {
       ToastComponent.showDialog(
         LangText(context).local.no_file_chosen_ucf,
@@ -103,7 +105,7 @@ class _UploadFileState extends State<UploadFile> {
     // print("file");
     // print(file);
 
-    var fileUploadResponse =
+    final fileUploadResponse =
         await FileUploadRepository().fileUpload(File(file.paths.first!));
     resetData();
     if (fileUploadResponse.result == false) {
@@ -119,7 +121,7 @@ class _UploadFileState extends State<UploadFile> {
   }
 
   getImageList() async {
-    var response = await FileUploadRepository()
+    final response = await FileUploadRepository()
         .getFiles(currentPage, searchTxt, widget.fileType, sortBy!.key);
     _images.addAll(response.data!);
     _faceData = true;
@@ -143,7 +145,7 @@ class _UploadFileState extends State<UploadFile> {
   }
 
   delete(id) async {
-    var response = await FileUploadRepository().deleteFile(id);
+    final response = await FileUploadRepository().deleteFile(id);
 
     if (response.result) {
       resetData();
@@ -176,7 +178,7 @@ class _UploadFileState extends State<UploadFile> {
 
   Future<void> refresh() async {
     await resetData();
-    return Future.delayed(Duration(seconds: 1));
+    return Future.delayed(const Duration(seconds: 1));
   }
 
   scrollControllerPosition() {
@@ -268,7 +270,8 @@ class _UploadFileState extends State<UploadFile> {
         children: List.generate(
             5,
             (index) => Container(
-                margin: EdgeInsets.only(bottom: 20),
+                margin:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingLarge),
                 child: ShimmerHelper().buildBasicShimmer(
                     height: 96, width: DeviceInfo(context).width!))),
       ),
@@ -280,9 +283,9 @@ class _UploadFileState extends State<UploadFile> {
       padding: const EdgeInsets.only(top: 145.0),
       child: GridView.builder(
           controller: mainScrollController,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, crossAxisSpacing: 12),
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppDimensions.paddingNormal),
           itemCount: _images.length,
           itemBuilder: (context, index) {
             return buildImageItem(index);
@@ -308,7 +311,7 @@ class _UploadFileState extends State<UploadFile> {
           if (widget.canMultiSelect) {
             if (_selectedImages!
                 .any((element) => element.id == _images[index].id)) {
-              int getIndex = findIndex(_images[index].id);
+              final int getIndex = findIndex(_images[index].id);
               _selectedImages!.removeAt(getIndex);
             } else {
               _selectedImages!.add(_images[index]);
@@ -330,8 +333,8 @@ class _UploadFileState extends State<UploadFile> {
         children: [
           MyWidget().productContainer(
             width: DeviceInfo(context).width!,
-            margin: EdgeInsets.only(bottom: 20),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            margin: const EdgeInsets.only(bottom: AppDimensions.paddingLarge),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             height: 170,
             borderColor: MyTheme.grey_153,
             borderRadius: 10,
@@ -347,7 +350,7 @@ class _UploadFileState extends State<UploadFile> {
                         alignment: Alignment.center,
                         height: 100,
                         width: DeviceInfo(context).width!,
-                        child: Icon(
+                        child: const Icon(
                           Icons.description,
                           size: 35,
                           color: MyTheme.white,
@@ -355,7 +358,7 @@ class _UploadFileState extends State<UploadFile> {
                 Text(
                   "${_images[index].fileOriginalName}.${_images[index].extension}",
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -365,7 +368,10 @@ class _UploadFileState extends State<UploadFile> {
           ),
           if (_selectedImages!
               .any((element) => element.id == _images[index].id))
-            Positioned(top: 10, right: 10, child: buildCheckContainer()),
+            Positioned(
+                top: AppDimensions.paddingSupSmall,
+                right: AppDimensions.paddingSupSmall,
+                child: buildCheckContainer()),
           if (!widget.canMultiSelect && !widget.canSelect)
             Positioned(
                 top: 10,
@@ -389,7 +395,7 @@ class _UploadFileState extends State<UploadFile> {
         width: DeviceInfo(context).width!,
         borderRadius: 10,
         bgColor: MyTheme.white,
-        borderColor: MyTheme.accent_color,
+        borderColor: Theme.of(context).primaryColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -411,18 +417,18 @@ class _UploadFileState extends State<UploadFile> {
     );
   }
 
-  buildFilterSection(BuildContext context) {
+  Column buildFilterSection(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         buildUploadFileContainer(context),
         Container(
           height: 40,
-          margin: EdgeInsets.only(top: 10),
+          margin: const EdgeInsets.only(top: AppDimensions.paddingSupSmall),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
                 Container(
@@ -431,11 +437,12 @@ class _UploadFileState extends State<UploadFile> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(255, 255, 255, 0),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusHalfSmall),
                     border: Border.all(
                         color: const Color.fromRGBO(255, 255, 255, 0),
                         width: 0.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: MyTheme.white,
                       ),
@@ -468,11 +475,12 @@ class _UploadFileState extends State<UploadFile> {
                 Container(
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(255, 255, 255, 0),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusHalfSmall),
                     border: Border.all(
                         color: const Color.fromRGBO(255, 255, 255, 0),
                         width: 0.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: MyTheme.white,
                       ),
@@ -505,7 +513,7 @@ class _UploadFileState extends State<UploadFile> {
   Widget buildFlatEditTextFiled() {
     return Container(
       width: DeviceInfo(context).width! / 2 - (16 * 1.5 + 50),
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       height: 45,
       alignment: Alignment.center,
       child: TextField(
@@ -518,15 +526,16 @@ class _UploadFileState extends State<UploadFile> {
 
   Widget buildCheckContainer() {
     return AnimatedOpacity(
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
       opacity: 1,
       child: Container(
         height: 16,
         width: 16,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0), color: Colors.green),
-        child: Padding(
-          padding: const EdgeInsets.all(3),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusDefault),
+            color: Colors.green),
+        child: const Padding(
+          padding: EdgeInsets.all(3),
           child: Icon(Icons.check, color: Colors.white, size: 10),
         ),
       ),
@@ -537,14 +546,14 @@ class _UploadFileState extends State<UploadFile> {
     return Container(
       width: 35,
       child: PopupMenuButton<MenuOptions>(
-        offset: Offset(-12, 0),
+        offset: const Offset(-12, 0),
         child: Padding(
           padding: EdgeInsets.zero,
           child: Container(
             width: 35,
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             alignment: Alignment.topRight,
-            child: Image.asset("assets/more.png",
+            child: Image.asset(AppImages.more,
                 width: 3,
                 height: 15,
                 fit: BoxFit.contain,

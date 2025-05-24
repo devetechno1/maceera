@@ -38,7 +38,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -52,8 +52,8 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   }
 
   razorpay() {
-    String initial_url =
-        "${AppConfig.BASE_URL}/razorpay/pay-with-razorpay?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id${widget.orderId}";
+    final String initialUrl =
+        "${AppConfig.BASE_URL}/razorpay/pay-with-razorpay?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id${widget.orderId}";
 
     // print(initial_url);
 
@@ -73,7 +73,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(initial_url), headers: {
+      ..loadRequest(Uri.parse(initialUrl), headers: {
         "Content-Type": "application/json",
         "App-Language": app_language.$!,
         "Accept": "application/json",
@@ -85,8 +85,8 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
       });
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -126,7 +126,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   }
 
   void getData() {
-    String? payment_details = '';
+    String? paymentDetails = '';
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -144,16 +144,16 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
         Navigator.pop(context);
       } else if (responseJSON["result"] == true) {
-        payment_details = responseJSON['payment_details'];
-        onPaymentSuccess(payment_details);
+        paymentDetails = responseJSON['payment_details'];
+        onPaymentSuccess(paymentDetails);
       }
     });
   }
 
-  onPaymentSuccess(payment_details) async {
-    var razorpayPaymentSuccessResponse = await PaymentRepository()
+  Future<void> onPaymentSuccess(paymentDetails) async {
+    final razorpayPaymentSuccessResponse = await PaymentRepository()
         .getRazorpayPaymentSuccessResponse(widget.payment_type, widget.amount,
-            _combined_order_id, payment_details);
+            _combined_order_id, paymentDetails);
 
     if (razorpayPaymentSuccessResponse.result == false) {
       ToastComponent.showDialog(
@@ -171,24 +171,24 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
     if (widget.payment_type == "cart_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "wallet_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return Wallet(from_recharge: true);
+        return const Wallet(from_recharge: true);
       }));
     } else if (widget.payment_type == "order_re_payment") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "customer_package_payment") {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Profile();
+        return const Profile();
       }));
     }
   }
 
-  buildBody() {
+  Widget buildBody() {
     if (_order_init == false &&
         _combined_order_id == 0 &&
         widget.payment_type == "cart_payment") {
@@ -224,7 +224,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_razorpay,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

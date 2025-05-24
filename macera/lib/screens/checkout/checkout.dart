@@ -32,6 +32,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:one_context/one_context.dart';
 
+import '../../app_config.dart';
 import '../../custom/loading.dart';
 import '../../data_model/order_detail_response.dart';
 import '../../helpers/auth_helper.dart';
@@ -40,7 +41,8 @@ import '../../repositories/order_repository.dart';
 import '../guest_checkout_pages/guest_checkout_address.dart';
 
 class Checkout extends StatefulWidget {
-  final int? order_id; // only need when making manual payment from order details
+  final int?
+      order_id; // only need when making manual payment from order details
   final String list;
   final PaymentFor? paymentFor;
   final double rechargeAmount;
@@ -64,15 +66,15 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var _selected_payment_method_index = 0;
   String? _selected_payment_method = "";
   String? _selected_payment_method_key = "";
 
-  ScrollController _mainScrollController = ScrollController();
-  TextEditingController _couponController = TextEditingController();
-  var _paymentTypeList = [];
+  final ScrollController _mainScrollController = ScrollController();
+  final TextEditingController _couponController = TextEditingController();
+  final _paymentTypeList = [];
   bool _isInitial = true;
   String? _totalString = ". . .";
   double? _grandTotalValue = 0.00;
@@ -136,7 +138,7 @@ class _CheckoutState extends State<Checkout> {
     return balance;
   }
 
-  fetchAll() {
+  void fetchAll() {
     fetchList();
     fetchSummary();
     if (widget.paymentFor != PaymentFor.Order) {
@@ -161,11 +163,11 @@ class _CheckoutState extends State<Checkout> {
           : "order";
     });
 
-    var paymentTypeResponseList = await PaymentRepository()
+    final paymentTypeResponseList = await PaymentRepository()
         .getPaymentResponseList(list: widget.list, mode: mode);
 
     _paymentTypeList.addAll(paymentTypeResponseList);
-    if (_paymentTypeList.length > 0) {
+    if (_paymentTypeList.isNotEmpty) {
       _selected_payment_method = _paymentTypeList[0].payment_type;
       _selected_payment_method_key = _paymentTypeList[0].payment_type_key;
     }
@@ -173,12 +175,15 @@ class _CheckoutState extends State<Checkout> {
     setState(() {});
   }
 
-  fetchSummary() async {
+  Future<void> fetchSummary() async {
     print('in fetch summery');
-    if(widget.paymentFor == PaymentFor.ManualPayment || widget.paymentFor == PaymentFor.OrderRePayment){
-      OrderDetailResponse? orderDetailsResponse = await OrderRepository().getOrderDetails(id: widget.order_id);
+    if (widget.paymentFor == PaymentFor.ManualPayment ||
+        widget.paymentFor == PaymentFor.OrderRePayment) {
+      final OrderDetailResponse? orderDetailsResponse =
+          await OrderRepository().getOrderDetails(id: widget.order_id);
 
-      DetailedOrder? details = orderDetailsResponse?.detailed_orders?.firstOrNull;
+      final DetailedOrder? details =
+          orderDetailsResponse?.detailed_orders?.firstOrNull;
 
       if (details != null) {
         _subTotalString = details.subtotal;
@@ -193,11 +198,10 @@ class _CheckoutState extends State<Checkout> {
         setState(() {});
       }
 
-
       return;
     }
-        
-    var cartSummaryResponse = await CartRepository().getCartSummaryResponse();
+
+    final cartSummaryResponse = await CartRepository().getCartSummaryResponse();
 
     if (cartSummaryResponse != null) {
       _subTotalString = cartSummaryResponse.sub_total;
@@ -248,17 +252,17 @@ class _CheckoutState extends State<Checkout> {
     fetchAll();
   }
 
-  onCouponApply() async {
-    var coupon_code = _couponController.text.toString();
-    if (coupon_code == "") {
+  Future<void> onCouponApply() async {
+    final couponCode = _couponController.text.toString();
+    if (couponCode == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_coupon_code,
       );
       return;
     }
 
-    var couponApplyResponse =
-        await CouponRepository().getCouponApplyResponse(coupon_code);
+    final couponApplyResponse =
+        await CouponRepository().getCouponApplyResponse(couponCode);
     if (couponApplyResponse.result == false) {
       ToastComponent.showDialog(
         couponApplyResponse.message,
@@ -270,8 +274,8 @@ class _CheckoutState extends State<Checkout> {
     fetchSummary();
   }
 
-  onCouponRemove() async {
-    var couponRemoveResponse =
+  Future<void> onCouponRemove() async {
+    final couponRemoveResponse =
         await CouponRepository().getCouponRemoveResponse();
 
     if (couponRemoveResponse.result == false) {
@@ -285,12 +289,12 @@ class _CheckoutState extends State<Checkout> {
     fetchSummary();
   }
 
-  onPressPlaceOrderOrProceed() async {
-    if (guest_checkout_status.$ && !is_logged_in.$) {
+  Future<void> onPressPlaceOrderOrProceed() async {
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
       Loading.show(context);
       // guest checkout user create response
 
-      var guestUserAccountCreateResponse = await GuestCheckoutRepository()
+      final guestUserAccountCreateResponse = await GuestCheckoutRepository()
           .guestUserAccountCreate(widget.guestCheckOutShippingAddress);
       Loading.close();
 
@@ -307,7 +311,7 @@ class _CheckoutState extends State<Checkout> {
         // then it goes to guest check address page
         Navigator.pushAndRemoveUntil(OneContext().context!,
             MaterialPageRoute(builder: (context) {
-          return GuestCheckoutAddress();
+          return const GuestCheckoutAddress();
         }), (Route<dynamic> route) => true);
       }
       return;
@@ -524,8 +528,9 @@ class _CheckoutState extends State<Checkout> {
       pay_by_wallet();
     } else if (_selected_payment_method == "cash_payment") {
       pay_by_cod();
-    } else if (_selected_payment_method == "manual_payment" && widget.paymentFor == PaymentFor.Order) {
-        pay_by_manual_payment();
+    } else if (_selected_payment_method == "manual_payment" &&
+        widget.paymentFor == PaymentFor.Order) {
+      pay_by_manual_payment();
     } else if (_selected_payment_method == "manual_payment" &&
         (widget.paymentFor == PaymentFor.ManualPayment ||
             widget.paymentFor == PaymentFor.WalletRecharge ||
@@ -549,27 +554,24 @@ class _CheckoutState extends State<Checkout> {
     }
   }
 
-  pay_by_wallet() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> pay_by_wallet() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponseFromWallet(
             _selected_payment_method_key, _grandTotalValue);
 
     if (orderCreateResponse.result == false) {
-      ToastComponent.showDialog(
-        orderCreateResponse.message,
-        isError: true
-      );
+      ToastComponent.showDialog(orderCreateResponse.message, isError: true);
       return;
     }
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return OrderList(from_checkout: true);
+      return const OrderList(from_checkout: true);
     }));
   }
 
-  pay_by_cod() async {
+  Future<void> pay_by_cod() async {
     loading();
-    var orderCreateResponse = await PaymentRepository()
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponseFromCod(_selected_payment_method_key);
     Navigator.of(loadingcontext).pop();
     if (orderCreateResponse.result == false) {
@@ -581,13 +583,13 @@ class _CheckoutState extends State<Checkout> {
     }
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return OrderList(from_checkout: true);
+      return const OrderList(from_checkout: true);
     }));
   }
 
-  pay_by_manual_payment() async {
+  Future<void> pay_by_manual_payment() async {
     loading();
-    var orderCreateResponse = await PaymentRepository()
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponseFromManualPayment(_selected_payment_method_key);
     Navigator.pop(loadingcontext);
     if (orderCreateResponse.result == false) {
@@ -599,7 +601,7 @@ class _CheckoutState extends State<Checkout> {
     }
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return OrderList(from_checkout: true);
+      return const OrderList(from_checkout: true);
     }));
   }
 
@@ -620,7 +622,12 @@ class _CheckoutState extends State<Checkout> {
   onPressDetails() {
     showDialog(
       context: context,
-      builder: (_) => _AlertDialogDetailsWidget(subTotalString: _subTotalString, taxString: _taxString, shippingCostString: _shippingCostString, discountString: _discountString, totalString: _totalString),
+      builder: (_) => _AlertDialogDetailsWidget(
+          subTotalString: _subTotalString,
+          taxString: _taxString,
+          shippingCostString: _shippingCostString,
+          discountString: _discountString,
+          totalString: _totalString),
     );
   }
 
@@ -637,7 +644,7 @@ class _CheckoutState extends State<Checkout> {
         body: Stack(
           children: [
             RefreshIndicator(
-              color: MyTheme.accent_color,
+              color: Theme.of(context).primaryColor,
               backgroundColor: Colors.white,
               onRefresh: _onRefresh,
               displacement: 0,
@@ -650,7 +657,8 @@ class _CheckoutState extends State<Checkout> {
                     delegate: SliverChildListDelegate(
                       [
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(
+                              AppDimensions.paddingDefault),
                           child: buildPaymentMethodList(),
                         ),
                         Container(
@@ -668,9 +676,9 @@ class _CheckoutState extends State<Checkout> {
               alignment: Alignment.bottomCenter,
               child: widget.paymentFor == PaymentFor.WalletRecharge ||
                       widget.paymentFor == PaymentFor.PackagePay
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                       ),
                       height: (widget.paymentFor == PaymentFor.ManualPayment) ||
@@ -679,7 +687,8 @@ class _CheckoutState extends State<Checkout> {
                           : 292,
                       //color: Colors.white,
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding:
+                            const EdgeInsets.all(AppDimensions.paddingDefault),
                         child: Column(
                           children: [
                             widget.paymentFor == PaymentFor.Order
@@ -688,8 +697,14 @@ class _CheckoutState extends State<Checkout> {
                                         const EdgeInsets.only(bottom: 16.0),
                                     child: buildApplyCouponRow(context),
                                   )
-                                : SizedBox.shrink(),
-                            CheckoutDetails(showTotal: false, subTotalString: _subTotalString, taxString: _taxString, shippingCostString: _shippingCostString, discountString: _discountString, totalString: _totalString),
+                                : const SizedBox.shrink(),
+                            CheckoutDetails(
+                                showTotal: false,
+                                subTotalString: _subTotalString,
+                                taxString: _taxString,
+                                shippingCostString: _shippingCostString,
+                                discountString: _discountString,
+                                totalString: _totalString),
                             grandTotalSection(),
                           ],
                         ),
@@ -716,34 +731,38 @@ class _CheckoutState extends State<Checkout> {
               autofocus: false,
               decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.enter_coupon_code,
-                  hintStyle:
-                      TextStyle(fontSize: 14.0, color: MyTheme.textfield_grey),
+                  hintStyle: const TextStyle(
+                      fontSize: 14.0, color: MyTheme.textfield_grey),
                   enabledBorder: app_language_rtl.$!
-                      ? OutlineInputBorder(
+                      ? const OutlineInputBorder(
                           borderSide: BorderSide(
                               color: MyTheme.textfield_grey, width: 0.5),
-                          borderRadius: const BorderRadius.only(
-                            topRight: const Radius.circular(8.0),
-                            bottomRight: const Radius.circular(8.0),
+                          borderRadius: BorderRadius.only(
+                            topRight:
+                                Radius.circular(AppDimensions.radiusSmall),
+                            bottomRight:
+                                Radius.circular(AppDimensions.radiusSmall),
                           ),
                         )
-                      : OutlineInputBorder(
+                      : const OutlineInputBorder(
                           borderSide: BorderSide(
                               color: MyTheme.textfield_grey, width: 0.5),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: const Radius.circular(8.0),
-                            bottomLeft: const Radius.circular(8.0),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(AppDimensions.radiusSmall),
+                            bottomLeft:
+                                Radius.circular(AppDimensions.radiusSmall),
                           ),
                         ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
                         BorderSide(color: MyTheme.medium_grey, width: 0.5),
                     borderRadius: const BorderRadius.only(
-                      topLeft: const Radius.circular(8.0),
-                      bottomLeft: const Radius.circular(8.0),
+                      topLeft: Radius.circular(AppDimensions.radiusSmall),
+                      bottomLeft: Radius.circular(AppDimensions.radiusSmall),
                     ),
                   ),
-                  contentPadding: EdgeInsetsDirectional.only(start: 16.0)),
+                  contentPadding:
+                      const EdgeInsetsDirectional.only(start: 16.0)),
             ),
           ),
         ),
@@ -753,21 +772,23 @@ class _CheckoutState extends State<Checkout> {
                 height: 42,
                 child: Btn.basic(
                   minWidth: MediaQuery.of(context).size.width,
-                  color: MyTheme.accent_color,
+                  color: Theme.of(context).primaryColor,
                   shape: app_language_rtl.$!
-                      ? RoundedRectangleBorder(
-                          borderRadius: const BorderRadius.only(
-                          topLeft: const Radius.circular(8.0),
-                          bottomLeft: const Radius.circular(8.0),
+                      ? const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(AppDimensions.radiusSmall),
+                          bottomLeft:
+                              Radius.circular(AppDimensions.radiusSmall),
                         ))
-                      : RoundedRectangleBorder(
-                          borderRadius: const BorderRadius.only(
-                          topRight: const Radius.circular(8.0),
-                          bottomRight: const Radius.circular(8.0),
+                      : const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(AppDimensions.radiusSmall),
+                          bottomRight:
+                              Radius.circular(AppDimensions.radiusSmall),
                         )),
                   child: Text(
                     AppLocalizations.of(context)!.apply_coupon_all_capital,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w600),
@@ -782,15 +803,15 @@ class _CheckoutState extends State<Checkout> {
                 height: 42,
                 child: Btn.basic(
                   minWidth: MediaQuery.of(context).size.width,
-                  color: MyTheme.accent_color,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: const BorderRadius.only(
-                    topRight: const Radius.circular(8.0),
-                    bottomRight: const Radius.circular(8.0),
+                  color: Theme.of(context).primaryColor,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(AppDimensions.radiusSmall),
+                    bottomRight: Radius.circular(AppDimensions.radiusSmall),
                   )),
                   child: Text(
                     AppLocalizations.of(context)!.remove_ucf,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w600),
@@ -821,29 +842,29 @@ class _CheckoutState extends State<Checkout> {
       ),
       title: Text(
         widget.title!,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,
     );
   }
 
-  buildPaymentMethodList() {
-    if (_isInitial && _paymentTypeList.length == 0) {
+  Widget? buildPaymentMethodList() {
+    if (_isInitial && _paymentTypeList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper()
               .buildListShimmer(item_count: 5, item_height: 100.0));
-    } else if (_paymentTypeList.length > 0) {
+    } else if (_paymentTypeList.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.separated(
           separatorBuilder: (context, index) {
-            return SizedBox(
+            return const SizedBox(
               height: 16,
             );
           },
           itemCount: _paymentTypeList.length,
           scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return Padding(
@@ -853,15 +874,16 @@ class _CheckoutState extends State<Checkout> {
           },
         ),
       );
-    } else if (!_isInitial && _paymentTypeList.length == 0) {
+    } else if (!_isInitial && _paymentTypeList.isEmpty) {
       return Container(
           height: 100,
           child: Center(
               child: Text(
             AppLocalizations.of(context)!.no_payment_method_is_added,
-            style: TextStyle(color: MyTheme.font_grey),
+            style: const TextStyle(color: MyTheme.font_grey),
           )));
     }
+    return null;
   }
 
 /////Method card paypal,Strip,Bkash,etc//////////
@@ -873,14 +895,16 @@ class _CheckoutState extends State<Checkout> {
       child: Stack(
         children: [
           AnimatedContainer(
-            duration: Duration(milliseconds: 400),
+            duration: const Duration(milliseconds: 400),
             decoration: BoxDecoration(
-                    color: Colors.white, borderRadius: BorderRadius.circular(6))
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusHalfSmall))
                 .copyWith(
                     border: Border.all(
                         color: _selected_payment_method_key ==
                                 _paymentTypeList[index].payment_type_key
-                            ? MyTheme.accent_color
+                            ? Theme.of(context).primaryColor
                             : MyTheme.light_grey,
                         width: _selected_payment_method_key ==
                                 _paymentTypeList[index].payment_type_key
@@ -893,14 +917,15 @@ class _CheckoutState extends State<Checkout> {
                       width: 100,
                       height: 63,
                       child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(
+                              AppDimensions.paddingDefault),
                           child:
                               /*Image.asset(
                           _paymentTypeList[index].image,
                           fit: BoxFit.fitWidth,
                         ),*/
                               FadeInImage.assetNetwork(
-                            placeholder: 'assets/placeholder.png',
+                            placeholder: AppImages.placeholder,
                             image: _paymentTypeList[index].payment_type ==
                                     "manual_payment"
                                 ? _paymentTypeList[index].image
@@ -913,13 +938,14 @@ class _CheckoutState extends State<Checkout> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(
+                              bottom: AppDimensions.paddingSmall),
                           child: Text(
                             _paymentTypeList[index].title,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: MyTheme.font_grey,
                                 fontSize: 14,
                                 height: 1.6,
@@ -945,14 +971,15 @@ class _CheckoutState extends State<Checkout> {
 
   Widget buildPaymentMethodCheckContainer(bool check) {
     return AnimatedOpacity(
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
       opacity: check ? 1 : 0,
       child: Container(
         height: 16,
         width: 16,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0), color: Colors.green),
-        child: Icon(Icons.check, color: Colors.white, size: 10),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusDefault),
+            color: Colors.green),
+        child: const Icon(Icons.check, color: Colors.white, size: 10),
       ),
     );
   }
@@ -965,9 +992,9 @@ class _CheckoutState extends State<Checkout> {
         child: Btn.minWidthFixHeight(
           minWidth: MediaQuery.of(context).size.width,
           height: 50,
-          color: MyTheme.accent_color,
+          color: Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusNormal),
           ),
           child: Text(
             widget.paymentFor == PaymentFor.WalletRecharge
@@ -978,7 +1005,7 @@ class _CheckoutState extends State<Checkout> {
                         ? AppLocalizations.of(context)!.buy_package_ucf
                         : AppLocalizations.of(context)!
                             .place_my_order_all_capital,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           onPressed: () {
@@ -994,18 +1021,18 @@ class _CheckoutState extends State<Checkout> {
       height: 40,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
         color: MyTheme.soft_accent_color,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(AppDimensions.paddingSmallExtra),
         child: Row(
           children: [
             Padding(
               padding: const EdgeInsetsDirectional.only(start: 16.0),
               child: Text(
                 AppLocalizations.of(context)!.total_amount_ucf,
-                style: TextStyle(color: MyTheme.font_grey, fontSize: 14),
+                style: const TextStyle(color: MyTheme.font_grey, fontSize: 14),
               ),
             ),
             // Visibility(
@@ -1027,12 +1054,12 @@ class _CheckoutState extends State<Checkout> {
             //     ),
             //   ),
             // ),
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 16.0),
               child: Text(balance(),
                   style: TextStyle(
-                      color: MyTheme.accent_color,
+                      color: Theme.of(context).primaryColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w600)),
             ),
@@ -1050,8 +1077,8 @@ class _CheckoutState extends State<Checkout> {
         return AlertDialog(
             content: Row(
           children: [
-            CircularProgressIndicator(),
-            SizedBox(
+            const CircularProgressIndicator(),
+            const SizedBox(
               width: 10,
             ),
             Text("${AppLocalizations.of(context)!.please_wait_ucf}"),
@@ -1069,7 +1096,11 @@ class _AlertDialogDetailsWidget extends StatelessWidget {
     required String shippingCostString,
     required String? discountString,
     required String? totalString,
-  }) : _subTotalString = subTotalString, _taxString = taxString, _shippingCostString = shippingCostString, _discountString = discountString, _totalString = totalString;
+  })  : _subTotalString = subTotalString,
+        _taxString = taxString,
+        _shippingCostString = shippingCostString,
+        _discountString = discountString,
+        _totalString = totalString;
 
   final String? _subTotalString;
   final String? _taxString;
@@ -1080,8 +1111,15 @@ class _AlertDialogDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: EdgeInsets.all(2).copyWith(top: 16),
-      content: CheckoutDetails(showTotal: true, subTotalString: _subTotalString, taxString: _taxString, shippingCostString: _shippingCostString, discountString: _discountString, totalString: _totalString),
+      contentPadding:
+          const EdgeInsets.all(2).copyWith(top: AppDimensions.paddingDefault),
+      content: CheckoutDetails(
+          showTotal: true,
+          subTotalString: _subTotalString,
+          taxString: _taxString,
+          shippingCostString: _shippingCostString,
+          discountString: _discountString,
+          totalString: _totalString),
       actions: [
         Btn.basic(
           child: Text(
@@ -1104,9 +1142,13 @@ class CheckoutDetails extends StatelessWidget {
     required String? taxString,
     required String shippingCostString,
     required String? discountString,
-    required String? totalString, 
+    required String? totalString,
     required this.showTotal,
-  }) : _subTotalString = subTotalString, _taxString = taxString, _shippingCostString = shippingCostString, _discountString = discountString, _totalString = totalString;
+  })  : _subTotalString = subTotalString,
+        _taxString = taxString,
+        _shippingCostString = shippingCostString,
+        _discountString = discountString,
+        _totalString = totalString;
 
   final String? _subTotalString;
   final String? _taxString;
@@ -1123,7 +1165,8 @@ class CheckoutDetails extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Row(
                 children: [
                   Container(
@@ -1131,29 +1174,29 @@ class CheckoutDetails extends StatelessWidget {
                     child: Text(
                       AppLocalizations.of(context)!.subtotal_all_capital,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: MyTheme.font_grey,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     SystemConfig.systemCurrency != null
                         ? _subTotalString!.replaceAll(
                             SystemConfig.systemCurrency!.code!,
                             SystemConfig.systemCurrency!.symbol!)
                         : _subTotalString!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
                   ),
                 ],
               )),
-          
           Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Row(
                 children: [
                   Container(
@@ -1161,20 +1204,20 @@ class CheckoutDetails extends StatelessWidget {
                     child: Text(
                       AppLocalizations.of(context)!.tax_all_capital,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: MyTheme.font_grey,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     SystemConfig.systemCurrency != null
                         ? _taxString!.replaceAll(
                             SystemConfig.systemCurrency!.code!,
                             SystemConfig.systemCurrency!.symbol!)
                         : _taxString!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
@@ -1182,29 +1225,29 @@ class CheckoutDetails extends StatelessWidget {
                 ],
               )),
           Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Row(
                 children: [
                   Container(
                     width: 120,
                     child: Text(
-                      AppLocalizations.of(context)!
-                          .shipping_cost_all_capital,
+                      AppLocalizations.of(context)!.shipping_cost_all_capital,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: MyTheme.font_grey,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     SystemConfig.systemCurrency != null
                         ? _shippingCostString.replaceAll(
                             SystemConfig.systemCurrency!.code!,
                             SystemConfig.systemCurrency!.symbol!)
                         : _shippingCostString,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
@@ -1212,7 +1255,8 @@ class CheckoutDetails extends StatelessWidget {
                 ],
               )),
           Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
               child: Row(
                 children: [
                   Container(
@@ -1220,60 +1264,60 @@ class CheckoutDetails extends StatelessWidget {
                     child: Text(
                       AppLocalizations.of(context)!.discount_all_capital,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: MyTheme.font_grey,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     SystemConfig.systemCurrency != null
                         ? _discountString!.replaceAll(
                             SystemConfig.systemCurrency!.code!,
                             SystemConfig.systemCurrency!.symbol!)
                         : _discountString!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: MyTheme.font_grey,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
                   ),
                 ],
               )),
-          Divider(
+          const Divider(
             indent: 8.0,
           ),
-          if(showTotal)
-          Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 120,
-                    child: Text(
-                      AppLocalizations.of(context)!
-                          .grand_total_all_capital,
-                      textAlign: TextAlign.end,
+          if (showTotal)
+            Padding(
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 120,
+                      child: Text(
+                        AppLocalizations.of(context)!.grand_total_all_capital,
+                        textAlign: TextAlign.end,
+                        style: const TextStyle(
+                            color: MyTheme.font_grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      SystemConfig.systemCurrency != null
+                          ? _totalString!.replaceAll(
+                              SystemConfig.systemCurrency!.code!,
+                              SystemConfig.systemCurrency!.symbol!)
+                          : _totalString!,
                       style: TextStyle(
-                          color: MyTheme.font_grey,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w600),
                     ),
-                  ),
-                  Spacer(),
-                  Text(
-                    SystemConfig.systemCurrency != null
-                        ? _totalString!.replaceAll(
-                            SystemConfig.systemCurrency!.code!,
-                            SystemConfig.systemCurrency!.symbol!)
-                        : _totalString!,
-                    style: TextStyle(
-                        color: MyTheme.accent_color,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )),
+                  ],
+                )),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_dimensions.dart';
 import '../data_model/popup_banner_model.dart';
@@ -23,15 +24,17 @@ class PopupBannerDialog extends StatelessWidget {
                 children: [
                   AspectRatio(
                     aspectRatio: 1,
-                    child: Image.network(
-                      popupBannerModel.image ?? '',
+                    child: CachedNetworkImage(
+                     // popupBannerModel.image ?? '',
                       width: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.cover, 
+                    
+                      imageUrl:popupBannerModel.image ?? '',
                     ),
                   ),
                   Positioned(
-                    top: AppDimensions.paddingsmall,
-                    right: AppDimensions.paddingsmall,
+                    top: AppDimensions.paddingSmall,
+                    right: AppDimensions.paddingSmall,
                     child: Container(
                       width: 28,
                       height: 28,
@@ -55,10 +58,10 @@ class PopupBannerDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: AppDimensions.paddingDefualt),
+              const SizedBox(height: AppDimensions.paddingDefault),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingDefualt),
+                    horizontal: AppDimensions.paddingDefault),
                 child: Text(
                   popupBannerModel.title ?? '',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -66,20 +69,20 @@ class PopupBannerDialog extends StatelessWidget {
                       ),
                 ),
               ),
-              const SizedBox(height: AppDimensions.paddingsmall),
+              const SizedBox(height: AppDimensions.paddingSmall),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingDefualt),
+                    horizontal: AppDimensions.paddingDefault),
                 child: Text(
                   popupBannerModel.summary ?? '',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-              const SizedBox(height: AppDimensions.paddingDefualt),
+              const SizedBox(height: AppDimensions.paddingDefault),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingDefualt,
-                    vertical: AppDimensions.paddingsupsmall),
+                    horizontal: AppDimensions.paddingDefault,
+                    vertical: AppDimensions.paddingSupSmall),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -87,7 +90,7 @@ class PopupBannerDialog extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(
-                        double.infinity, AppDimensions.paddingveryLarge),
+                        double.infinity, AppDimensions.paddingVeryLarge),
                     backgroundColor: popupBannerModel.btnBackgroundColor,
                     shape: const RoundedRectangleBorder(),
                   ),

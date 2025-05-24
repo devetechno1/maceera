@@ -22,12 +22,13 @@ class SelectAddressProvider with ChangeNotifier {
     }
   }
 
+  @override
   void dispose() {
     mainScrollController.dispose();
     super.dispose();
   }
 
-  Future<void> fetchAll(BuildContext context) async{
+  Future<void> fetchAll(BuildContext context) async {
     if (is_logged_in.$ == true) {
       await fetchShippingAddressList(context);
     }
@@ -35,7 +36,7 @@ class SelectAddressProvider with ChangeNotifier {
 
   Future<void> fetchShippingAddressList(BuildContext context) async {
     reset();
-    var addressResponse = await AddressRepository().getAddressList();
+    final addressResponse = await AddressRepository().getAddressList();
     shippingAddressList.addAll(addressResponse.addresses ?? []);
     if (shippingAddressList.isNotEmpty) {
       for (int i = 0; i < shippingAddressList.length; i++) {
@@ -111,7 +112,7 @@ class SelectAddressProvider with ChangeNotifier {
     );
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ShippingInfo();
+      return const ShippingInfo();
     })).then((value) {
       onPopped(value, context);
     });

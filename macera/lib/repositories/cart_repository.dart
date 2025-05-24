@@ -16,10 +16,10 @@ class CartRepository {
   Future<dynamic> getCartResponseList(
     int? uid,
   ) async {
-    String url = ("${AppConfig.BASE_URL}/carts");
-    var postBody;
+    const String url = ("${AppConfig.BASE_URL}/carts");
+    String postBody;
 
-    if (guest_checkout_status.$ && !is_logged_in.$) {
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
       postBody = jsonEncode({"temp_user_id": temp_user_id.$});
     } else {
       postBody = jsonEncode({"user_id": user_id.$});
@@ -39,16 +39,16 @@ class CartRepository {
 
   // cart count
   Future<dynamic> getCartCount() async {
-    var postBody;
-    if (guest_checkout_status.$ && !is_logged_in.$) {
+    String postBody;
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
       postBody = jsonEncode({"temp_user_id": temp_user_id.$});
     } else {
       postBody = jsonEncode({"user_id": user_id.$});
     }
 
-    // if (guest_checkout_status.$ && !is_logged_in.$) {
+    // if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
     // var postBody = jsonEncode({"temp_user_id": temp_user_id.$});
-    String url = ("${AppConfig.BASE_URL}/cart-count");
+    const String url = ("${AppConfig.BASE_URL}/cart-count");
     final response = await ApiRequest.post(
       url: url,
       headers: {
@@ -63,7 +63,7 @@ class CartRepository {
 
   // cart item delete
   Future<dynamic> getCartDeleteResponse(int cartId) async {
-    String url = "${AppConfig.BASE_URL}/carts/$cartId";
+    final String url = "${AppConfig.BASE_URL}/carts/$cartId";
 
     final response = await ApiRequest.delete(
       url: url,
@@ -84,11 +84,11 @@ class CartRepository {
 
   // cart process
   Future<dynamic> getCartProcessResponse(
-      String cart_ids, String cart_quantities) async {
-    var post_body = jsonEncode(
-        {"cart_ids": "${cart_ids}", "cart_quantities": "$cart_quantities"});
+      String cartIds, String cartQuantities) async {
+    final postBody = jsonEncode(
+        {"cart_ids": "$cartIds", "cart_quantities": "$cartQuantities"});
 
-    String url = ("${AppConfig.BASE_URL}/carts/process");
+    const String url = ("${AppConfig.BASE_URL}/carts/process");
     final response = await ApiRequest.post(
         url: url,
         headers: {
@@ -96,35 +96,35 @@ class CartRepository {
           "Authorization": "Bearer ${access_token.$}",
           "App-Language": app_language.$!
         },
-        body: post_body,
+        body: postBody,
         middleware: BannedUser());
     return cartProcessResponseFromJson(response.body);
   }
 
   // cart add
   Future<dynamic> getCartAddResponse(
-      int? id, String? variant, int? user_id, int? quantity) async {
-    var post_body;
+      int? id, String? variant, int? userId, int? quantity) async {
+    String postBody;
 
-    if (guest_checkout_status.$ && !is_logged_in.$) {
-      post_body = jsonEncode({
-        "id": "${id}",
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
+      postBody = jsonEncode({
+        "id": "$id",
         "variant": variant,
         "quantity": "$quantity",
         "cost_matrix": AppConfig.purchase_code,
         "temp_user_id": temp_user_id.$
       });
     } else {
-      post_body = jsonEncode({
-        "id": "${id}",
+      postBody = jsonEncode({
+        "id": "$id",
         "variant": variant,
-        "user_id": "$user_id",
+        "user_id": "$userId",
         "quantity": "$quantity",
         "cost_matrix": AppConfig.purchase_code,
       });
     }
 
-    String url = ("${AppConfig.BASE_URL}/carts/add");
+    const String url = ("${AppConfig.BASE_URL}/carts/add");
     final response = await ApiRequest.post(
       url: url,
       headers: {
@@ -132,7 +132,7 @@ class CartRepository {
         "Authorization": "Bearer ${access_token.$}",
         "App-Language": app_language.$!
       },
-      body: post_body,
+      body: postBody,
       middleware: BannedUser(),
     );
     print("digital cart add response: ${response.body}");
@@ -140,15 +140,15 @@ class CartRepository {
   }
 
   Future<dynamic> getCartSummaryResponse() async {
-    var postBody;
+    String postBody;
 
-    if (guest_checkout_status.$ && !is_logged_in.$) {
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
       postBody = jsonEncode({"temp_user_id": temp_user_id.$});
     } else {
       postBody = jsonEncode({"user_id": user_id.$});
     }
 
-    String url = ("${AppConfig.BASE_URL}/cart-summary");
+    const String url = ("${AppConfig.BASE_URL}/cart-summary");
     final response = await ApiRequest.post(
         url: url,
         body: postBody,

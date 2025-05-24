@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:shared_value/shared_value.dart';
 
 import '../app_config.dart';
@@ -84,113 +86,116 @@ final SharedValue<bool> auction_addon_installed = SharedValue(
   value: false, // initial value
   key: "auction_addon_installed", // disk storage key for shared_preferences
 );
-// addon end
-
-// social login start
-final SharedValue<bool> allow_google_login = SharedValue(
-  value: false, // initial value
-  key: "allow_google_login", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> allow_facebook_login = SharedValue(
-  value: false, // initial value
-  key: "allow_facebook_login", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> allow_twitter_login = SharedValue(
-  value: false, // initial value
-  key: "allow_twitter_login", // disk storage key for shared_preferences
-);
-final SharedValue<bool> allow_apple_login = SharedValue(
-  value: false, // initial value
-  key: "allow_apple_login", // disk storage key for shared_preferences
-);
-// social login end
-
-// business setting
-final SharedValue<bool> pick_up_status = SharedValue(
-  value: false, // initial value
-  key: "pick_up_status", // disk storage key for shared_preferences
-);
-// business setting
-final SharedValue<bool> carrier_base_shipping = SharedValue(
-  value: false, // initial value
-  key: "carrier_base_shipping", // disk storage key for shared_preferences
-);
-// business setting
-final SharedValue<bool> google_recaptcha = SharedValue(
-  value: false, // initial value
-  key: "google_recaptcha", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> wallet_system_status = SharedValue(
-  value: false, // initial value
-  key: "wallet_system_status", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> mail_verification_status = SharedValue(
-  value: false, // initial value
-  key: "mail_verification_status", // disk storage key for shared_preferences
-);
-final SharedValue<bool> must_otp = SharedValue(
-  value: false, // initial value
-  key: "must_otp", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> conversation_system_status = SharedValue(
-  value: false, // initial value
-  key: "conversation_system", // disk storage key for shared_preferences
-);
-final SharedValue<bool> vendor_system = SharedValue(
-  value: false, // initial value
-  key: "vendor_system", // disk storage key for shared_preferences
-);
-
-final SharedValue<bool> classified_product_status = SharedValue(
-  value: false, // initial value
-  key: "classified_product", // disk storage key for shared_preferences
-);
-final SharedValue<bool> guest_checkout_status = SharedValue(
-  value: false, // initial value
-  key: "guest_checkout", // disk storage key for shared_preferences
-);
-final SharedValue<bool> last_viewed_product_status = SharedValue(
-  value: false, // initial value
-  key:
-      "last_viewed_product_activation", // disk storage key for shared_preferences
-);
-final SharedValue<bool> minimum_order_amount_check = SharedValue(
-  value: false, // initial value
-  key: "minimum_order_amount_check", // disk storage key for shared_preferences
-);
-final SharedValue<bool> minimum_order_quantity_check = SharedValue(
-  value: false, // initial value
-  key: "minimum_order_quantity_check", // disk storage key for shared_preferences
-);
-
-final SharedValue<double> minimum_order_amount = SharedValue(
-  value: 0, // initial value
-  key: "minimum_order_amount", // disk storage key for shared_preferences
-);
-final SharedValue<int> minimum_order_quantity = SharedValue(
-  value: 0, // initial value
-  key: "minimum_order_quantity", // disk storage key for shared_preferences
-);
 final SharedValue<int> lastIndexPopupBanner = SharedValue(
   value: -1, // initial value
   key: "lastIndexPopupBanner", // disk storage key for shared_preferences
 );
+// addon end
 
-bool minOrderAmountNotEnough(double amount) => minimum_order_amount_check.$ && amount < minimum_order_amount.$;
-bool minOrderQuantityNotEnough(int quantity) => minimum_order_quantity_check.$ && quantity < minimum_order_quantity.$;
+// social login start
+// final SharedValue<bool> allow_google_login = SharedValue(
+//   value: false, // initial value
+//   key: "allow_google_login", // disk storage key for shared_preferences
+// );
 
+// final SharedValue<bool> allow_facebook_login = SharedValue(
+//   value: false, // initial value
+//   key: "allow_facebook_login", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<bool> allow_twitter_login = SharedValue(
+//   value: false, // initial value
+//   key: "allow_twitter_login", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> allow_apple_login = SharedValue(
+//   value: false, // initial value
+//   key: "allow_apple_login", // disk storage key for shared_preferences
+// );
+// social login end
+
+// business setting
+// final SharedValue<bool> pick_up_status = SharedValue(
+//   value: false, // initial value
+//   key: "pick_up_status", // disk storage key for shared_preferences
+// );
+// business setting
+// final SharedValue<bool> AppConfig.businessSettingsData.carrierBaseShipping = SharedValue(
+//   value: false, // initial value
+//   key: "AppConfig.businessSettingsData.carrierBaseShipping", // disk storage key for shared_preferences
+// );
+// business setting
+// final SharedValue<bool> google_recaptcha = SharedValue(
+//   value: false, // initial value
+//   key: "google_recaptcha", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<bool> wallet_system_status = SharedValue(
+//   value: false, // initial value
+//   key: "wallet_system_status", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<bool> mail_verification_status = SharedValue(
+//   value: false, // initial value
+//   key: "mail_verification_status", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> must_otp = SharedValue(
+//   value: false, // initial value
+//   key: "must_otp", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<bool> conversation_system_status = SharedValue(
+//   value: false, // initial value
+//   key: "conversation_system", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> vendor_system = SharedValue(
+//   value: false, // initial value
+//   key: "vendor_system", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<bool> classified_product_status = SharedValue(
+//   value: false, // initial value
+//   key: "classified_product", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> guest_checkout_status = SharedValue(
+//   value: false, // initial value
+//   key: "guest_checkout", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> last_viewed_product_status = SharedValue(
+//   value: false, // initial value
+//   key:
+//       "last_viewed_product_activation", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> minimum_order_amount_check = SharedValue(
+//   value: false, // initial value
+//   key: "minimum_order_amount_check", // disk storage key for shared_preferences
+// );
+// final SharedValue<bool> minimum_order_quantity_check = SharedValue(
+//   value: false, // initial value
+//   key: "minimum_order_quantity_check", // disk storage key for shared_preferences
+// );
+
+// final SharedValue<double> minimum_order_amount = SharedValue(
+//   value: 0, // initial value
+//   key: "minimum_order_amount", // disk storage key for shared_preferences
+// );
+// final SharedValue<int> minimum_order_quantity = SharedValue(
+//   value: 0, // initial value
+//   key: "minimum_order_quantity", // disk storage key for shared_preferences
+// );
+
+bool minOrderAmountNotEnough(double amount) =>
+    AppConfig.businessSettingsData.minimumOrderAmountCheck &&
+    amount < AppConfig.businessSettingsData.minimumOrderAmount;
+bool minOrderQuantityNotEnough(int quantity) =>
+    AppConfig.businessSettingsData.minimumOrderQuantityCheck &&
+    quantity < AppConfig.businessSettingsData.minimumOrderQuantity;
 
 final SharedValue<String> guestEmail = SharedValue(
   value: "", // initial value
   key: "guest_email", // disk storage key for shared_preferences
 );
 
-final SharedValue<String> notificationShowType = SharedValue(
-  value: "", // initial value
-  key: "notification_show_type", // disk storage key for shared_preferences
-);
+// final SharedValue<String> notificationShowType = SharedValue(
+//   value: "", // initial value
+//   key: "notification_show_type", // disk storage key for shared_preferences
+// );

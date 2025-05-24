@@ -38,7 +38,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
 
-  WebViewController _webViewController = WebViewController();
+  final WebViewController _webViewController = WebViewController();
 
   @override
   void initState() {
@@ -51,8 +51,8 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
     }
   }
 
-  createOrder() async {
-    var orderCreateResponse = await PaymentRepository()
+  Future<void> createOrder() async {
+    final orderCreateResponse = await PaymentRepository()
         .getOrderCreateResponse(widget.payment_method_key);
 
     if (orderCreateResponse.result == false) {
@@ -70,8 +70,8 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
   }
 
   iyzico() {
-    String initial_url =
-        "${AppConfig.BASE_URL}/iyzico/init?payment_type=${widget.payment_type}&combined_order_id=${_combined_order_id}&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
+    final String initialUrl =
+        "${AppConfig.BASE_URL}/iyzico/init?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
     _webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
@@ -84,7 +84,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(initial_url), headers: commonHeader);
+      ..loadRequest(Uri.parse(initialUrl), headers: commonHeader);
   }
 
   @override
@@ -102,7 +102,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
 
   void getData() {
     // print('called.........');
-    String? payment_details = '';
+    String? paymentDetails = '';
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -117,16 +117,16 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
 
         Navigator.pop(context);
       } else if (responseJSON["result"] == true) {
-        payment_details = responseJSON['payment_details'];
-        onPaymentSuccess(payment_details);
+        paymentDetails = responseJSON['payment_details'];
+        onPaymentSuccess(paymentDetails);
       }
     });
   }
 
-  onPaymentSuccess(payment_details) async {
-    var iyzicoPaymentSuccessResponse = await PaymentRepository()
+  Future<void> onPaymentSuccess(paymentDetails) async {
+    final iyzicoPaymentSuccessResponse = await PaymentRepository()
         .getIyzicoPaymentSuccessResponse(widget.payment_type, widget.amount,
-            _combined_order_id, payment_details);
+            _combined_order_id, paymentDetails);
     if (iyzicoPaymentSuccessResponse.result == false) {
       ToastComponent.showDialog(
         iyzicoPaymentSuccessResponse.message!,
@@ -139,25 +139,26 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
       iyzicoPaymentSuccessResponse.message!,
     );
     if (widget.payment_type == "cart_payment") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "order_re_payment") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return OrderList(from_checkout: true);
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const OrderList(from_checkout: true);
       }));
     } else if (widget.payment_type == "wallet_payment") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return Wallet(from_recharge: true);
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const Wallet(from_recharge: true);
       }));
     } else if (widget.payment_type == "customer_package_payment") {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Profile();
+      await Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) {
+        return const Profile();
       }));
     }
   }
 
-  buildBody() {
+  Widget buildBody() {
     //print("init url");
     //print(initial_url);
 
@@ -196,7 +197,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
       ),
       title: Text(
         AppLocalizations.of(context)!.pay_with_iyzico,
-        style: TextStyle(fontSize: 16, color: MyTheme.accent_color),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,
       titleSpacing: 0,

@@ -7,18 +7,18 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class ShippingRepository {
   Future<dynamic> getDeliveryInfo() async {
-    String url = ("${AppConfig.BASE_URL}/delivery-info");
+    const String url = ("${AppConfig.BASE_URL}/delivery-info");
 
-    var post_body;
-    if (guest_checkout_status.$ && !is_logged_in.$) {
-      post_body = jsonEncode({"temp_user_id": temp_user_id.$});
+    String postBody;
+    if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
+      postBody = jsonEncode({"temp_user_id": temp_user_id.$});
     } else {
-      post_body = jsonEncode({"user_id": user_id.$});
+      postBody = jsonEncode({"user_id": user_id.$});
     }
 
     final response = await ApiRequest.post(
       url: url,
-      body: post_body,
+      body: postBody,
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${access_token.$}",

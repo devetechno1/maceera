@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -16,11 +17,11 @@ class HomeAllProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (homeData!.isAllProductInitial && homeData!.allProductList.length == 0) {
+    if (homeData!.isAllProductInitial && homeData!.allProductList.isEmpty) {
       return SingleChildScrollView(
           child: ShimmerHelper().buildProductGridShimmer(
               scontroller: homeData!.allProductScrollController));
-    } else if (homeData!.allProductList.length > 0) {
+    } else if (homeData!.allProductList.isNotEmpty) {
       //snapshot.hasData
 
       return GridView.builder(
@@ -28,13 +29,13 @@ class HomeAllProducts extends StatelessWidget {
         //addAutomaticKeepAlives: true,
         itemCount: homeData!.allProductList.length,
         controller: homeData!.allProductScrollController,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             childAspectRatio: 0.618),
-        padding: EdgeInsets.all(16.0),
-        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(AppDimensions.paddingDefault),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
           // 3
@@ -47,7 +48,7 @@ class HomeAllProducts extends StatelessWidget {
             stroked_price: homeData!.allProductList[index].stroked_price,
             has_discount: homeData!.allProductList[index].has_discount,
             discount: homeData!.allProductList[index].discount,
-            is_wholesale: null,
+            isWholesale: null,
           );
         },
       );
