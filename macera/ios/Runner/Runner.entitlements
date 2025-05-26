@@ -10,8 +10,8 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:appleerastore.com</string>
-		<string>applinks:appleerastore.com</string>
+		<string>webcredentials:maceraeg.com</string>
+		<string>applinks:maceraeg.com</string>
 	</array>
 </dict>
 </plist>
