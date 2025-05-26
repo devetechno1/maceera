@@ -138,7 +138,7 @@ class _BkashScreenState extends State<BkashScreen> {
   }
 
   void getData() {
-    String? paymentDetails = '';
+    // String? paymentDetails = '';
     _webViewController
         .runJavaScriptReturningResult("document.body.innerText")
         .then((data) {
@@ -153,7 +153,7 @@ class _BkashScreenState extends State<BkashScreen> {
         );
         Navigator.pop(context);
       } else if (responseJSON["result"] == true) {
-        paymentDetails = responseJSON['payment_details'];
+        // paymentDetails = responseJSON['payment_details'];
         onPaymentSuccess(responseJSON);
       }
     });

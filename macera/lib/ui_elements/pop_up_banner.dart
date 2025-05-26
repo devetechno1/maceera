@@ -90,7 +90,7 @@ class PopupBannerDialog extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(
-                        double.infinity, AppDimensions.paddingVeryLarge),
+                        double.infinity, AppDimensions.paddingVeryExtraLarge),
                     backgroundColor: popupBannerModel.btnBackgroundColor,
                     shape: const RoundedRectangleBorder(),
                   ),

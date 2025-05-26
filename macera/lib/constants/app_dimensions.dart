@@ -13,7 +13,7 @@ abstract final class AppDimensions {
   static const double paddingLarge = 20;
   static const double paddingMaxLarge = 24;
   static const double paddingExtraLarge = 28;
-  static const double paddingVeryLarge = 36;
+  static const double paddingVeryExtraLarge = 36;
   //Radius
   static const double radiusSmallExtra = 4;
   static const double radiusHalfSmall = 6;

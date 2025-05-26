@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:one_context/one_context.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_value/shared_value.dart';
+import 'package:device_preview/device_preview.dart';
 
 import 'app_config.dart';
 import 'custom/aiz_route.dart';
@@ -62,7 +63,6 @@ import 'screens/profile.dart';
 import 'screens/seller_details.dart';
 import 'services/push_notification_service.dart';
 import 'single_banner/photo_provider.dart';
-import 'package:device_preview/device_preview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,6 +100,7 @@ void main() async {
   );
 }
 
+bool _isUpdateScreenOpened = false;
 bool skipUpdate = false;
 
 var routes = GoRouter(
@@ -113,14 +114,12 @@ var routes = GoRouter(
         redirect: (context, state) {
           final extra = state.extra;
           if (extra is Map<String, dynamic>) {
-            if (extra["skipUpdate"] == true) {
-              skipUpdate = true;
-            }
+            if (extra["skipUpdate"] == true) skipUpdate = true;
           }
-          if (AppConfig.version !=
-                  AppConfig.businessSettingsData.updateData?.version &&
-              !skipUpdate &&
-              state.uri.path != "/update") {
+          if (AppConfig.version != AppConfig.businessSettingsData.updateData?.version 
+          && (!_isUpdateScreenOpened || !skipUpdate || AppConfig.businessSettingsData.updateData?.mustUpdate == true)
+          && state.uri.path != "/update") {
+            _isUpdateScreenOpened = true;
             return '/update?url=${state.uri.path}';
           }
           return null;

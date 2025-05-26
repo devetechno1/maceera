@@ -224,7 +224,7 @@ class _PasswordForgetState extends State<PasswordForget> {
                 ),
               Padding(
                 padding:
-                    const EdgeInsets.only(top: AppDimensions.paddingVeryLarge),
+                    const EdgeInsets.only(top: AppDimensions.paddingVeryExtraLarge),
                 child: Container(
                   height: 45,
                   child: Btn.basic(

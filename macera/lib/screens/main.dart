@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/main.dart';
 import 'package:active_ecommerce_cms_demo_app/presenter/bottom_appbar_index.dart';
@@ -14,6 +13,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../app_config.dart';
+import '../ui_elements/close_app_dialog_widget.dart';
 // import 'home/home_page_type_enum.dart';
 
 class Main extends StatefulWidget {
@@ -53,7 +53,7 @@ class _MainState extends State<Main> {
     });
   }
 
-  getCartCount() async {
+  void getCartCount() {
     Provider.of<CartCounter>(context, listen: false).getCount();
   }
 
@@ -75,8 +75,7 @@ class _MainState extends State<Main> {
       const Profile()
     ];
     fetchAll();
-    // TODO: implement initState
-    //re appear statusbar in case it was not there in the previous page
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     super.initState();
@@ -99,34 +98,10 @@ class _MainState extends State<Main> {
         _dialogShowing = true;
       });
 
-      final shouldPop = (await showDialog<bool>(
+      final bool shouldPop = await showDialog<bool?>(
             context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return Directionality(
-                textDirection:
-                    app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
-                child: AlertDialog(
-                  content: Text(
-                      AppLocalizations.of(context)!.do_you_want_close_the_app),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Platform.isAndroid ? SystemNavigator.pop() : exit(0);
-                      },
-                      child: Text(AppLocalizations.of(context)!.yes_ucf),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context, false);
-                      },
-                      child: Text(AppLocalizations.of(context)!.no_ucf),
-                    ),
-                  ],
-                ),
-              );
-            },
-          )) ??
+            builder: (_) => const CloseAppDialogWidget(),
+          ) ??
           false;
 
       setState(() {

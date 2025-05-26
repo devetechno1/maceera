@@ -17,12 +17,12 @@ import '../../helpers/main_helpers.dart';
 import '../profile.dart';
 
 class PaytmScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  var package_id;
-  int? orderId;
-  PaytmScreen(
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final package_id;
+  final int? orderId;
+  const PaytmScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,

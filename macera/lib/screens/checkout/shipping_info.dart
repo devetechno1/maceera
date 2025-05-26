@@ -75,7 +75,7 @@ class _ShippingInfoState extends State<ShippingInfo> {
     setState(() {});
   }
 
-  getSetShippingCost() async {
+  Future<void> getSetShippingCost() async {
     var shippingCostResponse;
     shippingCostResponse = await AddressRepository()
         .getShippingCostResponse(shipping_type: _sellerWiseShippingOption);
@@ -88,12 +88,12 @@ class _ShippingInfoState extends State<ShippingInfo> {
     setState(() {});
   }
 
-  resetData() {
+  void resetData() {
     clearData();
     fetchAll();
   }
 
-  clearData() {
+  void clearData() {
     _deliveryInfoList.clear();
     _sellerWiseShippingOption.clear();
     _shipping_cost_string = ". . .";
@@ -109,20 +109,20 @@ class _ShippingInfoState extends State<ShippingInfo> {
     }
   }
 
-  onPopped(value) async {
+  void onPopped(value) {
     resetData();
   }
 
-  afterAddingAnAddress() {
+  void afterAddingAnAddress() {
     resetData();
   }
 
-  onPickUpPointSwitch() async {
+  void onPickUpPointSwitch() {
     _shipping_cost_string = ". . .";
     setState(() {});
   }
 
-  changeShippingOption(ShippingOption option, index) {
+  void changeShippingOption(ShippingOption option, index) {
     if (option.index == 1) {
       if (_deliveryInfoList.first.pickupPoints!.isNotEmpty) {
         _sellerWiseShippingOption[index].shippingId =

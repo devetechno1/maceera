@@ -634,7 +634,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
                   padding: MediaQuery.of(context).viewPadding.top >
                           30 //MediaQuery.of(context).viewPadding.top is the status bar height, with a notch phone it results almost 50, without a notch it shows 24.0.For safety we have checked if its greater than thirty
                       ? const EdgeInsets.only(
-                          top: AppDimensions.paddingVeryLarge)
+                          top: AppDimensions.paddingVeryExtraLarge)
                       : const EdgeInsets.only(top: 14.0),
                   child: buildTopAppBarContainer(),
                 ),

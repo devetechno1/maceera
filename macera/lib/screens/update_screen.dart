@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../data_model/business_settings/update_model.dart';
 import '../services/navigation_service.dart';
-import 'home/home.dart';
 
 class UpdateScreen extends StatelessWidget {
   const UpdateScreen({super.key});
@@ -13,8 +12,12 @@ class UpdateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final UpdateDataModel updateData =
         AppConfig.businessSettingsData.updateData!;
+    final bool canGoHome = !updateData.mustUpdate;
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (canGoHome) navigateToHome(context);
+      },
       child: Scaffold(
         body: Center(
           child: Padding(
@@ -22,12 +25,10 @@ class UpdateScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(flex: 1),
                 Image.asset(
                   AppImages.applogo,
                   width: 200,
                   height: 250,
-                  //  color: Theme.of(context).primaryColor,
                 ),
                 const SizedBox(height: AppDimensions.paddingSmall),
                 Text(
@@ -42,15 +43,14 @@ class UpdateScreen extends StatelessWidget {
                 Text(
                   LangText(context).local.please_update_to_continue,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                const SizedBox(height: AppDimensions.paddingSmall),
-                //  Spacer(flex: 2,),
-                const SizedBox(height: AppDimensions.paddingExtraLarge),
+                const SizedBox(height: AppDimensions.paddingVeryExtraLarge),
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.system_update_alt, color: Colors.white),
+                  icon: const Icon(
+                    Icons.system_update_alt,
+                    color: Colors.white,
+                  ),
                   label: Text(
                     LangText(context).local.update_now_ucf,
                     style: const TextStyle(
@@ -71,39 +71,20 @@ class UpdateScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: AppDimensions.paddingSmall),
-                if (!updateData.mustUpdate)
-                  GestureDetector(
-                    onTap: () {
-                      final GoRouter goRouter = GoRouter.of(context);
-                      final String newPath =
-                          goRouter.state?.uri.queryParameters['url'] ?? '/';
-                      goRouter.go(newPath, extra: {'skipUpdate': true});
-                    },
+                const SizedBox(height: AppDimensions.paddingLarge),
+                if (canGoHome)
+                  TextButton(
+                    onPressed: () => navigateToHome(context),
                     child: Text(
                       LangText(context).local.skip_ucf,
                       style: TextStyle(
-                       
-                       color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).primaryColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         // decoration: TextDecoration.underline, // يمكن إضافة خط تحت النص ليظهر أكثر وضوحًا
                       ),
                     ),
                   ),
-                // const SizedBox(height: AppDimensions.paddingMaxLarge),
-                const Spacer(),
-                //    GestureDetector(
-                //   onTap: () => NavigationService.handleUrls(
-                //     updateData.storeLink,
-                //     context,
-                //   ),
-                //   child: Image.asset(
-                //     _getDeviceImage(),
-                //     height: 140,
-                //     width: 140,
-                //   ),
-                // )
               ],
             ),
           ),
@@ -111,17 +92,10 @@ class UpdateScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-// String _getDeviceImage() {
-//   switch (AppConfig.storeType) {
-//     case StoreType.appleStore:
-//       return AppImages.applestore;
-//     case StoreType.playStore:
-//       return AppImages.googleplay;
-//     case StoreType.appGallery:
-//       return AppImages.huawei;
-//     default:
-//       return AppImages.placeholder;
-//   }
-// }
+  void navigateToHome(BuildContext context) {
+    final GoRouter goRouter = GoRouter.of(context);
+    final String newPath = goRouter.state?.uri.queryParameters['url'] ?? '/';
+    goRouter.go(newPath, extra: {'skipUpdate': true});
+  }
+}

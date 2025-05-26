@@ -16,12 +16,12 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../helpers/main_helpers.dart';
 
 class MyFatooraScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  String? payment_method_key;
-  String package_id;
-  int? orderId;
-  MyFatooraScreen(
+  final double? amount;
+  final String payment_type;
+  final String? payment_method_key;
+  final String package_id;
+  final int? orderId;
+  const MyFatooraScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,

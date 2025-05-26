@@ -39,7 +39,7 @@ class _BkashScreenState extends State<BkashScreen> {
   String? _initial_url = "";
   bool _initial_url_fetched = false;
 
-  final String? _token = "";
+  // final String? _token = "";
   bool showLoading = false;
 
   final WebViewController _webViewController = WebViewController();

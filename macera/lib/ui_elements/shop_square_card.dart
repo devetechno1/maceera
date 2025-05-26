@@ -53,7 +53,7 @@ class _ShopSquareCardState extends State<ShopSquareCard> {
                     color: Colors.white,
                     borderRadius:
                         BorderRadius.circular(AppDimensions.radiusNormal)),
-                padding: const EdgeInsets.all(AppDimensions.paddingVeryLarge),
+                padding: const EdgeInsets.all(AppDimensions.paddingVeryExtraLarge),
                 child: _buildImage()),
             Column(
               // mainAxisAlignment: MainAxisAlignment.spaceAround,

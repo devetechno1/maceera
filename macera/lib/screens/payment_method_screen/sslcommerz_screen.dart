@@ -15,12 +15,12 @@ import '../../helpers/main_helpers.dart';
 import '../profile.dart';
 
 class SslCommerzScreen extends StatefulWidget {
-  double? amount;
-  String payment_type;
-  int? orderId;
-  String? payment_method_key;
-  var package_id;
-  SslCommerzScreen(
+  final double? amount;
+  final String payment_type;
+  final int? orderId;
+  final String? payment_method_key;
+  final package_id;
+  const SslCommerzScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,

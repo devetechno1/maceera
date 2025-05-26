@@ -223,7 +223,7 @@ class _OtpState extends State<Otp> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        top: AppDimensions.paddingVeryLarge, bottom: 60),
+                        top: AppDimensions.paddingVeryExtraLarge, bottom: 60),
                     child: Visibility(
                       visible: !canResend,
                       child: TimerWidget(
@@ -241,7 +241,7 @@ class _OtpState extends State<Otp> {
                   // SizedBox(height: 15,),
                   Padding(
                     padding: const EdgeInsets.only(
-                        top: AppDimensions.paddingVeryLarge),
+                        top: AppDimensions.paddingVeryExtraLarge),
                     child: Center(
                       child: InkWell(
                         onTap: () {
