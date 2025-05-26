@@ -22,8 +22,8 @@ enum StoreType {
 
 class UpdateDataModel {
   final bool mustUpdate;
-  final String version;
-  final String storeLink;
+  final String? version;
+  final String? storeLink;
 
   const UpdateDataModel({
     required this.mustUpdate,

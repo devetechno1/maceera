@@ -519,20 +519,20 @@ class BusinessSettingsData extends Equatable {
       case StoreType.appGallery:
         updateData = UpdateDataModel(
           mustUpdate: '${data['must_appgallery_update']}' == '1', 
-          version: '${data['appgallery_version']}', 
-          storeLink: '${data['appgallery_link']}',
+          version: data['appgallery_version']?.toString(), 
+          storeLink: data['appgallery_link']?.toString(),
         );
       case StoreType.playStore:
         updateData = UpdateDataModel(
           mustUpdate: '${data['must_googleplay_update']}' == '1', 
-          version: '${data['googleplay_version']}', 
-          storeLink: '${data['googleplay_link']}',
+          version: data['googleplay_version']?.toString(),
+          storeLink: data['googleplay_link']?.toString(),
         );
       case StoreType.appleStore:
         updateData = UpdateDataModel(
           mustUpdate: '${data['must_appstore_update']}' == '1', 
-          version: '${data['appstore_version']}', 
-          storeLink: '${data['appstore_link']}',
+          version: data['appstore_version']?.toString(), 
+          storeLink: data['appstore_link']?.toString(),
         );
       case StoreType.unknown:
         updateData = null;

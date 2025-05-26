@@ -116,8 +116,9 @@ var routes = GoRouter(
           if (extra is Map<String, dynamic>) {
             if (extra["skipUpdate"] == true) skipUpdate = true;
           }
-          if (AppConfig.version != AppConfig.businessSettingsData.updateData?.version 
-          && (!_isUpdateScreenOpened || !skipUpdate || AppConfig.businessSettingsData.updateData?.mustUpdate == true)
+          final UpdateDataModel? updateData = AppConfig.businessSettingsData.updateData;
+          if ((updateData?.version != null && AppConfig.version != updateData?.version) 
+          && (!_isUpdateScreenOpened || !skipUpdate || updateData?.mustUpdate == true)
           && state.uri.path != "/update") {
             _isUpdateScreenOpened = true;
             return '/update?url=${state.uri.path}';
