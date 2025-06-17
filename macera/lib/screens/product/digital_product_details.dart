@@ -298,10 +298,11 @@ class _DigitalProductDetailsState extends State<DigitalProductDetails>
         : "";
 
     final variantResponse = await ProductRepository().getVariantWiseInfo(
-        slug: widget.slug,
-        color: colorString,
-        variants: _choiceString,
-        qty: _quantity);
+      slug: widget.slug,
+      color: colorString,
+      variants: _choiceString,
+      qty: _quantity,
+    );
     _stock = variantResponse.variantData!.stock;
     _stock_txt = variantResponse.variantData!.stockTxt;
     if (_quantity! > _stock!) {

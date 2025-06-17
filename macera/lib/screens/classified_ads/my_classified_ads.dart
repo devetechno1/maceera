@@ -202,7 +202,7 @@ class _MyClassifiedAdsState extends State<MyClassifiedAds> {
                 color: MyTheme.dark_font_grey),
           ),
           backgroundColor: MyTheme.mainColor,
-          leading: UsefulElements.backButton(context),
+          leading: UsefulElements.backButton(),
         ),
         backgroundColor: MyTheme.mainColor,
         body: buildBody(context),

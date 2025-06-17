@@ -39,6 +39,8 @@ class _PhonepayScreenState extends State<PhonepayScreen> {
   bool _order_init = false;
 
   final WebViewController _webViewController = WebViewController();
+    bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
+
 
   @override
   void initState() {
@@ -62,7 +64,12 @@ class _PhonepayScreenState extends State<PhonepayScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //    Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
           onPageFinished: (page) {
             if (page.contains("/phonepe/redirecturl")) {
               getData();
@@ -90,7 +97,7 @@ class _PhonepayScreenState extends State<PhonepayScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -102,9 +109,15 @@ class _PhonepayScreenState extends State<PhonepayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection:
-          app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if(!didPop){
+          Navigator.of(context).pop(goToOrdersScreen);
+        }
+      },
+      // textDirection:
+      //     app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: buildAppBar(context),
@@ -189,7 +202,7 @@ class _PhonepayScreenState extends State<PhonepayScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

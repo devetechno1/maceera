@@ -39,6 +39,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
   bool _order_init = false;
 
   final WebViewController _webViewController = WebViewController();
+    bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -77,7 +78,13 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          
+          // },
           onPageFinished: (page) {
             print(page.toString());
             getData();
@@ -89,9 +96,15 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection:
-          app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if(!didPop){
+          Navigator.of(context).pop(goToOrdersScreen);
+        }
+      },
+      // textDirection:
+      //     app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: buildAppBar(context),
@@ -115,7 +128,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
           responseJSON["message"],
         );
 
-        Navigator.pop(context);
+        Navigator.of(context).pop(goToOrdersScreen);
       } else if (responseJSON["result"] == true) {
         paymentDetails = responseJSON['payment_details'];
         onPaymentSuccess(paymentDetails);
@@ -131,7 +144,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
       ToastComponent.showDialog(
         iyzicoPaymentSuccessResponse.message!,
       );
-      Navigator.pop(context);
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -192,7 +205,7 @@ class _IyzicoScreenState extends State<IyzicoScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

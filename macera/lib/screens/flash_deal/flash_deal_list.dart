@@ -640,7 +640,7 @@ class _FlashDealListState extends State<FlashDealList> {
       centerTitle: false,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

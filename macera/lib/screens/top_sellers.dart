@@ -68,7 +68,7 @@ class _TopSellersState extends State<TopSellers> {
     return AppBar(
       backgroundColor: MyTheme.mainColor,
       // centerTitle: true,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Text(
         LangText(context).local.top_sellers_ucf,
         style: TextStyle(

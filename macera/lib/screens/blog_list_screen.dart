@@ -83,7 +83,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
             width: 20,
             margin: const EdgeInsetsDirectional.only(
                 end: AppDimensions.paddingDefault),
-            child: UsefulElements.backButton(context, color: "black"),
+            child: UsefulElements.backButton(color: "black"),
           ),
           Container(
             padding:

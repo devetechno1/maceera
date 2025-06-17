@@ -129,7 +129,7 @@ class _DigitalProductsState extends State<DigitalProducts> {
       scrolledUnderElevation: 0.0,
       backgroundColor: MyTheme.mainColor,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Padding(
         padding: const EdgeInsetsDirectional.only(end: 37),
         child: Row(

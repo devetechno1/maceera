@@ -24,6 +24,7 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
+  animated_text_lerp: ^2.0.0
   app_links: ^6.3.3
   device_info_plus: ^11.3.0
   device_preview: ^1.2.0

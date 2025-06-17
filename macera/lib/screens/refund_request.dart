@@ -138,7 +138,7 @@ class _RefundRequestState extends State<RefundRequest> {
       centerTitle: false,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

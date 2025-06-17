@@ -663,6 +663,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           height: 36,
           child: CustomInternationalPhoneNumberInput(
             countries: countries_code,
+            readOnly : true,
             hintText: LangText(context).local.phone_number_ucf,
             errorMessage: LangText(context).local.invalid_phone_number,
             initialValue: initialValue,

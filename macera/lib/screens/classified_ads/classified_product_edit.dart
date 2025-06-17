@@ -296,7 +296,7 @@ class _ClassifiedProductEditState extends State<ClassifiedProductEdit> {
             ),
           ),
           backgroundColor: MyTheme.white,
-          leading: UsefulElements.backButton(context),
+          leading: UsefulElements.backButton(),
         ),
         body: buildBody(),
       ),

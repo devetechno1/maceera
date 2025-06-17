@@ -12,7 +12,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 import '../data_model/reorder_response.dart';
 
 class OrderRepository {
-  Future<dynamic> getOrderList(
+  Future<OrderMiniResponse> getOrderList(
       {page = 1, payment_status = "", delivery_status = ""}) async {
     final String url = ("${AppConfig.BASE_URL}/purchase-history" +
         "?page=$page&payment_status=$payment_status&delivery_status=$delivery_status");

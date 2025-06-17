@@ -1,22 +1,26 @@
 import 'package:active_ecommerce_cms_demo_app/app_config.dart';
+import 'package:animated_text_lerp/animated_text_lerp.dart';
 import 'package:flutter/material.dart';
 
-import '../helpers/system_config.dart';
+import '../data_model/cart_response.dart';
 import '../my_theme.dart';
 import '../presenter/cart_provider.dart';
 import 'box_decorations.dart';
 import 'device_info.dart';
+import 'lang_text.dart';
 
 class CartSellerItemCardWidget extends StatelessWidget {
   final int sellerIndex;
   final int itemIndex;
   final CartProvider cartProvider;
+  final int index;
 
   const CartSellerItemCardWidget(
       {Key? key,
       required this.cartProvider,
       required this.sellerIndex,
-      required this.itemIndex})
+      required this.itemIndex,
+      required this.index})
       : super(key: key);
 
   @override
@@ -29,22 +33,50 @@ class CartSellerItemCardWidget extends StatelessWidget {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Container(
-                width: DeviceInfo(context).width! / 4,
-                height: 120,
-                child: ClipRRect(
-                    borderRadius: const BorderRadius.horizontal(
-                        left: Radius.circular(AppDimensions.radiusHalfSmall),
-                        right: Radius.zero),
+            SizedBox(
+              width: DeviceInfo(context).width! / 4,
+              height: 120,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadiusDirectional.horizontal(
+                      start: Radius.circular(AppDimensions.radiusHalfSmall),
+                      end: Radius.zero,
+                    ),
                     child: FadeInImage.assetNetwork(
                       placeholder: AppImages.placeholder,
                       image: cartProvider.shopList[sellerIndex]
-                          .cartItems[itemIndex].productThumbnailImage,
+                          .cartItems![itemIndex].productThumbnailImage!,
                       fit: BoxFit.contain,
-                    ))),
-            Container(
-              //color: Colors.red,
-              width: DeviceInfo(context).width! / 3,
+                    ),
+                  ),
+                  if (cartProvider.shopList[sellerIndex].cartItems![itemIndex]
+                      .isNotAvailable)
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: const BorderRadiusDirectional.horizontal(
+                          start: Radius.circular(
+                            AppDimensions.radiusHalfSmall,
+                          ),
+                          end: Radius.zero,
+                        ),
+                      ),
+                      child: Text(
+                        LangText(context).local.notAvailable,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
@@ -52,8 +84,8 @@ class CartSellerItemCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      cartProvider.shopList[sellerIndex].cartItems[itemIndex]
-                          .productName,
+                      cartProvider.shopList[sellerIndex].cartItems![itemIndex]
+                          .productName!,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       style: const TextStyle(
@@ -61,63 +93,92 @@ class CartSellerItemCardWidget extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: AppDimensions.paddingLarge),
-                      child: Row(
-                        children: [
-                          Text(
-                            SystemConfig.systemCurrency != null
-                                ? cartProvider.shopList[sellerIndex]
-                                    .cartItems[itemIndex].price
-                                    .replaceAll(
-                                        SystemConfig.systemCurrency!.code,
-                                        SystemConfig.systemCurrency!.symbol)
-                                : cartProvider.shopList[sellerIndex]
-                                    .cart_items[itemIndex].price,
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ],
+                    AnimatedNumberText<double>(
+                      double.tryParse(
+                            cartProvider.shopList[sellerIndex]
+                                .cartItems![itemIndex].price!
+                                .replaceAll(RegExp('[^0-9.]'), ''),
+                          ) ??
+                          0.0,
+                      duration: const Duration(milliseconds: 500),
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
+                      formatter: (value) => '${value.toStringAsFixed(2)}',
                     ),
+                    Builder(
+                      builder: (context) {
+                        String? text;
+                        final CartItem item = cartProvider
+                            .shopList[sellerIndex].cartItems![itemIndex];
+                        if (item.quantity < item.minQuantity) {
+                          text = LangText(context)
+                              .local
+                              .minimumOrderQuantity(item.minQuantity);
+                        } else if (item.quantity > item.maxQuantity) {
+                          text = LangText(context)
+                              .local
+                              .maxOrderQuantityLimit(item.maxQuantity);
+                        }
+                        if (text == null) return const SizedBox();
+                        return Center(
+                          child: Text(
+                            text,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
             ),
-            const Spacer(),
-            Container(
-              width: 32,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ////////////////////////////////////////////////
-                  GestureDetector(
-                    onTap: () async {
-                      cartProvider.onPressDelete(
-                        context,
-                        cartProvider
-                            .shopList[sellerIndex].cartItems[itemIndex].id
-                            .toString(),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: AppDimensions.paddingNormal),
-                      child: Image.asset(
-                        AppImages.trash,
-                        height: 16,
-                        color: Colors.red,
-                      ),
+            Column(
+              children: [
+                Visibility(
+                  visible: cartProvider
+                      .shopList[sellerIndex].cartItems![index].isLoading,
+                  child: const Padding(
+                    padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(),
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                const Spacer(),
+                ////////////////////////////////////////////////
+                GestureDetector(
+                  onTap: () async {
+                    cartProvider.onPressDelete(
+                        context,
+                        cartProvider
+                            .shopList[sellerIndex].cartItems![itemIndex].id
+                            .toString(),
+                        sellerIndex,
+                        itemIndex);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: AppDimensions.paddingNormal),
+                    child: Image.asset(
+                      AppImages.trash,
+                      height: 16,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.all(AppDimensions.paddingDefault),
@@ -127,7 +188,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       if (cartProvider.shopList[sellerIndex]
-                              .cartItems[itemIndex].auctionProduct ==
+                              .cartItems![itemIndex].auctionProduct ==
                           0) {
                         cartProvider.onQuantityIncrease(
                             context, sellerIndex, itemIndex);
@@ -142,7 +203,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                       child: Icon(
                         Icons.add,
                         color: cartProvider.shopList[sellerIndex]
-                                    .cartItems[itemIndex].auctionProduct ==
+                                    .cartItems![itemIndex].auctionProduct ==
                                 0
                             ? Theme.of(context).primaryColor
                             : MyTheme.grey_153,
@@ -151,21 +212,26 @@ class CartSellerItemCardWidget extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         top: AppDimensions.paddingSmall,
-                        bottom: AppDimensions.paddingSmall),
-                    child: Text(
-                      cartProvider
-                          .shopList[sellerIndex].cartItems[itemIndex].quantity
-                          .toString(),
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor, fontSize: 16),
-                    ),
-                  ),
+                        bottom: AppDimensions.paddingSmall,
+                      ),
+                      child: Text(
+                        "${int.tryParse(
+                              cartProvider.shopList[sellerIndex]
+                                      .cartItems?[itemIndex].quantity
+                                      .toString() ??
+                                  '0',
+                            ) ?? 0}",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 16,
+                        ),
+                      )),
                   GestureDetector(
                     onTap: () {
                       if (cartProvider.shopList[sellerIndex]
-                              .cartItems[itemIndex].auctionProduct ==
+                              .cartItems![itemIndex].auctionProduct ==
                           0) {
                         cartProvider.onQuantityDecrease(
                             context, sellerIndex, itemIndex);
@@ -180,7 +246,7 @@ class CartSellerItemCardWidget extends StatelessWidget {
                       child: Icon(
                         Icons.remove,
                         color: cartProvider.shopList[sellerIndex]
-                                    .cartItems[itemIndex].auctionProduct ==
+                                    .cartItems![itemIndex].auctionProduct ==
                                 0
                             ? Theme.of(context).primaryColor
                             : MyTheme.grey_153,

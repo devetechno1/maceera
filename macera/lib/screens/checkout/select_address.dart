@@ -39,7 +39,7 @@ class _SelectAddressState extends State<SelectAddress> {
           child: Scaffold(
             appBar: AppBar(
               elevation: 0,
-              leading: UsefulElements.backButton(context),
+              leading: UsefulElements.backButton(),
               backgroundColor: MyTheme.white,
               title: buildAppbarTitle(context),
             ),
@@ -505,7 +505,7 @@ class _SelectAddressState extends State<SelectAddress> {
         : Container();
   }
 
-  BottomAppBar buildBottomAppBar(BuildContext context, provider) {
+  BottomAppBar buildBottomAppBar(BuildContext context, SelectAddressProvider provider) {
     return BottomAppBar(
       color: Colors.transparent,
       child: Container(
@@ -576,7 +576,7 @@ class _SelectAddressState extends State<SelectAddress> {
   Container buildAppbarBackArrow() {
     return Container(
       width: 40,
-      child: UsefulElements.backButton(context),
+      child: UsefulElements.backButton(),
     );
   }
 }

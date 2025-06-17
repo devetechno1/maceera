@@ -141,7 +141,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         "phone": phone,
         "longitude": null,
         "latitude": null,
-        "temp_user_id": temp_user_id.$
+        "temp_user_id": temp_user_id.$,
       });
       final postBody = jsonEncode(postValue);
 

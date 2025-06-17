@@ -1,7 +1,9 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
+import 'dart:math';
 
+import 'package:animated_text_lerp/animated_text_lerp.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -96,11 +98,26 @@ class _ProductDetailsState extends State<ProductDetails>
   var _choiceString = "";
   String? _variant = "";
   String? _totalPrice = "...";
+  double _basePrice = 0;
   var _singlePrice;
   var _singlePriceString;
-  int? _quantity = 1;
-  int? _stock = 0;
+  int _stock = 0;
+  int _quantity = 1;
+  int _inCart = 0;
   var _stock_txt;
+
+  int get maxQuantity => min(_stock, _productDetails?.maxQty ?? _stock);
+  int get minQuantity => _productDetails?.minQty ?? 1;
+
+  double get totalBasePrice => _basePrice * _quantity;
+
+  T whenItemInCart<T>(T inCart, T notInCart) {
+    if (_inCart > 0) {
+      return inCart;
+    } else {
+      return notInCart;
+    }
+  }
 
   double opacity = 0;
 
@@ -108,7 +125,6 @@ class _ProductDetailsState extends State<ProductDetails>
   bool _relatedProductInit = false;
   final List<dynamic> _topProducts = [];
   bool _topProductInit = false;
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -127,8 +143,7 @@ class _ProductDetailsState extends State<ProductDetails>
         },
       );
     });
-    quantityText.text = "${_quantity ?? 0}";
-    controller;
+    quantityText.text = "$_quantity";
     _ColorAnimationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 0));
 
@@ -162,15 +177,16 @@ class _ProductDetailsState extends State<ProductDetails>
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   _mainScrollController.dispose();
-  //   _variantScrollController.dispose();
-  //   _imageScrollController.dispose();
-  //   _colorScrollController.dispose();
-  //   _ColorAnimationController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    quantityText.dispose();
+    _mainScrollController.dispose();
+    _variantScrollController.dispose();
+    _imageScrollController.dispose();
+    _colorScrollController.dispose();
+    _ColorAnimationController.dispose();
+    super.dispose();
+  }
 
   fetchAll() {
     fetchProductDetails();
@@ -219,7 +235,7 @@ class _ProductDetailsState extends State<ProductDetails>
       _singlePrice = _productDetails!.calculable_price;
       _singlePriceString = _productDetails!.main_price;
       // fetchVariantPrice();
-      _stock = _productDetails!.current_stock;
+      _stock = _productDetails!.current_stock ?? _stock;
       _productDetails!.photos!.forEach((photo) {
         _productImageList.add(photo.path);
       });
@@ -231,7 +247,7 @@ class _ProductDetailsState extends State<ProductDetails>
         _colorList.add(color);
       });
       setChoiceString();
-      fetchAndSetVariantWiseInfo(change_appbar_string: true);
+      fetchAndSetVariantWiseInfo(change_appbar_string: true, inInit: true);
       _productDetailsFetched = true;
 
       setState(() {});
@@ -292,6 +308,7 @@ class _ProductDetailsState extends State<ProductDetails>
     if (is_logged_in.$ == false) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.you_need_to_log_in,
+        isError: true,
       );
       return;
     }
@@ -307,43 +324,52 @@ class _ProductDetailsState extends State<ProductDetails>
     }
   }
 
-  setQuantity(quantity) {
-    quantityText.text = "${quantity ?? 0}";
-  }
-
-  fetchAndSetVariantWiseInfo({bool change_appbar_string = true}) async {
+  Future<void> fetchAndSetVariantWiseInfo({
+    bool change_appbar_string = true,
+    bool inInit = false,
+  }) async {
     final colorString = _colorList.isNotEmpty
         ? _colorList[_selectedColorIndex].toString().replaceAll("#", "")
         : "";
 
+    if (inInit) _quantity = minQuantity;
+
     final variantResponse = await ProductRepository().getVariantWiseInfo(
-        slug: widget.slug,
-        color: colorString,
-        variants: _choiceString,
-        qty: _quantity);
-    _stock = variantResponse.variantData!.stock;
+      slug: widget.slug,
+      color: colorString,
+      variants: _choiceString,
+      qty: _quantity,
+    );
+    _stock = variantResponse.variantData!.stock ?? _stock;
     _stock_txt = variantResponse.variantData!.stockTxt;
-    if (_quantity! > _stock!) {
-      _quantity = _stock;
+    _inCart = variantResponse.variantData!.inCart ?? 0;
+
+    if (inInit) _quantity = _inCart;
+
+    if (_quantity > maxQuantity) {
+      _quantity = maxQuantity;
+    } else if (_quantity < minQuantity) {
+      _quantity = minQuantity;
     }
 
     _variant = variantResponse.variantData!.variant;
     _totalPrice = variantResponse.variantData!.price;
+    _basePrice = variantResponse.variantData!.basePrice;
 
     int pindex = 0;
     _productDetails!.photos?.forEach((photo) {
       if (photo.variant == _variant &&
           variantResponse.variantData!.image != "") {
         _currentImage = pindex;
-        _carouselController.jumpToPage(pindex);
+        _carouselController.animateToPage(pindex);
       }
       pindex++;
     });
-    setQuantity(_quantity);
+    quantityText.text = "$_quantity";
     setState(() {});
   }
 
-  reset() {
+  void reset() {
     restProductDetailValues();
     _currentImage = 0;
     _productImageList.clear();
@@ -354,14 +380,14 @@ class _ProductDetailsState extends State<ProductDetails>
     _choiceString = "";
     _variant = "";
     _selectedColorIndex = 0;
-    _quantity = 1;
+    _quantity = _inCart == 0 ? minQuantity : _inCart;
     _productDetailsFetched = false;
     _isInWishList = false;
     sellerChatTitleController.clear();
     setState(() {});
   }
 
-  restProductDetailValues() {
+  void restProductDetailValues() {
     _appbarPriceString = " . . .";
     _productDetails = null;
     _productImageList.clear();
@@ -374,29 +400,32 @@ class _ProductDetailsState extends State<ProductDetails>
     fetchAll();
   }
 
-  _onVariantChange(_choice_options_index, value) {
+  void _onVariantChange(_choice_options_index, value) {
     _selectedChoices[_choice_options_index] = value;
     setChoiceString();
     setState(() {});
-    fetchAndSetVariantWiseInfo();
+    fetchAndSetVariantWiseInfo(inInit: true);
   }
 
-  _onColorChange(index) {
+  void _onColorChange(index) {
     _selectedColorIndex = index;
     setState(() {});
-    fetchAndSetVariantWiseInfo();
+    fetchAndSetVariantWiseInfo(inInit: true);
   }
 
-  onPressAddToCart(context, snackbar) {
+  void onPressAddToCart(context, snackbar) {
     addToCart(mode: "add_to_cart", context: context, snackbar: snackbar);
   }
 
-  onPressBuyNow(context) {
+  void onPressBuyNow(context) {
     addToCart(mode: "buy_now", context: context);
   }
 
-  Future<void> addToCart(
-      {mode, required BuildContext context, snackbar = null}) async {
+  Future<void> addToCart({
+    mode,
+    required BuildContext context,
+    snackbar = null,
+  }) async {
     // if (is_logged_in.$ == false) {
     //   // ToastComponent.showDialog(AppLocalizations.of(context).common_login_warning, context,
     //   //     gravity: Toast.center, duration: Toast.lengthLong);
@@ -407,21 +436,26 @@ class _ProductDetailsState extends State<ProductDetails>
 
     if (!AppConfig.businessSettingsData.guestCheckoutStatus) {
       if (is_logged_in.$ == false) {
-        print("object $context");
         context.push("/users/login");
         return;
       }
     }
+    await fetchAndSetVariantWiseInfo();
 
     final cartAddResponse = await CartRepository().getCartAddResponse(
-        _productDetails?.id, _variant, user_id.$, _quantity);
+      _productDetails?.id,
+      _variant,
+      user_id.$,
+      _quantity,
+    );
 
     temp_user_id.$ = cartAddResponse.tempUserId;
-    temp_user_id.save();
+    await temp_user_id.save();
 
     if (cartAddResponse.result == false) {
       ToastComponent.showDialog(
         cartAddResponse.message,
+        isError: true,
       );
       return;
     } else {
@@ -784,6 +818,7 @@ class _ProductDetailsState extends State<ProductDetails>
   dynamic showLoginWarning() {
     return ToastComponent.showDialog(
       AppLocalizations.of(context)!.you_need_to_log_in,
+      isError: true,
     );
   }
 
@@ -799,6 +834,7 @@ class _ProductDetailsState extends State<ProductDetails>
     if (title == "" || message == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.title_or_message_empty_warning,
+        isError: true,
       );
       return;
     }
@@ -812,6 +848,7 @@ class _ProductDetailsState extends State<ProductDetails>
     if (conversationCreateResponse.result == false) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.could_not_create_conversation,
+        isError: true,
       );
       return;
     }
@@ -836,7 +873,10 @@ class _ProductDetailsState extends State<ProductDetails>
   Widget build(BuildContext context) {
     final SnackBar _addedToCartSnackbar = SnackBar(
       content: Text(
-        AppLocalizations.of(context)!.added_to_cart,
+        whenItemInCart<String>(
+          AppLocalizations.of(context)!.update_cart_ucf,
+          AppLocalizations.of(context)!.added_to_cart,
+        ),
         style: const TextStyle(color: MyTheme.font_grey),
       ),
       backgroundColor: MyTheme.soft_accent_color,
@@ -878,7 +918,7 @@ class _ProductDetailsState extends State<ProductDetails>
                   backgroundColor: MyTheme.mainColor,
                   pinned: true,
                   automaticallyImplyLeading: _scrollPosition > 250,
-                  expandedHeight: 355.0,
+                  expandedHeight: 375.0,
                   title: AnimatedOpacity(
                       opacity: _scrollPosition > 250 ? 1 : 0,
                       duration: const Duration(milliseconds: 200),
@@ -897,15 +937,20 @@ class _ProductDetailsState extends State<ProductDetails>
                     background: Stack(
                       children: [
                         Positioned.fill(
-                          child: ProductSliderImageWidget(
-                            productImageList: _productImageList,
-                            currentImage: _currentImage,
-                            carouselController: _carouselController,
+                          child: SafeArea(
+                            child: ProductSliderImageWidget(
+                              productImageList: _productImageList,
+                              currentImage: _currentImage,
+                              carouselController: _carouselController,
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 48, left: 33, right: 33),
+                            top: 48,
+                            left: 33,
+                            right: 33,
+                          ),
                           child: Row(
                             children: [
                               Builder(
@@ -1272,71 +1317,77 @@ class _ProductDetailsState extends State<ProductDetails>
                               ),
                             ],
                           ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            if (_productDetails!.video_link == "") {
-                              ToastComponent.showDialog(
-                                AppLocalizations.of(context)!
-                                    .video_not_available,
-                              );
-                              return;
-                            }
+                        if (_productDetails?.video_link?.isNotEmpty ==
+                            true) ...[
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          // if (_productDetails?.video_link != null &&
+                          //     _productDetails!.video_link!.isNotEmpty)
+                          InkWell(
+                            onTap: () {
+                              if (_productDetails!.video_link == "") {
+                                ToastComponent.showDialog(
+                                  AppLocalizations.of(context)!
+                                      .video_not_available,
+                                  isError: true,
+                                );
+                                return;
+                              }
 
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return VideoDescription(
-                                url: _productDetails!.video_link,
-                              );
-                            })).then((value) {
-                              onPopped(value);
-                            });
-                          },
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  spreadRadius: 0,
-                                  blurRadius: 16,
-                                  offset: const Offset(
-                                      0, 0), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                18.0,
-                                14.0,
-                                18.0,
-                                14.0,
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!.video_ucf,
-                                    style: const TextStyle(
-                                        color: Color(0xff3E4447),
-                                        fontSize: 13,
-                                        fontFamily: 'Public Sans',
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const Spacer(),
-                                  Image.asset(
-                                    "assets/arrow.png",
-                                    color: const Color(0xff6B7377),
-                                    height: 11,
-                                    width: 20,
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return VideoDescription(
+                                  url: _productDetails!.video_link,
+                                );
+                              })).then((value) {
+                                onPopped(value);
+                              });
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.08),
+                                    spreadRadius: 0,
+                                    blurRadius: 16,
+                                    offset: const Offset(
+                                        0, 0), // changes position of shadow
                                   ),
                                 ],
                               ),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  18.0,
+                                  14.0,
+                                  18.0,
+                                  14.0,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context)!.video_ucf,
+                                      style: const TextStyle(
+                                          color: Color(0xff3E4447),
+                                          fontSize: 13,
+                                          fontFamily: 'Public Sans',
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const Spacer(),
+                                    Image.asset(
+                                      "assets/arrow.png",
+                                      color: const Color(0xff6B7377),
+                                      height: 11,
+                                      width: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                         const SizedBox(
                           height: 16,
                         ),
@@ -1393,28 +1444,29 @@ class _ProductDetailsState extends State<ProductDetails>
                         ),
                       ]),
                 ),
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        18.0,
-                        22.0,
-                        18.0,
-                        0.0,
+                if (_relatedProducts.isNotEmpty || _relatedProductInit == false)
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          18.0,
+                          22.0,
+                          18.0,
+                          0.0,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .products_you_may_also_like,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Roboto',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      child: Text(
-                        AppLocalizations.of(context)!
-                            .products_you_may_also_like,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Roboto',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    buildProductsMayLikeList()
-                  ]),
-                ),
+                      buildProductsMayLikeList()
+                    ]),
+                  ),
 
                 //Top selling product
                 SliverList(
@@ -1533,9 +1585,10 @@ class _ProductDetailsState extends State<ProductDetails>
                   children: [
                     InkWell(
                         onTap: () {
-                          if (is_logged_in == false) {
+                          if (is_logged_in.$ == false) {
                             ToastComponent.showDialog(
                               LangText(context).local.you_need_to_log_in,
+                              isError: true,
                             );
                             return;
                           }
@@ -1577,19 +1630,22 @@ class _ProductDetailsState extends State<ProductDetails>
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(bottom: AppDimensions.paddingSmallExtra),
-            child: Text(
-              SystemConfig.systemCurrency != null
-                  ? _totalPrice.toString().replaceAll(
-                      SystemConfig.systemCurrency!.code!,
-                      SystemConfig.systemCurrency!.symbol!)
-                  : SystemConfig.systemCurrency!.symbol! +
-                      _totalPrice.toString(),
+            padding: const EdgeInsets.only(
+              bottom: AppDimensions.paddingSmallExtra,
+            ),
+            child: AnimatedNumberText<double>(
+              totalBasePrice,
+              duration: const Duration(
+                  milliseconds: AppDimensions.animationDefaultInMillis),
               style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600),
+                color: Theme.of(context).primaryColor,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+              ),
+              formatter: (value) {
+                return '${value.toStringAsFixed(2)} ${SystemConfig.systemCurrency?.symbol ?? ''}'
+                    .trim();
+              },
             ),
           )
         ],
@@ -1620,28 +1676,80 @@ class _ProductDetailsState extends State<ProductDetails>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: [
-              buildQuantityDownButton(),
-              const SizedBox(
-                width: 1,
+              QuantityButtonWidget(
+                icon: Icons.remove,
+                doWhen: _quantity > minQuantity,
+                textWhenDont: AppLocalizations.of(context)!
+                    .minimumOrderQuantity(minQuantity),
+                onPressed: () {
+                  _quantity = _quantity - 1;
+                  setState(() {});
+                  fetchAndSetVariantWiseInfo();
+                },
               ),
-              Container(
-                  width: 30,
-                  child: Center(
-                      child: QuantityInputField.show(quantityText,
-                          isDisable: _quantity == 0, onSubmitted: () {
-                    _quantity = int.parse(quantityText.text);
-                    print(_quantity);
-                    fetchAndSetVariantWiseInfo();
-                  }))),
-              buildQuantityUpButton()
+              SizedBox(
+                width: 36,
+                height: 36,
+                child: Center(
+                  child: QuantityInputField.show(
+                    quantityText,
+                    isDisable: _stock == 0,
+                    onChanged: (val) {
+                      _quantity = int.parse(quantityText.text);
+                      if (_quantity > maxQuantity) {
+                        _quantity = maxQuantity;
+                      } else if (_quantity < minQuantity) {
+                        _quantity = minQuantity;
+                      }
+                      quantityText.text = _quantity.toString();
+                    },
+                    onSubmitted: () {
+                      _quantity = int.parse(quantityText.text);
+                      fetchAndSetVariantWiseInfo();
+                    },
+                  ),
+                ),
+              ),
+              QuantityButtonWidget(
+                icon: Icons.add,
+                doWhen: _quantity < maxQuantity,
+                textWhenDont: AppLocalizations.of(context)!
+                    .maxOrderQuantityLimit(maxQuantity),
+                onPressed: () {
+                  _quantity = _quantity + 1;
+                  setState(() {});
+                  fetchAndSetVariantWiseInfo();
+                },
+              ),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Text(
-            "$_stock_txt",
-            style: const TextStyle(color: Color(0xff6B7377), fontSize: 14),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              children: [
+                Text(
+                  "$_stock_txt",
+                  style:
+                      const TextStyle(color: Color(0xff6B7377), fontSize: 14),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(
+                      milliseconds: AppDimensions.animationShortInMillis,
+                    ),
+                    child: Text(LangText(context).local.out_of_stock),
+                    textAlign: TextAlign.center,
+                    style: _stock == 0
+                        ? const TextStyle(color: Colors.red, fontSize: 15)
+                        : const TextStyle(
+                            color: Colors.transparent, fontSize: 0),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -1902,10 +2010,17 @@ class _ProductDetailsState extends State<ProductDetails>
         _onColorChange(index);
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        width: _selectedColorIndex == index ? 28 : 20,
-        height: _selectedColorIndex == index ? 28 : 20,
+        duration: const Duration(
+            milliseconds: AppDimensions.animationDefaultInMillis),
+        width: _selectedColorIndex == index ? 21 : 18,
+        height: _selectedColorIndex == index ? 21 : 18,
         decoration: BoxDecoration(
+          border: _selectedColorIndex == index
+              ? Border.all(
+                  color: Theme.of(context).primaryColor,
+                  width: 3,
+                )
+              : Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(AppDimensions.radiusDefault),
           color: ColorHelper.getColorFromColorCode(_colorList[index]),
           boxShadow: [
@@ -1927,24 +2042,8 @@ class _ProductDetailsState extends State<ProductDetails>
                   )
           ],
         ),
-        child: _selectedColorIndex == index
-            ? buildColorCheckerContainer()
-            : Container(
-                height: 25,
-              ),
       ),
     );
-  }
-
-  Padding buildColorCheckerContainer() {
-    return Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingHalfSmall),
-        child: /*Icon(Icons.check, color: Colors.white, size: 16),*/
-            Image.asset(
-          "assets/white_tick.png",
-          width: 16,
-          height: 16,
-        ));
   }
 
   Widget buildWholeSaleQuantityPrice() {
@@ -2043,17 +2142,20 @@ class _ProductDetailsState extends State<ProductDetails>
   Row buildMainPriceRow() {
     return Row(
       children: [
-        Text(
-          SystemConfig.systemCurrency != null
-              ? _singlePriceString.replaceAll(SystemConfig.systemCurrency!.code,
-                  SystemConfig.systemCurrency!.symbol)
-              : _singlePriceString,
-          // _singlePriceString,
+        AnimatedNumberText<double>(
+          _basePrice,
+          duration: const Duration(
+              milliseconds: AppDimensions.animationDefaultInMillis),
           style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontFamily: 'Public Sans',
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold),
+            color: Theme.of(context).primaryColor,
+            fontFamily: 'Public Sans',
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
+          formatter: (value) {
+            return '${value.toStringAsFixed(2)} ${SystemConfig.systemCurrency?.symbol ?? ''}'
+                .trim();
+          },
         ),
         Visibility(
           visible: _productDetails!.has_discount!,
@@ -2142,63 +2244,97 @@ class _ProductDetailsState extends State<ProductDetails>
   }
 
   Widget buildBottomAppBar(_addedToCartSnackbar) {
-    return BottomNavigationBar(
-      backgroundColor: MyTheme.white.withValues(alpha: 0.9),
-      items: [
-        bottomTap(context,
-            text: AppLocalizations.of(context)!.add_to_cart_ucf,
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(vertical: AppDimensions.paddingDefault),
+      color: MyTheme.white.withValues(alpha: 0.9),
+      child: AnimatedSwitcher(
+        duration: const Duration(
+          milliseconds: AppDimensions.animationDefaultInMillis,
+        ),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        child: whenItemInCart(
+          bottomTap(
+            context,
+            text: AppLocalizations.of(context)!.update_cart_ucf,
             color: Theme.of(context).primaryColor,
             shadowColor: MyTheme.accent_color_shadow,
-            onTap: () => onPressAddToCart(context, _addedToCartSnackbar)),
-        bottomTap(context,
-            text: AppLocalizations.of(context)!.buy_now_ucf,
-            color: MyTheme.golden,
-            shadowColor: MyTheme.golden_shadow,
-            onTap: () => onPressBuyNow(context)),
-      ],
+            onTap: () => onPressAddToCart(context, _addedToCartSnackbar),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: bottomTap(
+                  context,
+                  text: AppLocalizations.of(context)!.add_to_cart_ucf,
+                  color: Theme.of(context).primaryColor,
+                  shadowColor: MyTheme.accent_color_shadow,
+                  onTap: () => onPressAddToCart(context, _addedToCartSnackbar),
+                ),
+              ),
+              Expanded(
+                child: bottomTap(
+                  context,
+                  text: AppLocalizations.of(context)!.buy_now_ucf,
+                  color: MyTheme.golden,
+                  shadowColor: MyTheme.golden_shadow,
+                  onTap: () => onPressBuyNow(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  BottomNavigationBarItem bottomTap(
+  Widget bottomTap(
     BuildContext context, {
     required String text,
     required Color color,
     required Color shadowColor,
     required void Function() onTap,
   }) {
-    return BottomNavigationBarItem(
-      backgroundColor: Colors.transparent,
-      label: '',
-      icon: Padding(
-        padding: const EdgeInsets.only(
-          left: 23,
-          right: 14,
-        ),
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.radiusHalfSmall),
-              color: color,
-              boxShadow: [
-                BoxShadow(
-                  color: color,
-                  blurRadius: 20,
-                  spreadRadius: 0.0,
-                  offset:
-                      const Offset(0.0, 10.0), // shadow direction: bottom right
-                )
-              ],
-            ),
-            height: 50,
-            child: Center(
-              child: Text(
-                text,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingSmall,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
+        child: AnimatedContainer(
+          duration: const Duration(
+            milliseconds: AppDimensions.animationDefaultInMillis,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusHalfSmall),
+            color: _stock == 0 ? Colors.grey : color,
+            boxShadow: _stock == 0
+                ? null
+                : [
+                    BoxShadow(
+                      color: color,
+                      blurRadius: 20,
+                      spreadRadius: 0.0,
+                      offset: const Offset(0.0, 5.0),
+                    )
+                  ],
+          ),
+          height: 50,
+          child: Center(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -2462,61 +2598,6 @@ class _ProductDetailsState extends State<ProductDetails>
     }
   }
 
-  Container buildQuantityUpButton() => Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle, // This makes the container a perfect circle
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .16),
-              blurRadius: 6,
-              spreadRadius: 0.0,
-              offset: const Offset(0.0, 3.0), // shadow direction: bottom right
-            ),
-          ],
-        ),
-        width: 36,
-        child: IconButton(
-            icon: Icon(Icons.add, size: 16, color: MyTheme.dark_grey),
-            onPressed: () {
-              if (_quantity! < _stock!) {
-                _quantity = (_quantity!) + 1;
-                setState(() {});
-                //fetchVariantPrice();
-
-                fetchAndSetVariantWiseInfo();
-                // calculateTotalPrice();
-              }
-            }),
-      );
-
-  Container buildQuantityDownButton() => Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle, // This makes the container a perfect circle
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .16),
-            blurRadius: 6,
-            spreadRadius: 0.0,
-            offset: const Offset(0.0, 3.0), // shadow direction: bottom right
-          ),
-        ],
-      ),
-      width: 30,
-      child: IconButton(
-          icon: const Center(
-              child: Icon(Icons.remove, size: 16, color: Color(0xff707070))),
-          onPressed: () {
-            if (_quantity! > 1) {
-              _quantity = _quantity! - 1;
-              setState(() {});
-              // calculateTotalPrice();
-              // fetchVariantPrice();
-              fetchAndSetVariantWiseInfo();
-            }
-          }));
-
   Row buildProductImageSection() {
     if (_productImageList.isEmpty) {
       return Row(
@@ -2713,5 +2794,51 @@ $string
 
 </html>
 """;
+  }
+}
+
+class QuantityButtonWidget extends StatelessWidget {
+  const QuantityButtonWidget({
+    super.key,
+    required this.icon,
+    required this.doWhen,
+    required this.textWhenDont,
+    required this.onPressed,
+  });
+  final IconData icon;
+  final bool doWhen;
+  final String textWhenDont;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        if (doWhen) {
+          onPressed();
+        } else {
+          ToastComponent.showDialog(textWhenDont, isError: true);
+        }
+      },
+      borderRadius: BorderRadius.circular(100),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .16),
+              blurRadius: 6,
+              spreadRadius: 0.0,
+              offset: const Offset(0.0, 3.0),
+            ),
+          ],
+        ),
+        width: 36,
+        height: 36,
+        alignment: Alignment.center,
+        child: Icon(icon, size: 16, color: MyTheme.dark_grey),
+      ),
+    );
   }
 }

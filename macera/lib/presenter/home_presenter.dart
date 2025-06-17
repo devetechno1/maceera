@@ -297,10 +297,11 @@ class HomePresenter extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isOpenedBefore = false;
   Future<void> showPopupBanner([BuildContext? cntx]) async {
     final BuildContext? context = cntx ?? OneContext().context;
     if(context == null || GoRouter.of(context).state?.path != "/" || !SystemConfig.isShownSplashScreed || _isOpenedBefore) return;
+    _isOpenedBefore = true;
+    
     final Status<List<PopupBannerModel>> bannersStatus = await executeAndHandleErrors(() => SlidersRepository().fetchBannerPopupData());
 
     if (bannersStatus is Success<List<PopupBannerModel>>){
@@ -313,7 +314,6 @@ class HomePresenter extends ChangeNotifier {
         lastIndexPopupBanner.$ = index;
         lastIndexPopupBanner.save();
 
-        _isOpenedBefore = true;
         
         showDialog(
           context: context,
@@ -551,3 +551,4 @@ class CurrentRemainingTime {
     required this.sec,
   });
 }
+  bool _isOpenedBefore = false;

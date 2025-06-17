@@ -15,13 +15,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../helpers/main_helpers.dart';
 
-class MyFatooraScreen extends StatefulWidget {
+class PaymobScreen extends StatefulWidget {
   final double? amount;
   final String payment_type;
   final String? payment_method_key;
   final String package_id;
   final int? orderId;
-  const MyFatooraScreen(
+  const PaymobScreen(
       {Key? key,
       this.amount = 0.00,
       this.orderId = 0,
@@ -31,29 +31,29 @@ class MyFatooraScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MyFatooraScreenState createState() => _MyFatooraScreenState();
+  _PaymobScreenState createState() => _PaymobScreenState();
 }
 
-class _MyFatooraScreenState extends State<MyFatooraScreen> {
+class _PaymobScreenState extends State<PaymobScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
   final WebViewController _webViewController = WebViewController();
-    bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
+  bool get goToOrdersScreen =>
+      widget.payment_type != "cart_payment" || _order_init;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.payment_type == "cart_payment") {
       createOrder();
     } else {
-      myfa();
+      paymob();
     }
   }
 
-  myfa() {
+  paymob() {
     final String _initial_url =
-        "${AppConfig.BASE_URL}/myfatoorah/initiate?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
+        "${AppConfig.BASE_URL}/paymob/initiate?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&amount=${widget.amount}&user_id=${user_id.$}&package_id=${widget.package_id}&order_id=${widget.orderId}";
     print(_initial_url);
     _webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -64,10 +64,11 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
           //   Navigator.of(context).pop(goToOrdersScreen);
           // },
           // onHttpError: (error) {
+          //   print(error);
           //   Navigator.of(context).pop(goToOrdersScreen);
           // },
           onPageFinished: (page) {
-            if (page.contains("/myfatoorah/callback")) {
+            if (page.contains("/paymob/callback")) {
               getData();
             }
           },
@@ -91,7 +92,7 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
     _combined_order_id = orderCreateResponse.combined_order_id;
     _order_init = true;
     setState(() {});
-    myfa();
+    paymob();
   }
 
   @override
@@ -99,7 +100,7 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if(!didPop){
+        if (!didPop) {
           Navigator.of(context).pop(goToOrdersScreen);
         }
       },
@@ -113,46 +114,41 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
     );
   }
 
-  void getData() {
-    _webViewController
-        .runJavaScriptReturningResult("document.body.innerText")
-        .then((data) {
-      var responseJSON = jsonDecode(data as String);
-      if (responseJSON.runtimeType == String) {
-        responseJSON = jsonDecode(responseJSON);
-      }
-      if (responseJSON["result"] == false) {
-        ToastComponent.showDialog(
-          responseJSON["message"],
-        );
-        Navigator.of(context).pop(goToOrdersScreen);
-      } else if (responseJSON["result"] == true) {
-        ToastComponent.showDialog(
-          responseJSON["message"],
-        );
+  void getData() async {
+    final data = await _webViewController
+        .runJavaScriptReturningResult("document.body.innerText");
 
-        if (widget.payment_type == "cart_payment") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return const OrderList(from_checkout: true);
-          }));
-        } else if (widget.payment_type == "order_re_payment") {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const OrderList(from_checkout: true);
-          }));
-        } else if (widget.payment_type == "wallet_payment") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return const Wallet(from_recharge: true);
-          }));
-        } else if (widget.payment_type == "customer_package_payment") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return const Profile();
-          }));
-        }
+    var responseJSON = jsonDecode(data as String);
+    if (responseJSON.runtimeType == String) {
+      responseJSON = jsonDecode(responseJSON);
+    }
+    if (responseJSON["result"] == false) {
+      ToastComponent.showDialog(responseJSON["message"]);
+      Navigator.of(context).pop(goToOrdersScreen);
+    } else if (responseJSON["result"] == true) {
+      ToastComponent.showDialog(responseJSON["message"]);
+
+      if (widget.payment_type == "cart_payment") {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return const OrderList(from_checkout: true);
+        }));
+      } else if (widget.payment_type == "order_re_payment") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const OrderList(from_checkout: true);
+        }));
+      } else if (widget.payment_type == "wallet_payment") {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return const Wallet(from_recharge: true);
+        }));
+      } else if (widget.payment_type == "customer_package_payment") {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return const Profile();
+        }));
       }
-    });
+    }
   }
 
   Widget? buildBody() {
@@ -169,12 +165,10 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
       );
     } else {
       return SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: WebViewWidget(
-            controller: _webViewController,
-          ),
+        child: SizedBox(
+          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context).height,
+          child: WebViewWidget(controller: _webViewController),
         ),
       );
     }
@@ -195,7 +189,7 @@ class _MyFatooraScreenState extends State<MyFatooraScreen> {
         ),
       ),
       title: Text(
-        AppLocalizations.of(context)!.pay_with_my_fatoora,
+        AppLocalizations.of(context)!.pay_with_my_paymob,
         style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
       ),
       elevation: 0.0,

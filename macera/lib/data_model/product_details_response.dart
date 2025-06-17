@@ -65,6 +65,8 @@ class DetailedProduct {
       this.rating,
       this.rating_count,
       this.earn_point,
+      this.maxQty,
+      this.minQty,
       this.description,
       this.downloads,
       this.video_link,
@@ -98,6 +100,8 @@ class DetailedProduct {
   int? rating;
   int? rating_count;
   int? earn_point;
+  int? minQty;
+  int? maxQty;
   String? description;
   String? downloads;
   String? video_link;
@@ -136,6 +140,8 @@ class DetailedProduct {
         rating: json["rating"].toInt(),
         rating_count: json["rating_count"],
         earn_point: json["earn_point"].toInt(),
+        minQty: json["min_qty"]?.toInt(),
+        maxQty: json["max_qty"]?.toInt(),
         description: json["description"] == null || json["description"] == ""
             ? "No Description is available"
             : json['description'],
@@ -178,6 +184,8 @@ class DetailedProduct {
         "downloads": downloads,
         "video_link": video_link,
         "link": link,
+        "min_qty": minQty,
+        "max_qty": maxQty,
         "brand": brand!.toJson(),
         "wholesale": List<dynamic>.from(wholesale!.map((x) => x.toJson())),
       };

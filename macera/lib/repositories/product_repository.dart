@@ -180,12 +180,24 @@ class ProductRepository {
     return productMiniResponseFromJson(response.body);
   }
 
-  Future<VariantResponse> getVariantWiseInfo(
-      {required String slug, color = '', variants = '', qty = 1}) async {
+  Future<VariantResponse> getVariantWiseInfo({
+    required String slug,
+    String color = '',
+    String variants = '',
+    int? qty = 1,
+  }) async {
     const String url = ("${AppConfig.BASE_URL}/products/variant/price");
 
-    final postBody = jsonEncode(
-        {'slug': slug, "color": color, "variants": variants, "quantity": qty});
+    final postBody = jsonEncode({
+      'slug': slug,
+      "color": color,
+      "variants": variants,
+      "quantity": qty,
+      if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$)
+        "temp_user_id": temp_user_id.$
+      else
+        "user_id": user_id.$,
+    });
 
     final response = await ApiRequest.post(
         url: url,

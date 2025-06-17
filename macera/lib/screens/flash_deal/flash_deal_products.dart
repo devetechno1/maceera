@@ -164,7 +164,7 @@ class _FlashDealProductsState extends State<FlashDealProducts> {
       toolbarHeight: 50,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

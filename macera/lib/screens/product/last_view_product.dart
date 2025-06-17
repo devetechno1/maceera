@@ -118,7 +118,7 @@ class _LastViewProductState extends State<LastViewProduct> {
     return AppBar(
       backgroundColor: Colors.white,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Text(
         AppLocalizations.of(context)!.last_view_product_ucf,
         style: TextStyle(

@@ -37,8 +37,10 @@ class OnlinePay extends StatefulWidget {
 class _OnlinePayState extends State<OnlinePay> {
   int? _combined_order_id = 0;
   bool _initial_url_fetched = false;
+  bool _order_init = false;
 
   final WebViewController _webViewController = WebViewController();
+  bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
 
   @override
   void initState() {
@@ -60,10 +62,11 @@ class _OnlinePayState extends State<OnlinePay> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
     _combined_order_id = orderCreateResponse.combined_order_id;
+    _order_init = true;
     pay(Uri.parse(
         "${AppConfig.BASE_URL}/online-pay/init?payment_type=${widget.payment_type}&combined_order_id=$_combined_order_id&wallet_amount=${widget.amount}&payment_option=${widget.payment_method_key}"));
   }
@@ -75,7 +78,14 @@ class _OnlinePayState extends State<OnlinePay> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          
+          
+          // },
           onPageFinished: (page) {
             print(page);
             if (page.contains("/online-pay/done")) {
@@ -111,7 +121,7 @@ class _OnlinePayState extends State<OnlinePay> {
             }
             if (page.contains("/online-pay/failed")) {
               getData();
-              Navigator.pop(context);
+              Navigator.of(context).pop(goToOrdersScreen);
             }
           },
         ),
@@ -188,7 +198,7 @@ class _OnlinePayState extends State<OnlinePay> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

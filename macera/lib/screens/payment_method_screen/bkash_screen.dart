@@ -43,6 +43,7 @@ class _BkashScreenState extends State<BkashScreen> {
   bool showLoading = false;
 
   final WebViewController _webViewController = WebViewController();
+    bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
 
   @override
   void initState() {
@@ -66,7 +67,7 @@ class _BkashScreenState extends State<BkashScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -123,7 +124,13 @@ class _BkashScreenState extends State<BkashScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          
+          // },
           onPageFinished: (page) {
             if (page.contains("/bkash/api/callback")) {
               getData();
@@ -304,7 +311,7 @@ class _BkashScreenState extends State<BkashScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

@@ -96,6 +96,8 @@ class UpdateScreen extends StatelessWidget {
   void navigateToHome(BuildContext context) {
     final GoRouter goRouter = GoRouter.of(context);
     final String newPath = goRouter.state?.uri.queryParameters['url'] ?? '/';
-    goRouter.go(newPath, extra: {'skipUpdate': true});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      goRouter.go(newPath, extra: {'skipUpdate': true});
+    });
   }
 }

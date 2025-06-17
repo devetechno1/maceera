@@ -111,10 +111,15 @@ class SelectAddressProvider with ChangeNotifier {
       addressUpdateInCartResponse.message,
     );
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return const ShippingInfo();
-    })).then((value) {
-      onPopped(value, context);
-    });
+    Future.delayed(
+      Duration.zero,
+      () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const ShippingInfo();
+        })).then((value) {
+          onPopped(value, context);
+        });
+      },
+    );
   }
 }

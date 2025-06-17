@@ -61,6 +61,7 @@ class CustomInternationalPhoneNumberInput extends StatefulWidget {
   final int maxLength;
 
   final bool isEnabled;
+  final bool readOnly;
   final bool formatInput;
   final bool autoFocus;
   final bool autoFocusSearch;
@@ -108,6 +109,7 @@ class CustomInternationalPhoneNumberInput extends StatefulWidget {
     this.spaceBetweenSelectorAndTextField = 12,
     this.maxLength = 15,
     this.isEnabled = true,
+    this.readOnly = false,
     this.formatInput = true,
     this.autoFocus = false,
     this.autoFocusSearch = false,
@@ -292,7 +294,7 @@ class _InputWidgetState extends State<CustomInternationalPhoneNumberInput> {
         selectorTextStyle: widget.selectorTextStyle,
         searchBoxDecoration: widget.searchBoxDecoration,
         locale: locale,
-        isEnabled: widget.isEnabled,
+        isEnabled: !widget.readOnly && widget.isEnabled,
         autoFocusSearchField: widget.autoFocusSearch,
         isScrollControlled: widget.countrySelectorScrollControlled,
         backgroundColor: widget.backgroundColor,
@@ -400,7 +402,7 @@ class _InputWidgetView
                 selectorTextStyle: widget.selectorTextStyle,
                 searchBoxDecoration: widget.searchBoxDecoration,
                 locale: state.locale,
-                isEnabled: widget.isEnabled,
+                isEnabled: !widget.readOnly && widget.isEnabled,
                 autoFocusSearchField: widget.autoFocusSearch,
                 isScrollControlled: widget.countrySelectorScrollControlled,
                 backgroundColor: widget.backgroundColor,
@@ -418,6 +420,7 @@ class _InputWidgetView
               controller: state.controller,
               focusNode: widget.focusNode,
               enabled: widget.isEnabled,
+              readOnly: widget.readOnly,
               autofocus: widget.autoFocus,
               keyboardType: widget.keyboardType,
               textInputAction: widget.keyboardAction,

@@ -6,6 +6,7 @@ import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/system_config.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:active_ecommerce_cms_demo_app/presenter/cart_counter.dart';
+import 'package:animated_text_lerp/animated_text_lerp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -28,13 +29,10 @@ class Cart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CartProvider(),
-      child: _Cart(
-        counter: counter,
-        from_navigation: from_navigation,
-        has_bottomnav: has_bottomnav,
-      ),
+    return _Cart(
+      counter: counter,
+      from_navigation: from_navigation,
+      has_bottomnav: has_bottomnav,
     );
   }
 }
@@ -67,8 +65,11 @@ class _CartState extends State<_Cart> {
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, cartProvider, _) {
+      final int currentQuantity = cartQuantityProduct.value =
+          cartProvider.shopList.firstOrNull?.cartItems?.length ?? 0;
+
       return Scaffold(
-        key: cartProvider.scaffoldKey,
+        
         backgroundColor: MyTheme.mainColor,
         appBar: buildAppBar(context),
         body: Stack(
@@ -86,60 +87,152 @@ class _CartState extends State<_Cart> {
                   SliverList(
                     delegate: SliverChildListDelegate(
                       [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height:
-                              cartProvider.isMinOrderQuantityNotEnough ? 25 : 0,
-                          width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 3),
-                          color: Theme.of(context).primaryColor,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: RichText(
-                              text: TextSpan(
-                                  style: const TextStyle(color: Colors.white),
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity} , '),
-                                    TextSpan(
-                                        text:
-                                            LangText(context).local.remaining),
-                                    TextSpan(
-                                        text:
-                                            ' ${AppConfig.businessSettingsData.minimumOrderQuantity - (cartProvider.shopList.firstOrNull?.cartItems?.length ?? 0)} '),
-                                  ]),
+                        // AnimatedContainer(
+                        //   duration: const Duration(milliseconds: 300),
+                        //   height:
+                        //       cartProvider.isMinOrderQuantityNotEnough ? 25 : 0,
+                        //   width: double.maxFinite,
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 20, vertical: 3),
+                        //   color: Theme.of(context).primaryColor,
+                        //   child: FittedBox(
+                        //     fit: BoxFit.scaleDown,
+                        //     child: RichText(
+                        //       text: TextSpan(
+                        //           style: const TextStyle(color: Colors.white),
+                        //           children: [
+                        //             TextSpan(
+                        //                 text:
+                        //                     '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity} , '),
+                        //             TextSpan(
+                        //                 text:
+                        //                     LangText(context).local.remaining),
+                        //             TextSpan(
+                        //                 text:
+                        //                     ' ${AppConfig.businessSettingsData.minimumOrderQuantity - (cartProvider.shopList.firstOrNull?.cartItems?.length ?? 0)} '),
+                        //           ]),
+                        //     ),
+                        //   ),
+                        // ),
+                        // AnimatedContainer(
+                        //   duration: const Duration(milliseconds: 300),
+                        //   height:
+                        //       cartProvider.isMinOrderAmountNotEnough ? 25 : 0,
+                        //   width: double.maxFinite,
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 20, vertical: 3),
+                        //   color: Theme.of(context).primaryColor,
+                        //   child: FittedBox(
+                        //     fit: BoxFit.scaleDown,
+                        //     child: RichText(
+                        //       text: TextSpan(
+                        //           style: const TextStyle(color: Colors.white),
+                        //           children: [
+                        //             TextSpan(
+                        //                 text:
+                        //                     '${LangText(context).local.minimum_order_amount_is} ${AppConfig.businessSettingsData.minimumOrderAmount} , '),
+                        //             TextSpan(
+                        //                 text:
+                        //                     LangText(context).local.remaining),
+                        //             TextSpan(
+                        //                 text:
+                        //                     ' ${AppConfig.businessSettingsData.minimumOrderAmount - cartProvider.cartTotal} '),
+                        //           ]),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 30),
+                        Align(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 900),
+                            child: LinearOrderProgress(
+                              value: AppConfig
+                                  .businessSettingsData.minimumOrderAmount,
+                              total: cartProvider.cartTotal,
+                              isLoading: cartProvider.isInitial,
+                              showProgress:
+                                  cartProvider.isMinOrderAmountNotEnough,
+                              title: LangText(context)
+                                  .local
+                                  .minimum_order_amount_with_remaining(
+                                    "${AppConfig.businessSettingsData.minimumOrderAmount}",
+                                    "${(AppConfig.businessSettingsData.minimumOrderAmount - cartProvider.cartTotal).abs()}",
+                                  ),
                             ),
                           ),
                         ),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height:
-                              cartProvider.isMinOrderAmountNotEnough ? 25 : 0,
-                          width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 3),
-                          color: Theme.of(context).primaryColor,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: RichText(
-                              text: TextSpan(
-                                  style: const TextStyle(color: Colors.white),
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            '${LangText(context).local.minimum_order_amount_is} ${AppConfig.businessSettingsData.minimumOrderAmount} , '),
-                                    TextSpan(
-                                        text:
-                                            LangText(context).local.remaining),
-                                    TextSpan(
-                                        text:
-                                            ' ${AppConfig.businessSettingsData.minimumOrderAmount - cartProvider.cartTotal} '),
-                                  ]),
+                        if (cartProvider.isMinOrderAmountNotEnough &&
+                            cartProvider.isMinOrderQuantityNotEnough)
+                          const SizedBox(height: AppDimensions.paddingNormal),
+                        Align(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 900),
+                            child: LinearOrderProgress(
+                              value: AppConfig
+                                  .businessSettingsData.minimumOrderQuantity
+                                  .toDouble(),
+                              total: currentQuantity.toDouble(),
+                              isLoading: cartProvider.isInitial,
+                              showProgress:
+                                  cartProvider.isMinOrderQuantityNotEnough,
+                              title: LangText(context)
+                                  .local
+                                  .minimum_order_quantity_with_remaining(
+                                    "${AppConfig.businessSettingsData.minimumOrderQuantity}",
+                                    "${(AppConfig.businessSettingsData.minimumOrderQuantity - currentQuantity).abs()}",
+                                  ),
                             ),
                           ),
                         ),
+
+                        // if (!cartProvider.isInitial &&
+                        //     quantityProgress < 1.0) ...[
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 20),
+                        //   child: Stack(
+                        //     alignment: Alignment.center,
+                        //     children: [
+
+                        //       LinearProgressIndicator(
+                        //         value: quantityProgress,
+                        //         minHeight: 20,
+                        //         backgroundColor: Colors.grey[300],
+                        //         color: Theme.of(context).primaryColor,
+                        //       ),
+                        //       Text(
+                        //         '${(quantityProgress * 100).toStringAsFixed(0)}%',
+                        //         style: const TextStyle(
+                        //           color: Colors.white,
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: AppDimensions.paddingVeryExtraLarge,
+                        //       vertical: AppDimensions.paddingSmall),
+                        //   child: FittedBox(
+                        //     child: RichText(
+                        //       text: TextSpan(
+                        //         style: const TextStyle(color: Colors.black),
+                        //         children: [
+                        //           TextSpan(
+                        //               text:
+                        //                   '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity} , '),
+                        //           TextSpan(
+                        //               text:
+                        //                   LangText(context).local.remaining),
+                        //           TextSpan(
+                        //               text:
+                        //                   ' ${AppConfig.businessSettingsData.minimumOrderQuantity - currentQuantity} '),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // ],
                         Padding(
                           padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
                           child: buildCartSellerList(cartProvider, context),
@@ -161,7 +254,7 @@ class _CartState extends State<_Cart> {
     });
   }
 
-  Container buildBottomContainer(cartProvider) {
+  Container buildBottomContainer(CartProvider cartProvider) {
     return Container(
       decoration: const BoxDecoration(
         color: MyTheme.mainColor,
@@ -194,13 +287,21 @@ class _CartState extends State<_Cart> {
                   ),
                   const Spacer(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(cartProvider.cartTotalString,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: AnimatedNumberText<double>(
+                        double.tryParse(
+                              cartProvider.cartTotalString
+                                  .replaceAll(RegExp('[^0-9.]'), ''),
+                            ) ??
+                            0.0,
+                        duration: const Duration(milliseconds: 300),
                         style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600)),
-                  ),
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        formatter: (value) => '${value.toStringAsFixed(2)}',
+                      )),
                 ],
               ),
             ),
@@ -216,7 +317,10 @@ class _CartState extends State<_Cart> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                          color: Theme.of(context).primaryColor, width: 1),
+                        color: cartProvider.shopList.isNotEmpty
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      ),
                       borderRadius: app_language_rtl.$!
                           ? const BorderRadius.only(
                               topLeft: Radius.circular(
@@ -241,7 +345,9 @@ class _CartState extends State<_Cart> {
                     ),
                     child: Btn.basic(
                       minWidth: MediaQuery.of(context).size.width,
-                      color: Theme.of(context).primaryColor,
+                      color: cartProvider.shopList.isNotEmpty
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey,
                       shape: app_language_rtl.$!
                           ? const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
@@ -289,8 +395,8 @@ class _CartState extends State<_Cart> {
       backgroundColor: MyTheme.mainColor,
       leading: Builder(
         builder: (context) => widget.from_navigation
-            ? UsefulElements.backToMain(context, go_back: false)
-            : UsefulElements.backButton(context),
+            ? UsefulElements.backToMain(go_back: false)
+            : UsefulElements.backButton(),
       ),
       centerTitle: widget.from_navigation,
       title: Text(
@@ -335,15 +441,31 @@ class _CartState extends State<_Cart> {
                             fontSize: 12),
                       ),
                       const Spacer(),
-                      Text(
-                        cartProvider.shopList[index].subTotal.replaceAll(
-                                SystemConfig.systemCurrency!.code,
-                                SystemConfig.systemCurrency!.symbol) ??
-                            '',
+                      // Text(
+                      //     cartProvider.shopList[index].subTotal.replaceAll(
+                      //             SystemConfig.systemCurrency!.code,
+                      //             SystemConfig.systemCurrency!.symbol) ??
+                      //         '',
+                      //     style: TextStyle(
+                      //         color: Theme.of(context).primaryColor,
+                      //         fontWeight: FontWeight.bold,
+                      //         fontSize: 12),
+                      //   ),
+                      AnimatedNumberText<double>(
+                        double.tryParse(
+                              cartProvider.shopList[index].subTotal
+                                  .replaceAll(RegExp('[^0-9.]'), ''),
+                            ) ??
+                            0.0, // fallback value لو فشل التحويل
+
+                        duration: const Duration(milliseconds: 300),
                         style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                        formatter: (value) =>
+                            '${value.toStringAsFixed(2)} ${SystemConfig.systemCurrency?.symbol ?? ''}',
                       ),
                     ],
                   ),
@@ -359,14 +481,135 @@ class _CartState extends State<_Cart> {
         ),
       );
     } else if (!cartProvider.isInitial && cartProvider.shopList.length == 0) {
-      return Container(
-          height: 100,
-          child: Center(
-              child: Text(
+      return SizedBox(
+        height: MediaQuery.sizeOf(context).height * 0.65,
+        child: Center(
+          child: Text(
             AppLocalizations.of(context)!.cart_is_empty,
-            style: const TextStyle(color: MyTheme.font_grey),
-          )));
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: MyTheme.font_grey,
+                ),
+          ),
+        ),
+      );
     }
     return null;
+  }
+}
+
+class LinearOrderProgress extends StatefulWidget {
+  const LinearOrderProgress({
+    super.key,
+    required this.value,
+    required this.total,
+    required this.isLoading,
+    required this.title,
+    required this.showProgress,
+  });
+
+  final double value;
+  final double total;
+  final bool isLoading;
+  final String title;
+  final bool showProgress;
+
+  @override
+  State<LinearOrderProgress> createState() => _LinearOrderProgressState();
+}
+
+class _LinearOrderProgressState extends State<LinearOrderProgress> {
+  late bool showProgress = !widget.isLoading;
+  bool isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        isReady = true;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double progress = (widget.total / widget.value).clamp(0.0, 1.0);
+    if (progress >= 1.0 && showProgress && !widget.showProgress) {
+      Future.delayed(
+        const Duration(milliseconds: AppDimensions.animationDefaultInMillis),
+        () {
+          setState(() {
+            showProgress = false;
+          });
+        },
+      );
+    } else if (progress < 1 && !showProgress && widget.showProgress) {
+      setState(() {
+        showProgress = true;
+      });
+    } else if (showProgress && !widget.showProgress) {
+      setState(() {
+        showProgress = false;
+      });
+    }
+    return AnimatedCrossFade(
+      crossFadeState:
+          showProgress ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      duration: const Duration(milliseconds: 100),
+      secondChild: const SizedBox(),
+      firstChild: Padding(
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge),
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                TweenAnimationBuilder<double>(
+                  tween: isReady
+                      ? Tween<double>(begin: 1, end: progress)
+                      : Tween<double>(begin: 0, end: progress),
+                  duration: const Duration(
+                    milliseconds: AppDimensions.animationDefaultInMillis,
+                  ),
+                  builder: (context, value, child) {
+                    return LinearProgressIndicator(
+                      value: value,
+                      minHeight: 20,
+                      backgroundColor: Colors.grey[300],
+                      color: Theme.of(context).primaryColor,
+                    );
+                  },
+                ),
+                // Text(
+                //   '${(progress * 100).toStringAsFixed(0)}%',
+                //   style: const TextStyle(
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                AnimatedNumberText<double>(
+                  progress * 100,
+                  duration: const Duration(
+                    milliseconds: AppDimensions.animationDefaultInMillis,
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  formatter: (value) => '${value.toStringAsFixed(0)}%',
+                ),
+              ],
+            ),
+            AnimatedStringText(
+              widget.title,
+              duration: const Duration(
+                milliseconds: AppDimensions.animationDefaultInMillis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

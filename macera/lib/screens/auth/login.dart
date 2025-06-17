@@ -105,9 +105,9 @@ class _LoginState extends State<Login> {
         _login_by == 'email' ? email : _phone, password, _login_by);
     Loading.close();
 
-    // empty temp user id after logged in
-    temp_user_id.$ = "";
-    temp_user_id.save();
+    // // empty temp user id after logged in
+    // temp_user_id.$ = "";
+    // temp_user_id.save();
 
     if (loginResponse.result == false) {
       if (loginResponse.message.runtimeType == List) {

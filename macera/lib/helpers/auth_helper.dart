@@ -22,6 +22,8 @@ class AuthHelper {
       user_phone.save();
       avatar_original.$ = loginResponse.user?.avatar_original;
       avatar_original.save();
+      temp_user_id.$ = '';
+      temp_user_id.save();
     }
   }
 
@@ -42,8 +44,8 @@ class AuthHelper {
     avatar_original.$ = "";
     avatar_original.save();
 
-    temp_user_id.$ = "";
-    temp_user_id.save();
+    // temp_user_id.$ = "";
+    // temp_user_id.save();
   }
 
   fetch_and_set() async {

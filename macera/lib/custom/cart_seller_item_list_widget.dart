@@ -22,15 +22,17 @@ class CartSellerItemListWidget extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(
           height: 14,
         ),
-        itemCount: cartProvider.shopList[sellerIndex].cartItems.length,
+        
+        itemCount: cartProvider.shopList[sellerIndex].cartItems!.length,
         scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
+         
           return CartSellerItemCardWidget(
             sellerIndex: sellerIndex,
             itemIndex: index,
-            cartProvider: cartProvider,
+            cartProvider: cartProvider, index: index,
           );
         },
       ),

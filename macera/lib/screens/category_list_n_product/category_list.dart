@@ -93,8 +93,7 @@ class _CategoryListState extends State<CategoryList> {
       centerTitle: widget.is_base_category,
       leading: widget.is_base_category
           ? Builder(
-              builder: (context) => UsefulElements.backToMain(context,
-                  go_back: false, color: "black"),
+              builder: (context) => UsefulElements.backToMain(go_back: false, color: "black"),
             )
           : Builder(
               builder: (context) => IconButton(

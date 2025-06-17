@@ -106,6 +106,8 @@ class BusinessSettingsData extends Equatable {
   final String? authorizenetSandbox;
   final dynamic minOrderAmountCheckActivat;
   final double minimumOrderAmount;
+  final double freeShippingMinimumOrderAmount;
+  final bool freeShippingMinimumCheck;
   final String? itemName;
   final bool aamarpaySandbox;
   final Color? secondaryColor;
@@ -227,6 +229,7 @@ class BusinessSettingsData extends Equatable {
   final dynamic flashDealBanner;
   final dynamic flashDealBannerSmall;
   final bool minimumOrderAmountCheck;
+  
   final bool minimumOrderQuantityCheck;
   final int minimumOrderQuantity;
   final bool homeBanner3Images;
@@ -361,6 +364,8 @@ class BusinessSettingsData extends Equatable {
     this.authorizenetSandbox,
     this.minOrderAmountCheckActivat,
     this.minimumOrderAmount = 0.0,
+    this.freeShippingMinimumOrderAmount=0.0,
+    this.freeShippingMinimumCheck = false,
     this.itemName,
     this.aamarpaySandbox = false,
     this.secondaryColor,
@@ -525,7 +530,7 @@ class BusinessSettingsData extends Equatable {
       case StoreType.playStore:
         updateData = UpdateDataModel(
           mustUpdate: '${data['must_googleplay_update']}' == '1', 
-          version: data['googleplay_version']?.toString(),
+          version: data['googleplay_version']?.toString(), 
           storeLink: data['googleplay_link']?.toString(),
         );
       case StoreType.appleStore:
@@ -648,6 +653,8 @@ class BusinessSettingsData extends Equatable {
             data['min_order_amount_check_activat'] as dynamic,
         minimumOrderAmount:
             double.parse(data['minimum_order_amount'] as String? ?? '0.0'),
+             freeShippingMinimumOrderAmount:
+            double.parse(data['free_shipping_minimum_order_amount'] as String? ?? '0.0'),
         itemName: data['item_name'] as String?,
         aamarpaySandbox: (data['aamarpay_sandbox'] as String?) == "1",
         secondaryColor:
@@ -780,6 +787,7 @@ class BusinessSettingsData extends Equatable {
         flashDealBanner: data['flash_deal_banner'] as dynamic,
         flashDealBannerSmall: data['flash_deal_banner_small'] as dynamic,
         minimumOrderAmountCheck: "${data['minimum_order_amount_check']}" == "1",
+        freeShippingMinimumCheck: "${data['free_shipping_minimum_check']}" == "1",
         minimumOrderQuantityCheck: "${data['minimum_order_quantity_check']}" == "1",
         minimumOrderQuantity: int.parse((data['minimum_order_quantity'] as String?) ?? "1"),
         homeBanner3Images: (data['home_banner3_images'] as String?) == "1",
@@ -1735,6 +1743,8 @@ class BusinessSettingsData extends Equatable {
       authorizenetSandbox,
       minOrderAmountCheckActivat,
       minimumOrderAmount,
+      freeShippingMinimumOrderAmount,
+      freeShippingMinimumCheck,
       itemName,
       aamarpaySandbox,
       secondaryColor,

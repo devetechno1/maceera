@@ -87,7 +87,7 @@ class _ClassifiedAdsState extends State<ClassifiedAds> {
       backgroundColor: MyTheme.mainColor,
       scrolledUnderElevation: 0.0,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Text(
         AppLocalizations.of(context)!.classified_ads_ucf,
         style: TextStyle(

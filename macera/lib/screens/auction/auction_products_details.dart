@@ -529,7 +529,7 @@ class _AuctionProductsDetailsState extends State<AuctionProductsDetails>
         });
   }
 
-  void showLoginWarning() {
+  Future<void> showLoginWarning() {
     return ToastComponent.showDialog(
       AppLocalizations.of(context)!.you_need_to_log_in,
     );

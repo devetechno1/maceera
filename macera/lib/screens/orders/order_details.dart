@@ -17,7 +17,6 @@ import 'package:active_ecommerce_cms_demo_app/data_model/order_detail_response.d
 import 'package:active_ecommerce_cms_demo_app/helpers/main_helpers.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
-import 'package:active_ecommerce_cms_demo_app/helpers/system_config.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/order_repository.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/refund_request_repository.dart';
@@ -77,7 +76,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   void initState() {
     fetchAll();
 
-    final k = IsolateNameServer.registerPortWithName(
+    IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
 
     _port.listen(
@@ -104,28 +103,28 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   // TODO:# make this fn work any time
-  Future<void> _downloadInvoice(id) async {
-    final folder = await createFolder();
-    try {
-      final String? _taskid = await FlutterDownloader.enqueue(
-          url: AppConfig.BASE_URL + "/invoice/download/$id",
-          // saveInPublicStorage: true,
-          savedDir: folder,
-          showNotification: true,
-          headers: {
-            "Authorization": "Bearer ${access_token.$}",
-            "Currency-Code": SystemConfig.systemCurrency!.code!,
-            "Currency-Exchange-Rate":
-                SystemConfig.systemCurrency!.exchangeRate.toString(),
-            "App-Language": app_language.$!,
-            "System-Key": AppConfig.system_key
-          });
-    } on Exception catch (e) {
-      print("e.toString()");
-      print(e.toString());
-      // TODO
-    }
-  }
+  // Future<void> _downloadInvoice(id) async {
+  //   final folder = await createFolder();
+  //   try {
+  //     final String? _taskid = await FlutterDownloader.enqueue(
+  //         url: AppConfig.BASE_URL + "/invoice/download/$id",
+  //         // saveInPublicStorage: true,
+  //         savedDir: folder,
+  //         showNotification: true,
+  //         headers: {
+  //           "Authorization": "Bearer ${access_token.$}",
+  //           "Currency-Code": SystemConfig.systemCurrency!.code!,
+  //           "Currency-Exchange-Rate":
+  //               SystemConfig.systemCurrency!.exchangeRate.toString(),
+  //           "App-Language": app_language.$!,
+  //           "System-Key": AppConfig.system_key
+  //         });
+  //   } on Exception catch (e) {
+  //     print("e.toString()");
+  //     print(e.toString());
+  //     // TODO
+  //   }
+  // }
 
   Future<String> createFolder() async {
     var mPath = "storage/emulated/0/Download/";
@@ -278,8 +277,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         builder: (context) => Checkout(
           title: LangText(context).local.order_repayment,
           rechargeAmount: convertedAmount,
-          paymentFor: PaymentFor.ManualPayment,
-          packageId: 0,
+          paymentFor: PaymentFor.OrderRePayment,
           order_id: _orderDetails!.id,
         ),
       ),
@@ -492,7 +490,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     setState(() {
       _showReasonWarning = true;
     });
-    final Timer timer = Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 2), () {
       setState(() {
         _showReasonWarning = false;
       });
@@ -1699,14 +1697,12 @@ class _OrderDetailsState extends State<OrderDetails> {
     return Container(
       height: 16,
       width: 16,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimensions.radiusDefault),
           color: paymentStatus == "paid" ? Colors.green : Colors.red),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingSmallExtra),
-        child: Icon(paymentStatus == "paid" ? Icons.check : Icons.check,
-            color: Colors.white, size: 10),
-      ),
+      child: Icon(paymentStatus == "paid" ? Icons.check : Icons.clear,
+          color: Colors.white, size: 10),
     );
   }
 }

@@ -390,7 +390,7 @@ class _AuctionBiddedProductsState extends State<AuctionBiddedProducts> {
     return AppBar(
       backgroundColor: Colors.white,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Text(
         AppLocalizations.of(context)!.all_bidded_products,
         style: TextStyle(

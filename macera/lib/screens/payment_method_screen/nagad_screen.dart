@@ -40,6 +40,8 @@ class _NagadScreenState extends State<NagadScreen> {
   bool _initial_url_fetched = false;
 
   final WebViewController _webViewController = WebViewController();
+    bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
+
 
   @override
   void initState() {
@@ -63,7 +65,7 @@ class _NagadScreenState extends State<NagadScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -86,7 +88,7 @@ class _NagadScreenState extends State<NagadScreen> {
       ToastComponent.showDialog(
         nagadUrlResponse.message!,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -106,7 +108,12 @@ class _NagadScreenState extends State<NagadScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
           onPageFinished: (page) {
             if (page.contains("/nagad/verify/") ||
                 page.contains('/check-out/confirm-payment/')) {
@@ -146,7 +153,7 @@ class _NagadScreenState extends State<NagadScreen> {
         ToastComponent.showDialog(
           responseJSON["message"],
         );
-        Navigator.pop(context);
+        Navigator.of(context).pop(goToOrdersScreen);
       } else if (widget.payment_type == "order_re_payment") {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const OrderList(from_checkout: true);
@@ -167,7 +174,7 @@ class _NagadScreenState extends State<NagadScreen> {
       ToastComponent.showDialog(
         nagadPaymentProcessResponse.message!,
       );
-      Navigator.pop(context);
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -229,7 +236,7 @@ class _NagadScreenState extends State<NagadScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

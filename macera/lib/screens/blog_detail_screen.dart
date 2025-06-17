@@ -19,7 +19,7 @@ class BlogDetailsScreen extends StatelessWidget {
           blog.title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        leading: UsefulElements.backButton(context),
+        leading: UsefulElements.backButton(),
         backgroundColor: MyTheme.mainColor,
         scrolledUnderElevation: 0.0,
       ),

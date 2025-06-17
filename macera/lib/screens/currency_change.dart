@@ -79,7 +79,7 @@ class _CurrencyChangeState extends State<CurrencyChange> {
       leading: Builder(
         builder: (context) => IconButton(
           padding: EdgeInsets.zero,
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

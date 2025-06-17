@@ -322,7 +322,7 @@ class _ChatState extends State<Chat> {
       backgroundColor: MyTheme.mainColor,
       leading: Container(
         margin: const EdgeInsets.only(left: AppDimensions.paddingSupSmall),
-        child: UsefulElements.backButton(context),
+        child: UsefulElements.backButton(),
       ),
     );
   }

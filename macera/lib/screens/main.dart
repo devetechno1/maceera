@@ -13,6 +13,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../app_config.dart';
+import '../presenter/cart_provider.dart';
 import '../ui_elements/close_app_dialog_widget.dart';
 // import 'home/home_page_type_enum.dart';
 
@@ -30,7 +31,7 @@ class _MainState extends State<Main> {
   BottomAppbarIndex bottomAppbarIndex = BottomAppbarIndex();
 
   fetchAll() {
-    getCartCount();
+    getCartData();
   }
 
   void onTapped(int i) {
@@ -53,8 +54,8 @@ class _MainState extends State<Main> {
     });
   }
 
-  void getCartCount() {
-    Provider.of<CartCounter>(context, listen: false).getCount();
+  void getCartData() {
+    Provider.of<CartProvider>(context, listen: false).fetchData(context);
   }
 
   @override

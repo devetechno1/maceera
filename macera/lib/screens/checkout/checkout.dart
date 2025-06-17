@@ -39,6 +39,7 @@ import '../../helpers/auth_helper.dart';
 import '../../repositories/guest_checkout_repository.dart';
 import '../../repositories/order_repository.dart';
 import '../guest_checkout_pages/guest_checkout_address.dart';
+import '../payment_method_screen/paymob_screen.dart';
 
 class Checkout extends StatefulWidget {
   final int?
@@ -107,7 +108,8 @@ class _CheckoutState extends State<Checkout> {
     String? balance;
 
     // Setting balance based on paymentFor conditions
-    if (widget.paymentFor == PaymentFor.ManualPayment) {
+    if (widget.paymentFor == PaymentFor.ManualPayment || 
+    widget.paymentFor == PaymentFor.OrderRePayment) {
       balance = widget.rechargeAmount.toString();
     }
     if (SystemConfig.systemCurrency != null) {
@@ -115,9 +117,6 @@ class _CheckoutState extends State<Checkout> {
           SystemConfig.systemCurrency!.symbol!);
     } else {
       balance = _totalString;
-    }
-    if (widget.paymentFor == PaymentFor.OrderRePayment) {
-      balance = widget.rechargeAmount.toString();
     }
 
     // Remove any non-numeric characters, except for a decimal point.
@@ -247,7 +246,16 @@ class _CheckoutState extends State<Checkout> {
     fetchAll();
   }
 
-  onPopped(value) {
+  onPopped(value) async {
+    if (value == true) {
+      ToastComponent.showDialog(
+        AppLocalizations.of(context)!.payment_cancelled_ucf,
+      );
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const OrderList(from_checkout: true);
+      }));
+      return;
+    }
     reset();
     fetchAll();
   }
@@ -331,7 +339,7 @@ class _CheckoutState extends State<Checkout> {
     }
 
     if (_selected_payment_method == "stripe") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
         return StripeScreen(
           amount: _grandTotalValue,
           payment_type: payment_type,
@@ -515,6 +523,18 @@ class _CheckoutState extends State<Checkout> {
     } else if (_selected_payment_method == "myfatoorah") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return MyFatooraScreen(
+          amount: _grandTotalValue,
+          payment_type: payment_type,
+          payment_method_key: _selected_payment_method_key,
+          package_id: widget.packageId.toString(),
+          orderId: widget.order_id,
+        );
+      })).then((value) {
+        onPopped(value);
+      });
+    } else if (_selected_payment_method == "paymob") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return PaymobScreen(
           amount: _grandTotalValue,
           payment_type: payment_type,
           payment_method_key: _selected_payment_method_key,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:active_ecommerce_cms_demo_app/app_config.dart';
-import 'package:active_ecommerce_cms_demo_app/custom/aiz_route.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/box_decorations.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/btn.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/lang_text.dart';
@@ -15,11 +14,17 @@ import 'package:active_ecommerce_cms_demo_app/helpers/shimmer_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/address_repository.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/guest_checkout_repository.dart';
-import 'package:active_ecommerce_cms_demo_app/screens/checkout/shipping_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
+import '../../custom/aiz_route.dart';
+import '../../custom/input_decorations.dart';
+import '../../custom/intl_phone_input.dart';
+import '../checkout/shipping_info.dart';
+import 'map_location.dart';
 
 class GuestCheckoutAddress extends StatefulWidget {
   const GuestCheckoutAddress({Key? key, this.from_shipping_info = false})
@@ -37,13 +42,17 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   City? _selected_city;
   Country? _selected_country;
   MyState? _selected_state;
+  double? longitude;
+  double? latitude;
+  bool passNotMatch = true;
 
   bool _isInitial = true;
   final List<dynamic> _shippingAddressList = [];
 
   String? name, email, address, country, state, city, postalCode, phone;
+  String password = '';
   bool? emailValid;
-  setValues() async {
+  void setValues() {
     name = _nameController.text.trim();
     email = _emailController.text.trim();
     address = _addressController.text.trim();
@@ -51,7 +60,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     state = _selected_state!.id.toString();
     city = _selected_city!.id.toString();
     postalCode = _postalCodeController.text.trim();
-    phone = _phoneController.text.trim();
+    password = _passwordController.text;
   }
 
   //controllers for add purpose
@@ -60,6 +69,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
@@ -75,12 +85,22 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   final List<MyState?> _selected_state_list_for_update = [];
   final List<Country> _selected_country_list_for_update = [];
 
+  bool _isValidPhoneNumber = false;
+
+  List<String?> countries_code = <String?>[];
+  Future<void> fetch_country() async {
+    final data = await AddressRepository().getCountryList();
+    data.countries?.forEach((c) => countries_code.add(c.code));
+    setState(() {});
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    if (is_logged_in.$ == true) {
+    fetch_country();
+
+    if (is_logged_in.$) {
       fetchAll();
     }
   }
@@ -138,6 +158,11 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     _addressController.clear();
     _postalCodeController.clear();
     _phoneController.clear();
+    _passwordController.clear();
+
+    longitude = null;
+    latitude = null;
+    passNotMatch = true;
 
     _countryController.clear();
     _stateController.clear();
@@ -158,7 +183,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
 
   Future<void> _onRefresh() async {
     reset();
-    if (is_logged_in.$ == true) {
+    if (is_logged_in.$) {
       fetchAll();
     }
   }
@@ -264,49 +289,66 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         .hasMatch(_emailController.text.trim());
 
     if (_nameController.text.trim().toString().isEmpty) {
-      ToastComponent.showDialog(
-        LangText(context).local.name_required,
-      );
+      ToastComponent.showDialog(LangText(context).local.name_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (_emailController.text.trim().toString().isEmpty) {
-      ToastComponent.showDialog(
-        LangText(context).local.email_required,
-      );
+      ToastComponent.showDialog(LangText(context).local.email_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (!emailValid!) {
+      ToastComponent.showDialog(LangText(context).local.enter_correct_email,
+          color: Theme.of(context).colorScheme.error);
+      return false;
+    } else if (longitude == null || latitude == null) {
       ToastComponent.showDialog(
-        LangText(context).local.enter_correct_email,
-      );
+          LangText(context).local.choose_an_address_or_pickup_point,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (_addressController.text.trim().toString().isEmpty) {
       ToastComponent.showDialog(
-        LangText(context).local.shipping_address_required,
-      );
+          LangText(context).local.shipping_address_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (_selected_country == null) {
-      ToastComponent.showDialog(
-        LangText(context).local.country_required,
-      );
+      ToastComponent.showDialog(LangText(context).local.country_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (_selected_state == null) {
-      ToastComponent.showDialog(
-        LangText(context).local.state_required,
-      );
+      ToastComponent.showDialog(LangText(context).local.state_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
     } else if (_selected_city == null) {
-      ToastComponent.showDialog(
-        LangText(context).local.city_required,
-      );
+      ToastComponent.showDialog(LangText(context).local.city_required,
+          color: Theme.of(context).colorScheme.error);
       return false;
-    } else if (_postalCodeController.text.trim().toString().isEmpty) {
-      ToastComponent.showDialog(
-        LangText(context).local.postal_code_required,
-      );
-      return false;
+      // } else if (_postalCodeController.text.trim().toString().isEmpty) {
+      //   ToastComponent.showDialog(
+      //     LangText(context).local.postal_code_required,
+      //     color: Theme.of(context).colorScheme.error,
+      //   );
+      //   return false;
     } else if (_phoneController.text.trim().toString().isEmpty) {
+      ToastComponent.showDialog(LangText(context).local.phone_number_required,
+          color: Theme.of(context).colorScheme.error);
+      return false;
+    } else if (!_isValidPhoneNumber) {
       ToastComponent.showDialog(
-        LangText(context).local.phone_number_required,
-      );
+          AppLocalizations.of(context)!.invalid_phone_number,
+          color: Theme.of(context).colorScheme.error);
+      return false;
+    } else if (_passwordController.text.isEmpty) {
+      ToastComponent.showDialog(LangText(context).local.enter_password,
+          color: Theme.of(context).colorScheme.error);
+      return false;
+    } else if (_passwordController.text.length < 6) {
+      ToastComponent.showDialog(
+          LangText(context).local.password_must_contain_at_least_6_characters,
+          color: Theme.of(context).colorScheme.error);
+      return false;
+    } else if (passNotMatch) {
+      ToastComponent.showDialog(LangText(context).local.passwords_do_not_match,
+          color: Theme.of(context).colorScheme.error);
       return false;
     }
     return true;
@@ -317,7 +359,7 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     if (!requiredFieldVerification()) return;
 
     Loading.show(context);
-    await setValues();
+    setValues();
 
     final Map<String, String> postValue = {
       "email": email!,
@@ -331,7 +373,10 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
     Loading.close();
 
     if (response.result!) {
-      ToastComponent.showDialog(LangText(context).local.already_have_account);
+      ToastComponent.showDialog(
+        LangText(context).local.already_have_account,
+        isError: true,
+      );
     } else {
       postValue.addAll({
         "name": name!,
@@ -339,10 +384,11 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         "country_id": country!,
         "state_id": state!,
         "city_id": city!,
-        "postal_code": postalCode!,
-        "longitude": '',
-        "latitude": '',
-        "temp_user_id": temp_user_id.$!
+        "password": password,
+        if (postalCode != null) "postal_code": postalCode!,
+        if (longitude != null) "longitude": longitude!.toString(),
+        if (latitude != null) "latitude": latitude!.toString(),
+        "temp_user_id": temp_user_id.$,
       });
 
       postBody = jsonEncode(postValue);
@@ -350,7 +396,9 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
       guestEmail.$ = email!;
       guestEmail.save();
 
-      AIZRoute.push(
+      Navigator.of(context).pop();
+
+      await AIZRoute.push(
         context,
         ShippingInfo(
           guestCheckOutShippingAddress: postBody,
@@ -411,6 +459,15 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   void dispose() {
     super.dispose();
     _mainScrollController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _addressController.dispose();
+    _postalCodeController.dispose();
+    _nameController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _countryController.dispose();
   }
 
   @override
@@ -480,17 +537,23 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
   Future buildShowAddFormDialog(BuildContext context) {
     return showDialog(
         context: context,
+        useRootNavigator: false,
         builder: (context) {
           return StatefulBuilder(builder: (BuildContext context,
               StateSetter setModalState /*You can rename this!*/) {
             return AlertDialog(
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusDefault)),
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusDefault),
+              ),
               insetPadding: const EdgeInsets.symmetric(horizontal: 10),
               contentPadding: const EdgeInsets.only(
-                  top: 23.0, left: 20.0, right: 20.0, bottom: 2.0),
+                top: 23.0,
+                left: 20.0,
+                right: 20.0,
+                bottom: 2.0,
+              ),
               content: Container(
                 width: 400,
                 child: SingleChildScrollView(
@@ -498,29 +561,33 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-//////////////////////////////////////////////name
                       Padding(
                         padding: const EdgeInsets.all(
                             AppDimensions.paddingSmallExtra),
                         child: Text(
-                            "${AppLocalizations.of(context)!.name_ucf} *",
-                            style: const TextStyle(
-                                color: Color(0xff3E4447),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12)),
+                          "${AppLocalizations.of(context)!.name_ucf} *",
+                          style: const TextStyle(
+                            color: Color(0xff3E4447),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingNormal),
+                          bottom: AppDimensions.paddingNormal,
+                        ),
                         child: Container(
                           height: 40,
                           child: TextField(
                             controller: _nameController,
                             autofocus: false,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            decoration: buildAddressInputDecoration(context,
-                                AppLocalizations.of(context)!.enter_your_name),
+                            textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                              AppLocalizations.of(context)!.enter_your_name,
+                            ),
                           ),
                         ),
                       ),
@@ -544,16 +611,24 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           height: 40,
                           child: TextField(
                             controller: _emailController,
+                            textInputAction: TextInputAction.next,
                             autofocus: false,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            decoration: buildAddressInputDecoration(context,
-                                AppLocalizations.of(context)!.enter_email),
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                                    AppLocalizations.of(context)!.enter_email),
                           ),
                         ),
                       ),
-                      //////////////////////////////////
-
+                      MapLocationWidget(
+                        latitude: latitude,
+                        longitude: longitude,
+                        onPlacePicked: (latLong) {
+                          latitude = latLong?.latitude;
+                          longitude = latLong?.longitude;
+                        },
+                      ),
+                      const SizedBox(height: AppDimensions.paddingSmall),
                       Padding(
                         padding: const EdgeInsets.all(
                             AppDimensions.paddingSmallExtra),
@@ -571,16 +646,17 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           height: 40,
                           child: TextField(
                             controller: _addressController,
+                            textInputAction: TextInputAction.next,
                             autofocus: false,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_address_ucf),
+                            keyboardType: TextInputType.streetAddress,
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                                    AppLocalizations.of(context)!
+                                        .enter_address_ucf),
                           ),
                         ),
                       ),
+
                       Padding(
                         padding: const EdgeInsets.only(
                             bottom: AppDimensions.paddingSmall),
@@ -602,11 +678,12 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                               return TextField(
                                 controller: controller,
                                 focusNode: focusNode,
+                                textInputAction: TextInputAction.next,
                                 obscureText: false,
-                                decoration: buildAddressInputDecoration(
-                                    context,
-                                    AppLocalizations.of(context)!
-                                        .enter_country_ucf),
+                                decoration: InputDecorations
+                                    .buildInputDecoration_with_border(
+                                        AppLocalizations.of(context)!
+                                            .enter_country_ucf),
                               );
                             },
                             suggestionsCallback: (name) async {
@@ -659,13 +736,14 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           child: TypeAheadField(
                             builder: (context, controller, focusNode) {
                               return TextField(
+                                textInputAction: TextInputAction.next,
                                 controller: controller,
                                 focusNode: focusNode,
                                 obscureText: false,
-                                decoration: buildAddressInputDecoration(
-                                    context,
-                                    AppLocalizations.of(context)!
-                                        .enter_state_ucf),
+                                decoration: InputDecorations
+                                    .buildInputDecoration_with_border(
+                                        AppLocalizations.of(context)!
+                                            .enter_state_ucf),
                               );
                             },
                             controller: _stateController,
@@ -764,13 +842,14 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                             },
                             builder: (context, controller, focusNode) {
                               return TextField(
+                                textInputAction: TextInputAction.next,
                                 controller: controller,
                                 focusNode: focusNode,
                                 obscureText: false,
-                                decoration: buildAddressInputDecoration(
-                                    context,
-                                    AppLocalizations.of(context)!
-                                        .enter_city_ucf),
+                                decoration: InputDecorations
+                                    .buildInputDecoration_with_border(
+                                        AppLocalizations.of(context)!
+                                            .enter_city_ucf),
                               );
                             },
                           ),
@@ -791,19 +870,78 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                         child: Container(
                           height: 40,
                           child: TextField(
+                            textInputAction: TextInputAction.next,
                             controller: _postalCodeController,
                             autofocus: false,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_postal_code_ucf),
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                                    AppLocalizations.of(context)!
+                                        .enter_postal_code_ucf),
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
                             bottom: AppDimensions.paddingSmall),
-                        child: Text(AppLocalizations.of(context)!.phone_ucf,
+                        child: Text(
+                            "${AppLocalizations.of(context)!.phone_ucf} *",
+                            style: const TextStyle(
+                                color: Color(0xff3E4447),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12)),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusHalfSmall),
+                          // boxShadow: [MyTheme.commonShadow()],
+                        ),
+                        height: 40,
+                        child: CustomInternationalPhoneNumberInput(
+                          countries: countries_code,
+                          height: 40,
+                          keyboardAction: TextInputAction.next,
+                          backgroundColor: Colors.transparent,
+                          hintText: LangText(context).local.phone_number_ucf,
+                          errorMessage:
+                              LangText(context).local.invalid_phone_number,
+                          onInputChanged: (PhoneNumber number) {
+                            setState(() {
+                              if (number.isoCode != null)
+                                AppConfig.default_country = number.isoCode!;
+                              phone = number.phoneNumber ?? '';
+                              print(phone);
+                            });
+                          },
+                          onInputValidated: (bool value) {
+                            print(value);
+                            _isValidPhoneNumber = value;
+                            setState(() {});
+                          },
+                          selectorConfig: const SelectorConfig(
+                              selectorType: PhoneInputSelectorType.DIALOG),
+                          ignoreBlank: false,
+                          autoValidateMode: AutovalidateMode.disabled,
+                          selectorTextStyle:
+                              const TextStyle(color: MyTheme.font_grey),
+                          textStyle: const TextStyle(color: MyTheme.font_grey),
+                          textFieldController: _phoneController,
+                          formatInput: true,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              signed: true),
+                          inputDecoration:
+                              InputDecorations.buildInputDecoration_phone(
+                                  hint_text: "01XXX XXX XXX"),
+                          onSaved: (PhoneNumber number) {},
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingSmallExtra),
+                        child: Text(
+                            "${AppLocalizations.of(context)!.password_ucf} *",
                             style: const TextStyle(
                                 color: Color(0xff3E4447),
                                 fontWeight: FontWeight.bold,
@@ -811,19 +949,54 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
+                            bottom: AppDimensions.paddingNormal),
                         child: Container(
                           height: 40,
                           child: TextField(
-                            controller: _phoneController,
+                            textInputAction: TextInputAction.next,
+                            controller: _passwordController,
                             autofocus: false,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_phone_number),
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            keyboardType: TextInputType.visiblePassword,
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                                    "• • • • • • • •"),
                           ),
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            AppDimensions.paddingSmallExtra),
+                        child: Text(
+                            "${AppLocalizations.of(context)!.confirm_your_password} *",
+                            style: const TextStyle(
+                                color: Color(0xff3E4447),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: AppDimensions.paddingNormal),
+                        child: Container(
+                          height: 40,
+                          child: TextField(
+                            textInputAction: TextInputAction.done,
+                            autofocus: false,
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            keyboardType: TextInputType.visiblePassword,
+                            onChanged: (val) {
+                              passNotMatch = val != _passwordController.text;
+                            },
+                            decoration: InputDecorations
+                                .buildInputDecoration_with_border(
+                                    "• • • • • • • •"),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -853,16 +1026,14 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
+                          Navigator.of(context).pop();
                         },
                       ),
                     ),
-                    const SizedBox(
-                      width: 1,
-                    ),
+                    const SizedBox(width: 1),
                     Padding(
                       padding: const EdgeInsets.only(
-                          bottom: AppDimensions.paddingExtraLarge),
+                          bottom: AppDimensions.paddingSmall),
                       child: Btn.minWidthFixHeight(
                         minWidth: 75,
                         height: 40,
@@ -872,15 +1043,15 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
                               AppDimensions.radiusHalfSmall),
                         ),
                         child: Text(
-                          LangText(context).local.add_ucf,
+                          LangText(context).local.continue_ucf,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        onPressed: () {
-                          continueToDeliveryInfo();
+                        onPressed: () async {
+                          await continueToDeliveryInfo();
                         },
                       ),
                     )
@@ -912,309 +1083,6 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
         ),
         contentPadding: const EdgeInsets.only(
             left: AppDimensions.paddingSmall, top: 6.0, bottom: 6.0));
-  }
-
-  Future buildShowUpdateFormDialog(BuildContext context, index) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (BuildContext context,
-              StateSetter setModalState /*You can rename this!*/) {
-            return AlertDialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 10),
-              contentPadding: const EdgeInsets.only(
-                  top: 36.0, left: 36.0, right: 36.0, bottom: 2.0),
-              content: Container(
-                width: 400,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(
-                            "${AppLocalizations.of(context)!.address_ucf} *",
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingDefault),
-                        child: Container(
-                          height: 55,
-                          child: TextField(
-                            controller: _addressControllerListForUpdate[index],
-                            autofocus: false,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_address_ucf),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(
-                            "${AppLocalizations.of(context)!.country_ucf} *",
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingDefault),
-                        child: Container(
-                          height: 40,
-                          child: TypeAheadField(
-                            controller: _countryControllerListForUpdate[index],
-                            suggestionsCallback: (name) async {
-                              final countryResponse = await AddressRepository()
-                                  .getCountryList(name: name);
-                              return countryResponse.countries;
-                            },
-                            loadingBuilder: (context) {
-                              return Container(
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        AppLocalizations.of(context)!
-                                            .loading_countries_ucf,
-                                        style: TextStyle(
-                                            color: MyTheme.medium_grey))),
-                              );
-                            },
-                            itemBuilder: (context, dynamic country) {
-                              //print(suggestion.toString());
-                              return ListTile(
-                                dense: true,
-                                title: Text(
-                                  country.name,
-                                  style:
-                                      const TextStyle(color: MyTheme.font_grey),
-                                ),
-                              );
-                            },
-                            onSelected: (value) {},
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(
-                            "${AppLocalizations.of(context)!.state_ucf} *",
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingDefault),
-                        child: Container(
-                          height: 40,
-                          child: TypeAheadField(
-                            controller: _stateControllerListForUpdate[index],
-                            suggestionsCallback: (name) async {
-                              final stateResponse = await AddressRepository()
-                                  .getStateListByCountry(
-                                      country_id:
-                                          _selected_country_list_for_update[
-                                                  index]
-                                              .id,
-                                      name: name);
-                              return stateResponse.states;
-                            },
-                            loadingBuilder: (context) {
-                              return Container(
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        AppLocalizations.of(context)!
-                                            .loading_states_ucf,
-                                        style: TextStyle(
-                                            color: MyTheme.medium_grey))),
-                              );
-                            },
-                            itemBuilder: (context, dynamic state) {
-                              //print(suggestion.toString());
-                              return ListTile(
-                                dense: true,
-                                title: Text(
-                                  state.name,
-                                  style:
-                                      const TextStyle(color: MyTheme.font_grey),
-                                ),
-                              );
-                            },
-                            onSelected: (value) {},
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(
-                            "${AppLocalizations.of(context)!.city_ucf} *",
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingDefault),
-                        child: Container(
-                          height: 40,
-                          child: TypeAheadField(
-                            controller: _cityControllerListForUpdate[index],
-                            suggestionsCallback: (name) async {
-                              if (_selected_state_list_for_update[index] ==
-                                  null) {
-                                final cityResponse = await AddressRepository()
-                                    .getCityListByState(); // blank response
-                                return cityResponse.cities;
-                              }
-                              final cityResponse = await AddressRepository()
-                                  .getCityListByState(
-                                      state_id: _selected_state_list_for_update[
-                                              index]!
-                                          .id,
-                                      name: name);
-                              return cityResponse.cities;
-                            },
-                            loadingBuilder: (context) {
-                              return Container(
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        AppLocalizations.of(context)!
-                                            .loading_cities_ucf,
-                                        style: TextStyle(
-                                            color: MyTheme.medium_grey))),
-                              );
-                            },
-                            itemBuilder: (context, dynamic city) {
-                              //print(suggestion.toString());
-                              return ListTile(
-                                dense: true,
-                                title: Text(
-                                  city.name,
-                                  style:
-                                      const TextStyle(color: MyTheme.font_grey),
-                                ),
-                              );
-                            },
-                            onSelected: (value) {},
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(AppLocalizations.of(context)!.postal_code,
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingDefault),
-                        child: Container(
-                          height: 40,
-                          child: TextField(
-                            controller:
-                                _postalCodeControllerListForUpdate[index],
-                            autofocus: false,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_postal_code_ucf),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Text(AppLocalizations.of(context)!.phone_ucf,
-                            style: const TextStyle(
-                                color: MyTheme.font_grey, fontSize: 12)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: AppDimensions.paddingSmall),
-                        child: Container(
-                          height: 40,
-                          child: TextField(
-                            controller: _phoneControllerListForUpdate[index],
-                            autofocus: false,
-                            decoration: buildAddressInputDecoration(
-                                context,
-                                AppLocalizations.of(context)!
-                                    .enter_phone_number),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: AppDimensions.paddingSmall),
-                      child: Btn.minWidthFixHeight(
-                        minWidth: 75,
-                        height: 40,
-                        color: const Color.fromRGBO(253, 253, 253, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusHalfSmall),
-                            side: BorderSide(
-                                color: MyTheme.light_grey, width: 1.0)),
-                        child: Text(
-                          AppLocalizations.of(context)!.close_all_capital,
-                          style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 13),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 1,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: AppDimensions.paddingExtraLarge),
-                      child: Btn.minWidthFixHeight(
-                        minWidth: 75,
-                        height: 40,
-                        color: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              AppDimensions.radiusHalfSmall),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)!.update_all_capital,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        onPressed: () {},
-                      ),
-                    )
-                  ],
-                )
-              ],
-            );
-          });
-        });
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -1255,7 +1123,8 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
 
   Widget? buildAddressList() {
     // print("is Initial: ${_isInitial}");
-    if (is_logged_in == false) {
+    if (!is_logged_in.$ &&
+        !AppConfig.businessSettingsData.guestCheckoutStatus) {
       return Container(
           height: 100,
           child: Center(
@@ -1264,9 +1133,23 @@ class _GuestCheckoutAddressState extends State<GuestCheckoutAddress> {
             style: const TextStyle(color: MyTheme.font_grey),
           )));
     } else if (_isInitial && _shippingAddressList.isEmpty) {
+      if (AppConfig.businessSettingsData.guestCheckoutStatus) {
+        return Center(
+          child: Container(
+            child: Text(
+              AppLocalizations.of(context)!.no_address_is_added,
+              style: const TextStyle(color: MyTheme.font_grey),
+            ),
+          ),
+        );
+      }
+
       return SingleChildScrollView(
-          child: ShimmerHelper()
-              .buildListShimmer(item_count: 5, item_height: 100.0));
+        child: ShimmerHelper().buildListShimmer(
+          item_count: 5,
+          item_height: 100.0,
+        ),
+      );
     } else if (_shippingAddressList.isNotEmpty) {
       return SingleChildScrollView(
         child: ListView.separated(

@@ -714,7 +714,7 @@
 //       leading: Builder(
 //         builder: (context) => IconButton(
 //           padding: EdgeInsets.zero,
-//           icon: UsefulElements.backButton(context),
+//           icon: UsefulElements.backButton(),
 //           onPressed: () => Navigator.of(context).pop(),
 //         ),
 //       ),
@@ -1823,7 +1823,7 @@ class _SellerDetailsState extends State<SellerDetails> {
       leading: Builder(
         builder: (context) => IconButton(
           padding: EdgeInsets.zero,
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

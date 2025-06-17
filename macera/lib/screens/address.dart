@@ -1173,33 +1173,29 @@ class _AddAddressDialogState extends State<AddAddressDialog> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Padding(
-              padding:
-                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
-              child: Btn.minWidthFixHeight(
-                minWidth: 75,
-                height: 40,
-                color: const Color.fromRGBO(253, 253, 253, 1),
-                shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.radiusHalfSmall),
-                    side: BorderSide(color: MyTheme.light_grey, width: 1)),
-                child: Text(
-                  LangText(context).local.close_ucf,
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+            Btn.minWidthFixHeight(
+              minWidth: 75,
+              height: 40,
+              color: const Color.fromRGBO(253, 253, 253, 1),
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusHalfSmall),
+                  side: BorderSide(color: MyTheme.light_grey, width: 1)),
+              child: Text(
+                LangText(context).local.close_ucf,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
               ),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
             ),
             const SizedBox(width: 1),
             Padding(
-              padding: const EdgeInsetsDirectional.only(start: 28.0),
+              padding: const EdgeInsetsDirectional.only(start: AppDimensions.paddingDefault),
               child: Btn.minWidthFixHeight(
                 minWidth: 75,
                 height: 40,

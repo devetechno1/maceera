@@ -3,6 +3,7 @@
 //     final cartResponse = cartResponseFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:math';
 
 CartResponse cartResponseFromJson(String str) =>
     CartResponse.fromJson(json.decode(str));
@@ -79,9 +80,15 @@ class CartItem {
   String? currencySymbol;
   String? tax;
   int? shippingCost;
-  int? quantity;
+  int quantity;
   int? lowerLimit;
-  int? upperLimit;
+  int upperLimit;
+  int? _maxQty;
+  bool isLoading;
+  int get maxQuantity => min(upperLimit, _maxQty ?? upperLimit);
+  int get minQuantity => lowerLimit ?? 1;
+
+  bool get isNotAvailable => maxQuantity < quantity  || quantity < minQuantity;
 
   CartItem({
     this.id,
@@ -96,14 +103,19 @@ class CartItem {
     this.currencySymbol,
     this.tax,
     this.shippingCost,
-    this.quantity,
+    this.quantity = 0,
     this.lowerLimit,
-    this.upperLimit,
-  });
+    this.upperLimit = 0,
+    int? maxQty,
+    this.isLoading = false,
+  }) {
+    _maxQty = maxQty;
+  }
 
   factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
         id: json["id"],
         ownerId: json["owner_id"],
+        maxQty: json["max_qty"],
         userId: json["user_id"],
         productId: json["product_id"],
         productName: json["product_name"],
@@ -114,14 +126,15 @@ class CartItem {
         currencySymbol: json["currency_symbol"],
         tax: json["tax"],
         shippingCost: json["shipping_cost"],
-        quantity: json["quantity"],
+        quantity: json["quantity"] ?? 0,
         lowerLimit: json["lower_limit"],
-        upperLimit: json["upper_limit"],
+        upperLimit: json["upper_limit"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "owner_id": ownerId,
+        "max_qty": _maxQty,
         "user_id": userId,
         "product_id": productId,
         "product_name": productName,

@@ -4,7 +4,6 @@ import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:active_ecommerce_cms_demo_app/custom/toast_component.dart';
 import 'package:active_ecommerce_cms_demo_app/helpers/shared_value_helper.dart';
 import 'package:active_ecommerce_cms_demo_app/my_theme.dart';
-import 'package:active_ecommerce_cms_demo_app/repositories/payment_repository.dart';
 import 'package:active_ecommerce_cms_demo_app/screens/orders/order_list.dart';
 import 'package:active_ecommerce_cms_demo_app/screens/wallet.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +12,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../helpers/main_helpers.dart';
+import '../../repositories/payment_repository.dart';
 import '../profile.dart';
 
 class StripeScreen extends StatefulWidget {
@@ -41,6 +41,8 @@ class _StripeScreenState extends State<StripeScreen> {
 
   final WebViewController _webViewController = WebViewController();
 
+  bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -61,15 +63,17 @@ class _StripeScreenState extends State<StripeScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          // },
           onPageFinished: (page) {
             if (page.contains("/stripe/success")) {
               getData();
             } else if (page.contains("/stripe/cancel")) {
-              ToastComponent.showDialog(
-                AppLocalizations.of(context)!.payment_cancelled_ucf,
-              );
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(goToOrdersScreen);
               return;
             }
           },
@@ -86,7 +90,7 @@ class _StripeScreenState extends State<StripeScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -98,9 +102,13 @@ class _StripeScreenState extends State<StripeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection:
-          app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if(!didPop){
+          Navigator.of(context).pop(goToOrdersScreen);
+        }
+      },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: buildAppBar(context),
@@ -186,7 +194,7 @@ class _StripeScreenState extends State<StripeScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

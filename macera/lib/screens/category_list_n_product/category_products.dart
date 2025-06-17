@@ -183,7 +183,7 @@ class _CategoryProductsState extends State<CategoryProducts> {
       padding: const EdgeInsetsDirectional.only(start: 8, end: 20),
       child: Row(
         children: [
-          UsefulElements.backButton(context, color: "black"),
+          UsefulElements.backButton(color: "black"),
           Expanded(
             child: Padding(
               padding: const EdgeInsetsDirectional.only(start: 10),

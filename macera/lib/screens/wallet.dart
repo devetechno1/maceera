@@ -196,7 +196,7 @@ class _WalletState extends State<Wallet> {
       centerTitle: false,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: UsefulElements.backButton(context),
+          icon: UsefulElements.backButton(),
           onPressed: () {
             if (widget.from_recharge) {
               Navigator.push(context, MaterialPageRoute(builder: (context) {

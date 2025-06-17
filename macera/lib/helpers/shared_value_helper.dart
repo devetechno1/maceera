@@ -9,7 +9,7 @@ final SharedValue<bool> is_logged_in = SharedValue(
   key: "is_logged_in", // disk storage key for shared_preferences
 );
 
-final SharedValue<String?> temp_user_id = SharedValue(
+final SharedValue<String> temp_user_id = SharedValue(
   value: "", // initial value
   key: "temp_user_id", // disk storage key for shared_preferences
 );

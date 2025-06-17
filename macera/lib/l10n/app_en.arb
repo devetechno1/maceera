@@ -1,7 +1,62 @@
 {
+  "notAvailable": "Not available",
+  "productExceedsMaxQuantity": "One of the products exceeds the maximum allowed quantity.",
+  "productBelowMinQuantity": "One of the products is below the minimum order quantity.",
+  "maxOrderQuantityLimit": "The maximum quantity you can order is {maxQuantity}. You cannot order more than that.",
+  "@maxOrderQuantityLimit": {
+    "placeholders": {
+      "maxQuantity": {
+        "type": "int"
+      }
+    }
+  },
+  "minimumOrderQuantity": "The minimum quantity required to order this product is {minQuantity}",
+  "@minimumOrderQuantity": {
+    "placeholders": {
+      "minQuantity": {
+        "type": "int"
+      }
+    }
+  },
+  "minimum_order_amount_with_remaining": "Minimum order amount is {minAmount}, remaining {remaining}",
+  "@minimum_order_amount_with_remaining": {
+    "description": "Message for showing minimum order amount and remaining amount",
+    "placeholders": {
+      "minAmount": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "minimum_order_quantity_with_remaining": "Minimum order quantity is {minquantity}, remaining {remaining}",
+  "@minimum_order_quantity_with_remaining": {
+    "description": "Message for showing minimum quantity order amount and remaining amount",
+    "placeholders": {
+      "minquantity": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "freeShippingUnlocked": "You’ve unlocked free shipping because your order exceeded {minOrderForFreeShipping}.",
+  "@freeShippingUnlocked": {
+    "placeholders": {
+      "minOrderForFreeShipping": {
+        "type": "double"
+      }
+    }
+  },
+  "out_of_stock": "Out of stock",
+  "you_should_complete": "You should complete",
+  "to_take_free_shipping": "to take free shipping",
+  "free_shipping_ucf": "Free",
   "skip_ucf": "No,i want to continue",
-  "please_update_to_continue":"Please update the app to continue using it",
-      "avaliable_update":"New update is available",
+  "please_update_to_continue": "Please update the app to continue using it",
+  "avaliable_update": "New update is available",
   "twelve_thousand_only": "12,000 or Twelve Thousand Only",
   "order_repayment": "Order Re-Payment",
   "download": "Download",
@@ -25,7 +80,7 @@
   "you_have_to_add_location_first": "You have to add location first",
   "check_your_WhatsApp_messages_to_retrieve_the_verification_code": "Check your WhatsApp messages to retrieve the verification code",
   "minimum_order_amount_is": "Minimum order amount is",
-  "minimum_order_qty_is": "The minimum order quantity for different products is",
+  "minimum_order_qty_is": "Minimum order quantity for different products is",
   "remaining": "remaining",
   "seconds": "Seconds",
   "minutes": "Minutes",
@@ -89,7 +144,7 @@
   "loading_states_ucf": "Loading governorate ...",
   "loading_cities_ucf": "Loading Cities ...",
   "check_your_internet_connection": "Check your internet connection",
-  "success_internet_connection":"Success internet connection",
+  "success_internet_connection": "Success internet connection",
   "select_a_country_first": "Select a country first",
   "select_a_state_first": "Select a Governorate first",
   "edit_ucf": "Edit",
@@ -208,11 +263,11 @@
   "todays_deal_ucf": "Todays Deal",
   "flash_deal_ucf": "Flash Deal",
   "best_selling": "Best Selling",
-  "flash_sale":"Flash Sale",
+  "flash_sale": "Flash Sale",
   "featured_categories_ucf": "Featured Categories",
   "featured_products_ucf": "Featured Products",
   "all_products_ucf": "All Products",
-  "search_in_active_ecommerce_cms": "Search In Macera...",
+  "search_in_active_ecommerce_cms": "Search In Macera Store...",
   "no_carousel_image_found": "No carousel image found",
   "no_category_found": "No category found",
   "categories_ucf": "Categories",
@@ -378,7 +433,7 @@
   "product_unit_ucf": "Product Unit",
   "order_code_ucf": "Order Code",
   "reason_ucf": "Reason",
-  "view_less_ucf":"view less",
+  "view_less_ucf": "view less",
   "reason_cannot_be_empty": "Reason cannot be empty",
   "enter_reason_ucf": "Enter Reason",
   "show_request_list_ucf": "Show Request List",
@@ -443,7 +498,7 @@
   "enter_your_name": "Enter your name",
   "confirm_your_password": "Confirm your password",
   "password_must_contain_at_least_6_characters": "Password must contain at least 6 characters",
-  "passwords_do_not_match": "Passwords do not match",
+  "passwords_do_not_match": "Password does not match",
   "join_ucf": "Join",
   "retype_password_ucf": "Retype Password",
   "or_register_with_a_phone": "or, Register with a phone number",
@@ -489,6 +544,7 @@
   "pay_with_payfast": "Pay with PayFast",
   "pay_with_phonepay": "Pay with Phonepay",
   "pay_with_my_fatoora": "Pay with MyFatoora",
+  "pay_with_my_paymob": "Pay with Paymob",
   "your_delivery_location": "Your delivery location . . .",
   "calculating": "Calculating...",
   "pick_here": "Pick Here",
@@ -796,7 +852,7 @@
   "verifyYourAccount": "Verify your account",
   "invalid_phone_number": "Invalid phone number",
   "pleaseEnsureUs": "Please ensure us",
-  "no_best_selling_products_available":"No best-selling products available.",
-  "no_auction_products":"No Auction Products",
-  "error_fetching_todays_deal_products":"Error fetching today's deal products"
+  "no_best_selling_products_available": "No best-selling products available.",
+  "no_auction_products": "No Auction Products",
+  "error_fetching_todays_deal_products": "Error fetching today's deal products"
 }

@@ -726,7 +726,7 @@ class _AuctionPurchaseHistoryState extends State<AuctionPurchaseHistory> {
           Builder(
             builder: (context) => IconButton(
               padding: EdgeInsets.zero,
-              icon: UsefulElements.backIcon(context),
+              icon: UsefulElements.backIcon(),
               onPressed: () {
                 return Navigator.of(context).pop();
               },

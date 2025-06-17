@@ -256,39 +256,47 @@ import 'package:active_ecommerce_cms_demo_app/presenter/cart_counter.dart';
 import 'package:active_ecommerce_cms_demo_app/repositories/cart_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../app_config.dart';
 import '../custom/aiz_route.dart';
 import '../custom/btn.dart';
 import '../custom/lang_text.dart';
+import '../helpers/debouncer.dart';
 import '../helpers/shared_value_helper.dart';
 import '../my_theme.dart';
 import '../screens/checkout/select_address.dart';
 import '../screens/guest_checkout_pages/guest_checkout_address.dart';
 
+ValueNotifier<double> cartTotalAmount = ValueNotifier<double>(0.0);
+ValueNotifier<int> cartQuantityProduct = ValueNotifier<int>(0);
+
 class CartProvider extends ChangeNotifier {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _mainScrollController = ScrollController();
-  List _shopList = [];
+  List<Datum> _shopList = [];
   CartResponse? _shopResponse;
   bool _isInitial = true;
   double _cartTotal = 0.00;
   String _cartTotalString = ". . .";
 
-  GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
   ScrollController get mainScrollController => _mainScrollController;
-  List get shopList => _shopList;
+  List<Datum> get shopList => _shopList;
   CartResponse? get shopResponse => _shopResponse;
   bool get isInitial => _isInitial;
+  bool get isFreeShipping =>
+      // false;
+      _cartTotal >
+          AppConfig.businessSettingsData.freeShippingMinimumOrderAmount &&
+      AppConfig.businessSettingsData.freeShippingMinimumCheck;
   double get cartTotal => _cartTotal;
   String get cartTotalString => _cartTotalString;
+
+  Debouncer debouncer = Debouncer(milliseconds: 900);
 
   int get itemsCount {
     int count = 0;
     for (var e in _shopList) {
-      count += ((e?.cartItems?.length as int?) ?? 0);
+      count += (e.cartItems?.length ?? 0);
     }
     return count;
   }
@@ -305,6 +313,7 @@ class CartProvider extends ChangeNotifier {
   @override
   void dispose() {
     _mainScrollController.dispose();
+    debouncer.cancel();
     super.dispose();
   }
 
@@ -340,36 +349,66 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onQuantityIncrease(
-      BuildContext context, int sellerIndex, int itemIndex) {
-    if (_shopList[sellerIndex].cartItems[itemIndex].quantity <
-        _shopList[sellerIndex].cartItems[itemIndex].upperLimit) {
-      _shopList[sellerIndex].cartItems[itemIndex].quantity++;
+  Future<void> onQuantityIncrease(
+      BuildContext context, int sellerIndex, int itemIndex) async {
+    if (_shopList[sellerIndex].cartItems![itemIndex].quantity <
+        _shopList[sellerIndex].cartItems![itemIndex].maxQuantity) {
+      _shopList[sellerIndex].cartItems![itemIndex].quantity =
+          _shopList[sellerIndex].cartItems![itemIndex].quantity + 1;
+      _shopList[sellerIndex].cartItems![itemIndex].isLoading = true;
       notifyListeners();
-      process(context, mode: "update");
+      debouncer(
+        () async {
+          final bool hasError = await process(context, mode: "update");
+          _shopList[sellerIndex].cartItems![itemIndex].isLoading = false;
+          if (hasError) {
+            _shopList[sellerIndex].cartItems![itemIndex].quantity =
+                _shopList[sellerIndex].cartItems![itemIndex].quantity - 1;
+            notifyListeners();
+          }
+          cartTotalAmount.value = cartTotal;
+          debouncer.cancel();
+        },
+      );
     } else {
       ToastComponent.showDialog(
-          "${AppLocalizations.of(context)!.cannot_order_more_than} ${_shopList[sellerIndex].cartItems[itemIndex].upperLimit} ${AppLocalizations.of(context)!.items_of_this_all_lower}",
-          gravity: ToastGravity.CENTER,
-          toastLength: Toast.LENGTH_LONG);
-    }
-  }
-
-  void onQuantityDecrease(
-      BuildContext context, int sellerIndex, int itemIndex) {
-    if (_shopList[sellerIndex].cartItems[itemIndex].quantity >
-        _shopList[sellerIndex].cartItems[itemIndex].lowerLimit) {
-      _shopList[sellerIndex].cartItems[itemIndex].quantity--;
-      notifyListeners();
-      process(context, mode: "update");
-    } else {
-      ToastComponent.showDialog(
-        "${AppLocalizations.of(context)!.cannot_order_more_than} ${_shopList[sellerIndex].cartItems[itemIndex].lowerLimit} ${AppLocalizations.of(context)!.items_of_this_all_lower}",
+        "${AppLocalizations.of(context)!.maxOrderQuantityLimit(_shopList[sellerIndex].cartItems![itemIndex].maxQuantity)}",
+        isError: true,
       );
     }
   }
 
-  void onPressDelete(BuildContext context, String cartId) {
+  Future<void> onQuantityDecrease(
+      BuildContext context, int sellerIndex, int itemIndex) async {
+    if (_shopList[sellerIndex].cartItems![itemIndex].quantity >
+        _shopList[sellerIndex].cartItems![itemIndex].lowerLimit!) {
+      _shopList[sellerIndex].cartItems![itemIndex].quantity =
+          _shopList[sellerIndex].cartItems![itemIndex].quantity - 1;
+      _shopList[sellerIndex].cartItems![itemIndex].isLoading = true;
+      notifyListeners();
+      debouncer(
+        () async {
+          final bool hasError = await process(context, mode: "update");
+          if (hasError) {
+            _shopList[sellerIndex].cartItems![itemIndex].quantity =
+                _shopList[sellerIndex].cartItems![itemIndex].quantity + 1;
+            notifyListeners();
+          }
+          _shopList[sellerIndex].cartItems![itemIndex].isLoading = false;
+          cartTotalAmount.value = cartTotal;
+          debouncer.cancel();
+        },
+      );
+    } else {
+      ToastComponent.showDialog(
+        "${AppLocalizations.of(context)!.minimumOrderQuantity(_shopList[sellerIndex].cartItems![itemIndex].minQuantity)}",
+        isError: true,
+      );
+    }
+  }
+
+  void onPressDelete(
+      BuildContext context, String cartId, int sellerIndex, int itemIndex) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -392,6 +431,7 @@ class CartProvider extends ChangeNotifier {
             ),
             onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
+              notifyListeners();
             },
           ),
           Btn.basic(
@@ -402,7 +442,7 @@ class CartProvider extends ChangeNotifier {
             ),
             onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
-              confirmDelete(context, cartId);
+              confirmDelete(context, cartId, sellerIndex, itemIndex);
             },
           ),
         ],
@@ -410,12 +450,17 @@ class CartProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> confirmDelete(BuildContext context, String cartId) async {
+  Future<void> confirmDelete(BuildContext context, String cartId,
+      int sellerIndex, int itemIndex) async {
+    _shopList[sellerIndex].cartItems![itemIndex].isLoading = true;
+    notifyListeners();
     final cartDeleteResponse =
         await CartRepository().getCartDeleteResponse(int.parse(cartId));
 
     if (cartDeleteResponse.result == true) {
       ToastComponent.showDialog(
+        color: Colors.green,
+        // Theme.of(context).colorScheme.error,
         cartDeleteResponse.message,
       );
 
@@ -426,6 +471,8 @@ class CartProvider extends ChangeNotifier {
         cartDeleteResponse.message,
       );
     }
+    _shopList[sellerIndex].cartItems![itemIndex].isLoading = false;
+    notifyListeners();
   }
 
   void onPressUpdate(BuildContext context) {
@@ -433,28 +480,50 @@ class CartProvider extends ChangeNotifier {
   }
 
   void onPressProceedToShipping(BuildContext context) {
+    for (Datum shop in _shopList) {
+      for (CartItem cartItem in shop.cartItems ?? []) {
+        if (cartItem.quantity < cartItem.minQuantity) {
+          ToastComponent.showDialog(
+            AppLocalizations.of(context)!.productBelowMinQuantity,
+            isError: true,
+          );
+          return;
+        } else if (cartItem.quantity > cartItem.maxQuantity) {
+          ToastComponent.showDialog(
+            AppLocalizations.of(context)!.productExceedsMaxQuantity,
+            isError: true,
+          );
+          return;
+        }
+      }
+    }
     process(context, mode: "proceed_to_shipping");
   }
 
-  Future<void> process(BuildContext context, {required String mode}) async {
+  Future<bool> process(BuildContext context, {required String mode}) async {
     final cartIds = [];
     final cartQuantities = [];
     if (_shopList.isNotEmpty) {
       _shopList.forEach((shop) {
-        if (shop.cartItems.length > 0) {
-          shop.cartItems.forEach((cartItem) {
+        if (shop.cartItems!.isNotEmpty) {
+          shop.cartItems!.forEach((cartItem) {
             cartIds.add(cartItem.id);
-            cartQuantities.add(cartItem.quantity);
+            int _quantity = cartItem.quantity;
+
+            if (_quantity > cartItem.maxQuantity) {
+              _quantity = cartItem.maxQuantity;
+            } else if (_quantity < cartItem.minQuantity) {
+              _quantity = cartItem.minQuantity;
+            }
+            cartQuantities.add(_quantity);
           });
         }
       });
     }
 
     if (cartIds.isEmpty) {
-      ToastComponent.showDialog(
-        AppLocalizations.of(context)!.cart_is_empty,
-      );
-      return;
+      ToastComponent.showDialog(AppLocalizations.of(context)!.cart_is_empty);
+      return true;
     }
 
     final cartIdsString = cartIds.join(',').toString();
@@ -464,9 +533,8 @@ class CartProvider extends ChangeNotifier {
         .getCartProcessResponse(cartIdsString, cartQuantitiesString);
 
     if (cartProcessResponse.result == false) {
-      ToastComponent.showDialog(
-        cartProcessResponse.message,
-      );
+      ToastComponent.showDialog(cartProcessResponse.message,isError: true);
+      return true;
     } else {
       if (mode == "update") {
         fetchData(context);
@@ -475,12 +543,12 @@ class CartProvider extends ChangeNotifier {
           ToastComponent.showDialog(
               '${LangText(context).local.minimum_order_qty_is} ${AppConfig.businessSettingsData.minimumOrderQuantity}',
               color: Theme.of(context).colorScheme.error);
-          return;
+          return true;
         } else if (isMinOrderAmountNotEnough) {
           ToastComponent.showDialog(
               '${LangText(context).local.minimum_order_amount_is} ${AppConfig.businessSettingsData.minimumOrderAmount}',
               color: Theme.of(context).colorScheme.error);
-          return;
+          return true;
         }
         if (AppConfig.businessSettingsData.guestCheckoutStatus &&
             !is_logged_in.$) {
@@ -492,11 +560,17 @@ class CartProvider extends ChangeNotifier {
         } else {
           // Navigate to select address page
           // Example:
-          AIZRoute.push(context, const SelectAddress()).then((value) {
-            onPopped(context, value);
-          });
+          Future.delayed(
+            Duration.zero,
+            () {
+              AIZRoute.push(context, const SelectAddress()).then((value) {
+                onPopped(context, value);
+              });
+            },
+          );
         }
       }
+      return false;
     }
   }
 

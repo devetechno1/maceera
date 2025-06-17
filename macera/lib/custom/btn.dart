@@ -4,7 +4,9 @@ import "package:flutter/material.dart";
 
 class Btn {
   static Widget basic(
-      {Color color = const Color.fromARGB(0, 0, 0, 0),
+      {
+
+        Color color = const Color.fromARGB(0, 0, 0, 0),
       OutlinedBorder shape = const RoundedRectangleBorder(
           borderRadius:
               BorderRadius.all(Radius.circular(AppDimensions.radiusNormal))),

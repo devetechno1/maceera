@@ -708,7 +708,7 @@ class _FilterState extends State<Filter> {
         children: <Widget>[
           IconButton(
             padding: EdgeInsets.zero,
-            icon: UsefulElements.backButton(context),
+            icon: UsefulElements.backButton(),
             onPressed: () => Navigator.of(context).pop(),
           ),
           Padding(

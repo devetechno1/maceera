@@ -362,7 +362,7 @@ class _CouponsState extends State<Coupons> {
       backgroundColor: MyTheme.mainColor,
       scrolledUnderElevation: 0.0,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       title: Text(
         LangText(context).local.coupons_ucf,
         style: TextStyle(

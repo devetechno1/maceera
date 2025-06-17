@@ -2,13 +2,14 @@ import 'package:active_ecommerce_cms_demo_app/app_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:one_context/one_context.dart';
 
 import '../helpers/shared_value_helper.dart';
 import '../my_theme.dart';
 import '../screens/main.dart';
 
 class UsefulElements {
-  static IconButton backButton(context, {color = 'black'}) {
+  static IconButton backButton({color = 'black'}) {
     return IconButton(
       padding: EdgeInsets.zero,
       icon: Icon(
@@ -16,11 +17,11 @@ class UsefulElements {
               ? CupertinoIcons.arrow_right
               : CupertinoIcons.arrow_left,
           color: color == 'white' ? Colors.white : MyTheme.dark_font_grey),
-      onPressed: () => Navigator.pop(context),
+      onPressed: () => Navigator.pop(OneContext().context!),
     );
   }
 
-  static Icon backIcon(context, {color = 'black'}) {
+  static Icon backIcon({color = 'black'}) {
     return Icon(
         app_language_rtl.$!
             ? CupertinoIcons.arrow_right
@@ -28,7 +29,7 @@ class UsefulElements {
         color: color == 'white' ? Colors.white : MyTheme.dark_font_grey);
   }
 
-  static Widget backToMain(context, {color = 'black', go_back = true}) {
+  static Widget backToMain({color = 'black', go_back = true}) {
     if (!go_back) return const SizedBox();
     return IconButton(
       icon: Icon(
@@ -37,7 +38,7 @@ class UsefulElements {
               : CupertinoIcons.arrow_left,
           color: color == 'white' ? Colors.white : MyTheme.dark_font_grey),
       onPressed: () => Navigator.push(
-          context,
+          OneContext().context!,
           MaterialPageRoute(builder: (context) => const Main())),
     );
   }

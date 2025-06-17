@@ -1,7 +1,62 @@
 {
+    "notAvailable": "غير متوفر",
+    "productExceedsMaxQuantity": "أحد المنتجات يحتوي على كمية تتجاوز الحد الأقصى المسموح.",
+    "productBelowMinQuantity": "أحد المنتجات يحتوي على كمية أقل من الحد الأدنى المسموح للطلب.",
+    "maxOrderQuantityLimit": "الحد الأقصى المسموح بطلبه هو {maxQuantity}. لا يمكنك طلب أكثر من ذلك.",
+    "@maxOrderQuantityLimit": {
+        "placeholders": {
+            "maxQuantity": {
+                "type": "int"
+            }
+        }
+    },
+    "minimumOrderQuantity": "الحد الأدنى لطلب هذا المنتج هو {minQuantity}.",
+    "@minimumOrderQuantity": {
+        "placeholders": {
+            "minQuantity": {
+                "type": "int"
+            }
+        }
+    },
+    "minimum_order_amount_with_remaining": "الحد الأدنى للطلب هو {minAmount}، المتبقي {remaining}",
+    "@minimum_order_amount_with_remaining": {
+        "description": "Message for showing minimum order and remaining amount",
+        "placeholders": {
+            "minAmount": {
+                "type": "String"
+            },
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "minimum_order_quantity_with_remaining": "الحد الأدنى للكميه هو {minquantity}، المتبقي {remaining}",
+    "@minimum_order_quantity_with_remaining": {
+        "description": "Message for showing minimumquantity order and remaining amount",
+        "placeholders": {
+            "minquantity": {
+                "type": "String"
+            },
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "freeShippingUnlocked": "لقد حصلت على شحن مجاني لأن قيمة طلبك تجاوزت {minOrderForFreeShipping}.",
+    "@freeShippingUnlocked": {
+        "placeholders": {
+            "minOrderForFreeShipping": {
+                "type": "double"
+            }
+        }
+    },
+    "out_of_stock": "غير متوفر حالياً",
+    "you_should_complete": "يجب عليك إكمال",
+    "to_take_free_shipping": "للحصول على شحن مجاني",
+    "free_shipping_ucf": "مجاني",
     "skip_ucf": "لا، اريد المتابعة",
-    "please_update_to_continue":  "يرجي تحديث التطبيق للاستمرار في استخدامه",
-    "avaliable_update":"التحديث متاح",
+    "please_update_to_continue": "يرجي تحديث التطبيق للاستمرار في استخدامه",
+    "avaliable_update": "التحديث متاح",
     "twelve_thousand_only": "١٢٬٠٠٠ أو اثنا عشر ألف فقط",
     "order_repayment": "إعادة دفع الطلب",
     "download": "تنزيل",
@@ -33,7 +88,7 @@
     "hours": "ساعات",
     "days": "ايام",
     "invalidURL": "رابط غير صالح",
-    "view_all_ucf":"اظهار الكل",
+    "view_all_ucf": "اظهار الكل",
     "my_classified_ads_ucf": "إعلاناتي المبوبة",
     "all_classified_ads_ucf": "جميع الإعلانات المبوبة",
     "terms_conditions_ucf": "الشروط والأحكام",
@@ -106,12 +161,12 @@
     "top_sellers_ucf": "أفضل البائعين",
     "todays_deal_ucf": "صفقة اليوم",
     "flash_deal_ucf": "عرض سريع",
-    "best_selling":"افضل المبيعات",
-    "flash_sale" :"عرض سريع",
+    "best_selling": "افضل المبيعات",
+    "flash_sale": "عرض سريع",
     "featured_categories_ucf": "الفئات المميزة",
     "featured_products_ucf": "المنتجات المميزة",
     "all_products_ucf": "جميع المنتجات",
-    "search_in_active_ecommerce_cms": "ابحث في Macera...",
+    "search_in_active_ecommerce_cms": "ابحث في متجر ديفي...",
     "no_carousel_image_found": "لم يتم العثور على صورة دوّارة",
     "no_category_found": "لم يتم العثور على فئة",
     "categories_ucf": "الفئات",
@@ -485,6 +540,7 @@
     "pay_with_payfast": "الدفع باستخدام PayFast",
     "pay_with_phonepay": "الدفع باستخدام Phonepay",
     "pay_with_my_fatoora": "الدفع باستخدام MyFatoora",
+    "pay_with_my_paymob": "الدفع باستخدام Paymob",
     "your_delivery_location": "موقع التوصيل الخاص بك ...",
     "calculating": "جارٍ الحساب...",
     "pick_here": "اختر هنا",
@@ -544,7 +600,7 @@
     "youtube_ucf": "يوتيوب",
     "dailymotion_ucf": "ديلي موشن",
     "vimeo_ucf": "فيميو",
-    "view_less_ucf":"عرض اقل",
+    "view_less_ucf": "عرض اقل",
     "save_n_unpublish_ucf": "حفظ وإلغاء النشر",
     "save_n_publish_ucf": "حفظ ونشر",
     "product_information_ucf": "معلومات المنتج",
@@ -747,8 +803,8 @@
     "payment_proof": "إثبات الدفع",
     "back_ucf": "عودة",
     "no_notification_ucf": "لا توجد إشعارات!",
-    "check_your_internet_connection":"تحقق من الاتصال بالانترنت",
-    "success_internet_connection":"نجاح الاتصال بالانترنت",
+    "check_your_internet_connection": "تحقق من الاتصال بالانترنت",
+    "success_internet_connection": "نجاح الاتصال بالانترنت",
     "already_have_account": "لديك حساب بالفعل بهذه المعلومات. يرجى تسجيل الدخول أولًا.",
     "add_new_classified_product_ucf": "إضافة منتج مصنف جديد",
     "condition_ucf": "الحالة",
@@ -796,8 +852,7 @@
     "verifyYourAccount": "تحقق من حسابك",
     "invalid_phone_number": "رقم هاتف غير صالح",
     "pleaseEnsureUs": "يرجى التأكيد لنا",
-    "no_best_selling_products_available":"لايوجد افضل مبيعات متاحه",
-   "no_auction_products": "لاتوجد منتجات مزاد حاليا",
-   "error_fetching_todays_deal_products": "خطأ في تحميل منتجات العروض اليومية:"
-
+    "no_best_selling_products_available": "لايوجد افضل مبيعات متاحه",
+    "no_auction_products": "لاتوجد منتجات مزاد حاليا",
+    "error_fetching_todays_deal_products": "خطأ في تحميل منتجات العروض اليومية:"
 }

@@ -42,6 +42,8 @@ class _PaypalScreenState extends State<PaypalScreen> {
   bool _initial_url_fetched = false;
 
   final WebViewController _webViewController = WebViewController();
+  bool get goToOrdersScreen => widget.payment_type != "cart_payment" || _order_init;
+
 
   @override
   void initState() {
@@ -65,7 +67,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -88,7 +90,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
       ToastComponent.showDialog(
         paypalUrlResponse.message!,
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -106,14 +108,21 @@ class _PaypalScreenState extends State<PaypalScreen> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onWebResourceError: (error) {},
+          // onWebResourceError: (error) {
+          //    Navigator.of(context).pop(goToOrdersScreen);
+          // },
+          // onHttpError: (error) {
+          //   Navigator.of(context).pop(goToOrdersScreen);
+          
+
+          // },
           onPageFinished: (page) {
             if (page.contains("/paypal/payment/done")) {
               getData();
             } else if (page.contains("/paypal/payment/cancel")) {
               ToastComponent.showDialog(
                   LangText(context).local.payment_cancelled_ucf);
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(goToOrdersScreen);
               return;
             }
           },
@@ -124,9 +133,15 @@ class _PaypalScreenState extends State<PaypalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection:
-          app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if(!didPop){
+          Navigator.of(context).pop(goToOrdersScreen);
+        }
+      },
+      // textDirection:
+      //     app_language_rtl.$! ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: buildAppBar(context),
@@ -220,7 +235,7 @@ class _PaypalScreenState extends State<PaypalScreen> {
                   ? CupertinoIcons.arrow_right
                   : CupertinoIcons.arrow_left,
               color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
         ),
       ),
       title: Text(

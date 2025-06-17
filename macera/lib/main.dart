@@ -28,8 +28,8 @@ import 'lang_config.dart';
 import 'my_theme.dart';
 import 'other_config.dart';
 import 'presenter/cart_counter.dart';
+import 'presenter/cart_provider.dart';
 import 'presenter/currency_presenter.dart';
-import 'presenter/home_presenter.dart';
 import 'presenter/select_address_provider.dart';
 import 'presenter/unRead_notification_counter.dart';
 import 'providers/blog_provider.dart';
@@ -116,10 +116,17 @@ var routes = GoRouter(
           if (extra is Map<String, dynamic>) {
             if (extra["skipUpdate"] == true) skipUpdate = true;
           }
-          final UpdateDataModel? updateData = AppConfig.businessSettingsData.updateData;
-          if ((updateData?.version != null && AppConfig.version != updateData?.version) 
-          && (!_isUpdateScreenOpened || !skipUpdate || updateData?.mustUpdate == true)
-          && state.uri.path != "/update") {
+          final UpdateDataModel? updateData =
+              AppConfig.businessSettingsData.updateData;
+
+          if ((updateData?.version != null &&
+                  AppConfig.version !=
+                      AppConfig.businessSettingsData.updateData?.version) &&
+              (!_isUpdateScreenOpened ||
+                  !skipUpdate ||
+                  AppConfig.businessSettingsData.updateData?.mustUpdate ==
+                      true) &&
+              state.uri.path != "/update") {
             _isUpdateScreenOpened = true;
             return '/update?url=${state.uri.path}';
           }
@@ -315,10 +322,11 @@ class _MyAppState extends State<MyApp> {
 
         ///
         //ChangeNotifierProvider(create: (_) => BannerProvider()),
-        ChangeNotifierProvider(create: (_) => HomePresenter()),
+        // ChangeNotifierProvider(create: (_) => HomePresenter()),
         ChangeNotifierProvider(create: (_) => BlogProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
         ChangeNotifierProvider(create: (_) => MyClassifiedProvider()),
+        ChangeNotifierProvider(lazy: false, create: (_) => CartProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, provider, snapshot) {

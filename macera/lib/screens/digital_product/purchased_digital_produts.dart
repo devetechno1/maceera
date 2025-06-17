@@ -85,7 +85,7 @@ class _PurchasedDigitalProductsState extends State<PurchasedDigitalProducts> {
       backgroundColor: MyTheme.mainColor,
       scrolledUnderElevation: 0.0,
       centerTitle: false,
-      leading: UsefulElements.backButton(context),
+      leading: UsefulElements.backButton(),
       // actions: [
       //   GestureDetector(
       //     onTap: () {},
