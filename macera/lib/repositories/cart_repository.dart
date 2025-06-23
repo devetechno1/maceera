@@ -13,9 +13,7 @@ import 'package:active_ecommerce_cms_demo_app/repositories/api-request.dart';
 
 class CartRepository {
   // get cart list
-  Future<dynamic> getCartResponseList(
-    int? uid,
-  ) async {
+  Future<dynamic> getCartResponseList() async {
     const String url = ("${AppConfig.BASE_URL}/carts");
     String postBody;
 

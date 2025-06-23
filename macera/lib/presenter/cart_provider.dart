@@ -320,9 +320,9 @@ class CartProvider extends ChangeNotifier {
   Future<void> fetchData(BuildContext context) async {
     getCartCount(context);
     final CartResponse cartResponseList =
-        await CartRepository().getCartResponseList(user_id.$);
+        await CartRepository().getCartResponseList();
 
-    if (cartResponseList.data != null && cartResponseList.data!.isNotEmpty) {
+    if (cartResponseList.data != null) {
       _shopList = cartResponseList.data!;
       _shopResponse = cartResponseList;
       getSetCartTotal();
@@ -332,8 +332,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getCartCount(BuildContext context) {
-    Provider.of<CartCounter>(context, listen: false).getCount();
+  Future<void> getCartCount(BuildContext context) {
+    return Provider.of<CartCounter>(context, listen: false).getCount();
   }
 
   void getSetCartTotal() {
@@ -533,7 +533,7 @@ class CartProvider extends ChangeNotifier {
         .getCartProcessResponse(cartIdsString, cartQuantitiesString);
 
     if (cartProcessResponse.result == false) {
-      ToastComponent.showDialog(cartProcessResponse.message,isError: true);
+      ToastComponent.showDialog(cartProcessResponse.message, isError: true);
       return true;
     } else {
       if (mode == "update") {
@@ -584,7 +584,7 @@ class CartProvider extends ChangeNotifier {
 
   Future<void> onRefresh(BuildContext context) async {
     reset();
-    fetchData(context);
+    await fetchData(context);
   }
 
   void onPopped(BuildContext context, dynamic value) {
