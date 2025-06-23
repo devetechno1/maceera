@@ -10,11 +10,9 @@ import 'package:active_ecommerce_cms_demo_app/screens/orders/order_details.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:one_context/one_context.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data_model/order_mini_response.dart';
-import '../../presenter/cart_provider.dart';
 
 class PaymentStatus {
   String option_key;
@@ -216,7 +214,7 @@ class _OrderListState extends State<OrderList> {
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
           if (!didPop) return goBack();
-          Provider.of<CartProvider>(context, listen: false).onRefresh(context);
+          // Provider.of<CartProvider>(context, listen: false).onRefresh(context);
         },
         child: Directionality(
           textDirection:
