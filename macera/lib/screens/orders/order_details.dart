@@ -1475,7 +1475,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                     _make_re_payment(_orderDetails!.grand_total ?? '');
                   },
                   child: Text(
-                    LangText(context).local.make_payment_ucf,
+                    LangText(context).local.order_repayment,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   )),
           ],

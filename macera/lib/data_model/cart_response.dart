@@ -119,7 +119,7 @@ class CartItem {
         userId: json["user_id"],
         productId: json["product_id"],
         productName: json["product_name"],
-        auctionProduct: json["auction_product"],
+        auctionProduct: int.tryParse("${json["auction_product"]}"),
         productThumbnailImage: json["product_thumbnail_image"],
         variation: json["variation"],
         price: json["price"],

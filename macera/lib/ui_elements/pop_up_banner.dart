@@ -1,3 +1,4 @@
+import 'package:active_ecommerce_cms_demo_app/helpers/string_helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_dimensions.dart';
@@ -25,11 +26,11 @@ class PopupBannerDialog extends StatelessWidget {
                   AspectRatio(
                     aspectRatio: 1,
                     child: CachedNetworkImage(
-                     // popupBannerModel.image ?? '',
+                      // popupBannerModel.image ?? '',
                       width: double.infinity,
-                      fit: BoxFit.cover, 
-                    
-                      imageUrl:popupBannerModel.image ?? '',
+                      fit: BoxFit.cover,
+
+                      imageUrl: popupBannerModel.image ?? '',
                     ),
                   ),
                   Positioned(
@@ -61,9 +62,11 @@ class PopupBannerDialog extends StatelessWidget {
               const SizedBox(height: AppDimensions.paddingDefault),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingDefault),
+                  horizontal: AppDimensions.paddingDefault,
+                ),
                 child: Text(
                   popupBannerModel.title ?? '',
+                  textDirection: (popupBannerModel.title ?? '').direction,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -75,6 +78,7 @@ class PopupBannerDialog extends StatelessWidget {
                     horizontal: AppDimensions.paddingDefault),
                 child: Text(
                   popupBannerModel.summary ?? '',
+                  textDirection: (popupBannerModel.summary ?? '').direction,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

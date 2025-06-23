@@ -129,7 +129,7 @@ class CartItem {
         productId: json["product_id"],
         productName: json["product_name"],
         productPrice: double.tryParse('${json["product_price"]}'),
-        productQuantity: json["product_quantity"],
+        productQuantity: int.tryParse("${json["product_quantity"]}"),
         productThumbnailImage: json["product_thumbnail_image"],
         isDigital: json["product_is_digital"],
       );

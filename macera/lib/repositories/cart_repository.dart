@@ -103,7 +103,7 @@ class CartRepository {
 
   // cart add
   Future<dynamic> getCartAddResponse(
-      int? id, String? variant, int? userId, int? quantity) async {
+      int? id, String? variant, int? quantity) async {
     String postBody;
 
     if (AppConfig.businessSettingsData.guestCheckoutStatus && !is_logged_in.$) {
@@ -118,7 +118,7 @@ class CartRepository {
       postBody = jsonEncode({
         "id": "$id",
         "variant": variant,
-        "user_id": "$userId",
+        "user_id": "${user_id.$}",
         "quantity": "$quantity",
         "cost_matrix": AppConfig.purchase_code,
       });

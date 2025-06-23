@@ -36,13 +36,12 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  final String _register_by =
-      otp_addon_installed.$ ? "phone" : "email"; //phone or email
   String initialCountry = 'EG';
 
   List<String?> countries_code = <String?>[];
 
-  String? _phone = "";
+  String _phone = "";
+  bool _isValidPhoneNumber = false;
   bool? _isAgree = false;
   bool _isCaptchaShowing = false;
   String googleRecaptchaKey = "";
@@ -75,61 +74,81 @@ class _RegistrationState extends State<Registration> {
     //before going to other screen show statusbar
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
     super.dispose();
   }
 
   Future<void> onPressSignUp() async {
-    final name = _nameController.text.toString();
-    final email = _emailController.text.toString();
-    final password = _passwordController.text.toString();
-    final passwordConfirm = _passwordConfirmController.text.toString();
+    final String name = _nameController.text.trim();
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text;
+    final String passwordConfirm = _passwordConfirmController.text;
 
     if (name == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_your_name,
+        isError: true,
       );
       return;
-    } else if (_register_by == 'email' && (email == "" || !isEmail(email))) {
+    } else if (email.isNotEmpty && !isEmail(email)) {
       ToastComponent.showDialog(
-        AppLocalizations.of(context)!.enter_email,
+        AppLocalizations.of(context)!.enter_correct_email,
+        isError: true,
       );
       return;
-    } else if (_register_by == 'phone' && _phone == "") {
+    } else if (_phoneNumberController.text.trim() == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_phone_number,
+        isError: true,
+      );
+      return;
+    } else if (_isValidPhoneNumber) {
+      ToastComponent.showDialog(
+        AppLocalizations.of(context)!.invalid_phone_number,
+        isError: true,
       );
       return;
     } else if (password == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_password,
+        isError: true,
       );
       return;
     } else if (passwordConfirm == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.confirm_your_password,
+        isError: true,
       );
       return;
     } else if (password.length < 6) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!
             .password_must_contain_at_least_6_characters,
+        isError: true,
       );
       return;
     } else if (password != passwordConfirm) {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.passwords_do_not_match,
+        isError: true,
       );
       return;
     }
     Loading.show(context);
 
     final signupResponse = await AuthRepository().getSignupResponse(
-        name,
-        _register_by == 'email' ? email : _phone,
-        password,
-        passwordConfirm,
-        _register_by,
-        googleRecaptchaKey);
+      name,
+      email,
+      _phone,
+      password,
+      passwordConfirm,
+      googleRecaptchaKey,
+    );
     Loading.close();
 
     if (signupResponse.result == false) {
@@ -138,9 +157,7 @@ class _RegistrationState extends State<Registration> {
         message += value + "\n";
       });
 
-      ToastComponent.showDialog(
-        message,
-      );
+      ToastComponent.showDialog(message, isError: true);
     } else {
       ToastComponent.showDialog(
         signupResponse.message,
@@ -179,9 +196,8 @@ class _RegistrationState extends State<Registration> {
 
       // context.go("/");
 
-      if ((AppConfig.businessSettingsData.mailVerificationStatus &&
-              _register_by == "email") ||
-          (AppConfig.businessSettingsData.mustOtp && _register_by == "phone")) {
+      if (AppConfig.businessSettingsData.mailVerificationStatus ||
+          AppConfig.businessSettingsData.mustOtp) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const Otp(
             fromRegistration: true,
@@ -244,115 +260,105 @@ class _RegistrationState extends State<Registration> {
                 padding: const EdgeInsets.only(
                     bottom: AppDimensions.paddingSmallExtra),
                 child: Text(
-                  _register_by == "email"
-                      ? AppLocalizations.of(context)!.email_ucf
-                      : AppLocalizations.of(context)!.phone_ucf,
+                  AppLocalizations.of(context)!.email_ucf,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      height: 36,
+                      child: TextField(
+                        controller: _emailController,
+                        autofocus: false,
+                        decoration: InputDecorations.buildInputDecoration_1(
+                            hint_text: "johndoe@example.com"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    bottom: AppDimensions.paddingSmallExtra),
+                child: Text(
+                  AppLocalizations.of(context)!.phone_ucf,
                   style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.w600),
                 ),
               ),
-              if (_register_by == "email")
-                Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: 36,
-                        child: TextField(
-                          controller: _emailController,
-                          autofocus: false,
-                          decoration: InputDecorations.buildInputDecoration_1(
-                              hint_text: "johndoe@example.com"),
+              Padding(
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      height: 36,
+                      child: CustomInternationalPhoneNumberInput(
+                        countries: countries_code,
+                        hintText: LangText(context).local.phone_number_ucf,
+                        errorMessage:
+                            LangText(context).local.invalid_phone_number,
+                        initialValue:
+                            PhoneNumber(isoCode: AppConfig.default_country),
+                        onInputChanged: (PhoneNumber number) {
+                          _phoneNumberController.text = number.parseNumber();
+                          setState(() {
+                            if (number.isoCode != null)
+                              AppConfig.default_country = number.isoCode!;
+                            _phone = number.phoneNumber ?? '';
+                          });
+                        },
+                        onInputValidated: (bool isNotValid) {
+                          print(isNotValid);
+                          _isValidPhoneNumber = !isNotValid;
+                        },
+                        selectorConfig: const SelectorConfig(
+                          selectorType: PhoneInputSelectorType.DIALOG,
                         ),
-                      ),
-                      // otp_addon_installed.$
-                      //     ? GestureDetector(
-                      //         onTap: () {
-                      //           setState(() {
-                      //             _register_by = "phone";
-                      //           });
-                      //         },
-                      //         child: Text(
-                      //           AppLocalizations.of(context)!
-                      //               .or_register_with_a_phone,
-                      //           style: TextStyle(
-                      //               color: MyTheme.accent_color,
-                      //               fontStyle: FontStyle.italic,
-                      //               decoration: TextDecoration.underline),
-                      //         ),
-                      //       )
-                      //     : Container()
-                    ],
-                  ),
-                )
-              else
-                Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        height: 36,
-                        child: CustomInternationalPhoneNumberInput(
-                          countries: countries_code,
-                          hintText: LangText(context).local.phone_number_ucf,
-                          errorMessage:
-                              LangText(context).local.invalid_phone_number,
-                          initialValue:
-                              PhoneNumber(isoCode: AppConfig.default_country),
-                          onInputChanged: (PhoneNumber number) {
-                            setState(() {
-                              if (number.isoCode != null)
-                                AppConfig.default_country = number.isoCode!;
-                              _phone = number.phoneNumber;
-                            });
-                          },
-                          onInputValidated: (bool value) {
-                            print(value);
-                          },
-                          selectorConfig: const SelectorConfig(
-                            selectorType: PhoneInputSelectorType.DIALOG,
-                          ),
-                          ignoreBlank: false,
-                          autoValidateMode: AutovalidateMode.disabled,
-                          selectorTextStyle:
-                              const TextStyle(color: MyTheme.font_grey),
-                          // initialValue: PhoneNumber(
-                          //     isoCode: countries_code[0].toString()),
-                          textFieldController: _phoneNumberController,
-                          formatInput: true,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              signed: true, decimal: true),
-                          inputDecoration:
-                              InputDecorations.buildInputDecoration_phone(
-                                  hint_text: "01XXX XXX XXX"),
-                          onSaved: (PhoneNumber number) {
-                            //print('On Saved: $number');
-                          },
+                        ignoreBlank: false,
+                        autoValidateMode: AutovalidateMode.disabled,
+                        selectorTextStyle:
+                            const TextStyle(color: MyTheme.font_grey),
+                        // initialValue: PhoneNumber(
+                        //     isoCode: countries_code[0].toString()),
+                        formatInput: true,
+                        inputDecoration:
+                            InputDecorations.buildInputDecoration_phone(
+                          hint_text: "01XXX XXX XXX",
                         ),
+                        onSaved: (PhoneNumber number) {
+                          //print('On Saved: $number');
+                        },
                       ),
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     setState(() {
-                      //       _register_by = "email";
-                      //     });
-                      //   },
-                      //   child: Text(
-                      //     AppLocalizations.of(context)!
-                      //         .or_register_with_an_email,
-                      //     style: TextStyle(
-                      //         color: MyTheme.accent_color,
-                      //         fontStyle: FontStyle.italic,
-                      //         decoration: TextDecoration.underline),
-                      //   ),
-                      // )
-                    ],
-                  ),
+                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     setState(() {
+                    //       _register_by = "email";
+                    //     });
+                    //   },
+                    //   child: Text(
+                    //     AppLocalizations.of(context)!
+                    //         .or_register_with_an_email,
+                    //     style: TextStyle(
+                    //         color: MyTheme.accent_color,
+                    //         fontStyle: FontStyle.italic,
+                    //         decoration: TextDecoration.underline),
+                    //   ),
+                    // )
+                  ],
                 ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: AppDimensions.paddingSmallExtra),

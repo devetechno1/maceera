@@ -137,8 +137,16 @@ class ProductRepository {
     return productMiniResponseFromJson(response.body);
   }
 
-  Future<ProductDetailsResponse> getProductDetails(
-      {String? slug = "", dynamic userId = ''}) async {
+  Future<ProductDetailsResponse> getProductDetails({String? slug = ""}) async {
+    String? userId;
+    if (is_logged_in.$) {
+      userId = user_id.$?.toString();
+    } else {
+      userId = temp_user_id.$;
+    }
+
+    if (userId?.trim().isNotEmpty != true) userId = '0';
+
     final String url =
         ("${AppConfig.BASE_URL}/products/" + slug.toString() + "/$userId");
 

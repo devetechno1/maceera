@@ -122,13 +122,21 @@ class DetailedProduct {
         shop_name: json["shop_name"],
         shop_logo: json["shop_logo"],
         estShippingTime: json["est_shipping_time"],
-        photos: List<Photo>.from(json["photos"].map((x) => Photo.fromJson(x))),
+        photos: json["photos"] == null
+            ? null
+            : List<Photo>.from(json["photos"].map((x) => Photo.fromJson(x))),
         thumbnail_image: json["thumbnail_image"],
-        tags: List<String>.from(json["tags"].map((x) => x)),
+        tags: json["tags"] == null
+            ? null
+            : List<String>.from(json["tags"].map((x) => x)),
         price_high_low: json["price_high_low"],
-        choice_options: List<ChoiceOption>.from(
-            json["choice_options"].map((x) => ChoiceOption.fromJson(x))),
-        colors: List<String>.from(json["colors"].map((x) => x)),
+        choice_options: json["choice_options"] == null
+            ? null
+            : List<ChoiceOption>.from(
+                json["choice_options"].map((x) => ChoiceOption.fromJson(x))),
+        colors: json["colors"] == null
+            ? null
+            : List<String>.from(json["colors"].map((x) => x)),
         has_discount: json["has_discount"],
         discount: json["discount"],
         stroked_price: json["stroked_price"],
@@ -137,9 +145,9 @@ class DetailedProduct {
         currency_symbol: json["currency_symbol"],
         current_stock: json["current_stock"],
         unit: json["unit"],
-        rating: json["rating"].toInt(),
+        rating: json["rating"]?.toInt(),
         rating_count: json["rating_count"],
-        earn_point: json["earn_point"].toInt(),
+        earn_point: json["earn_point"]?.toInt(),
         minQty: json["min_qty"]?.toInt(),
         maxQty: json["max_qty"]?.toInt(),
         description: json["description"] == null || json["description"] == ""
@@ -148,9 +156,11 @@ class DetailedProduct {
         downloads: json["downloads"],
         video_link: json["video_link"],
         link: json["link"],
-        brand: Brand.fromJson(json["brand"]),
-        wholesale: List<Wholesale>.from(
-            json["wholesale"].map((x) => Wholesale.fromJson(x))),
+        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        wholesale: json["wholesale"] == null
+            ? null
+            : List<Wholesale>.from(
+                json["wholesale"].map((x) => Wholesale.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

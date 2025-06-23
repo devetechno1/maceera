@@ -37,6 +37,8 @@ class PaymobScreen extends StatefulWidget {
 class _PaymobScreenState extends State<PaymobScreen> {
   int? _combined_order_id = 0;
   bool _order_init = false;
+  bool canPop = true;
+
   final WebViewController _webViewController = WebViewController();
   bool get goToOrdersScreen =>
       widget.payment_type != "cart_payment" || _order_init;
@@ -68,9 +70,16 @@ class _PaymobScreenState extends State<PaymobScreen> {
           //   Navigator.of(context).pop(goToOrdersScreen);
           // },
           onPageFinished: (page) {
+            canPop = true;
+            setState(() {});
             if (page.contains("/paymob/callback")) {
               getData();
+            } else if (page.contains("pending=false") &&
+                page.contains("success=true")) {
+              canPop = false;
+              setState(() {});
             }
+            print(page);
           },
         ),
       )
@@ -85,7 +94,7 @@ class _PaymobScreenState extends State<PaymobScreen> {
       ToastComponent.showDialog(
         orderCreateResponse.message,
       );
-      Navigator.of(context).pop(goToOrdersScreen);
+      if (canPop) Navigator.of(context).pop(goToOrdersScreen);
       return;
     }
 
@@ -100,7 +109,7 @@ class _PaymobScreenState extends State<PaymobScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
+        if (!didPop && canPop) {
           Navigator.of(context).pop(goToOrdersScreen);
         }
       },
@@ -178,16 +187,18 @@ class _PaymobScreenState extends State<PaymobScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       centerTitle: true,
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: Icon(
-              app_language_rtl.$!
-                  ? CupertinoIcons.arrow_right
-                  : CupertinoIcons.arrow_left,
-              color: MyTheme.dark_grey),
-          onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
-        ),
-      ),
+      leading: canPop
+          ? Builder(
+              builder: (context) => IconButton(
+                icon: Icon(
+                    app_language_rtl.$!
+                        ? CupertinoIcons.arrow_right
+                        : CupertinoIcons.arrow_left,
+                    color: MyTheme.dark_grey),
+                onPressed: () => Navigator.of(context).pop(goToOrdersScreen),
+              ),
+            )
+          : const SizedBox(),
       title: Text(
         AppLocalizations.of(context)!.pay_with_my_paymob,
         style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),

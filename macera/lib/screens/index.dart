@@ -53,7 +53,7 @@ class _IndexState extends State<Index> {
     InternetHelper.listenToConnectivityChanges(context);
     getSharedValueHelperData().then((value) {
       Future.delayed(const Duration(seconds: 3)).then((value) {
-        SystemConfig.isShownSplashScreed = true;
+        SystemConfig.isShownSplashScreen = true;
         Provider.of<LocaleProvider>(context, listen: false)
             .setLocale(app_mobile_language.$!);
         setState(() {});
@@ -66,7 +66,7 @@ class _IndexState extends State<Index> {
   Widget build(BuildContext context) {
     SystemConfig.context ??= context;
     return Scaffold(
-      body: SystemConfig.isShownSplashScreed
+      body: SystemConfig.isShownSplashScreen
           ? const Main()
           : const SplashScreen(),
     );

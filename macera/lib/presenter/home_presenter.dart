@@ -18,7 +18,6 @@ import 'package:one_context/one_context.dart';
 import '../data_model/category_response.dart';
 import '../data_model/popup_banner_model.dart';
 import '../helpers/shared_value_helper.dart';
-import '../helpers/system_config.dart';
 import '../status/execute_and_handle_remote_errors.dart';
 import '../status/status.dart';
 import '../ui_elements/pop_up_banner.dart';
@@ -299,7 +298,7 @@ class HomePresenter extends ChangeNotifier {
 
   Future<void> showPopupBanner([BuildContext? cntx]) async {
     final BuildContext? context = cntx ?? OneContext().context;
-    if(context == null || GoRouter.of(context).state?.path != "/" || !SystemConfig.isShownSplashScreed || _isOpenedBefore) return;
+    if(context == null || GoRouter.of(context).state?.path != "/" || _isOpenedBefore) return;
     _isOpenedBefore = true;
     
     final Status<List<PopupBannerModel>> bannersStatus = await executeAndHandleErrors(() => SlidersRepository().fetchBannerPopupData());

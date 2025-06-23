@@ -127,21 +127,20 @@ class _ProductDetailsState extends State<ProductDetails>
   bool _topProductInit = false;
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller
-          .runJavaScriptReturningResult(
-              "document.getElementById('scaled-frame').clientHeight")
-          .then(
-        (value) {
-          initHeight = double.parse(value.toString());
-          if (webViewHeight < initHeight) {
-            webViewHeight = initHeight;
-          } else {
-            initHeight = webViewHeight;
-          }
-          setState(() {});
-        },
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final value = await controller.runJavaScriptReturningResult(
+            "document.getElementById('scaled-frame').clientHeight");
+        initHeight = double.parse(value.toString());
+        if (webViewHeight < initHeight) {
+          webViewHeight = initHeight;
+        } else {
+          initHeight = webViewHeight;
+        }
+        setState(() {});
+      } catch (e) {
+        print("Error in runJavaScriptReturningResult : $e");
+      }
     });
     quantityText.text = "$_quantity";
     _ColorAnimationController =
@@ -198,8 +197,8 @@ class _ProductDetailsState extends State<ProductDetails>
   }
 
   fetchProductDetails() async {
-    final productDetailsResponse = await ProductRepository()
-        .getProductDetails(slug: widget.slug, userId: user_id.$);
+    final productDetailsResponse =
+        await ProductRepository().getProductDetails(slug: widget.slug);
 
     if (productDetailsResponse.detailed_products!.isNotEmpty) {
       _productDetails = productDetailsResponse.detailed_products![0];
@@ -236,14 +235,14 @@ class _ProductDetailsState extends State<ProductDetails>
       _singlePriceString = _productDetails!.main_price;
       // fetchVariantPrice();
       _stock = _productDetails!.current_stock ?? _stock;
-      _productDetails!.photos!.forEach((photo) {
+      _productDetails!.photos?.forEach((photo) {
         _productImageList.add(photo.path);
       });
 
-      _productDetails!.choice_options!.forEach((choiceOpiton) {
+      _productDetails!.choice_options?.forEach((choiceOpiton) {
         _selectedChoices.add(choiceOpiton.options![0]);
       });
-      _productDetails!.colors!.forEach((color) {
+      _productDetails!.colors?.forEach((color) {
         _colorList.add(color);
       });
       setChoiceString();
@@ -445,11 +444,10 @@ class _ProductDetailsState extends State<ProductDetails>
     final cartAddResponse = await CartRepository().getCartAddResponse(
       _productDetails?.id,
       _variant,
-      user_id.$,
       _quantity,
     );
 
-    temp_user_id.$ = cartAddResponse.tempUserId;
+    temp_user_id.$ = cartAddResponse?.tempUserId ?? '';
     await temp_user_id.save();
 
     if (cartAddResponse.result == false) {
@@ -1175,7 +1173,7 @@ class _ProductDetailsState extends State<ProductDetails>
                                 Visibility(
                                   visible: whole_sale_addon_installed.$,
                                   child: _productDetails != null
-                                      ? _productDetails!.wholesale!.isNotEmpty
+                                      ? _productDetails!.wholesale?.isNotEmpty == true
                                           ? buildWholeSaleQuantityPrice()
                                           : const SizedBox.shrink()
                                       : ShimmerHelper().buildBasicShimmer(
@@ -1535,33 +1533,34 @@ class _ProductDetailsState extends State<ProductDetails>
                             AppDimensions.radiusHalfSmall),
                         child: FadeInImage.assetNetwork(
                           placeholder: AppImages.placeholder,
-                          image: _productDetails!.shop_logo!,
+                          image: _productDetails?.shop_logo ?? '',
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                   ),
                 ),
-          Container(
-            width: MediaQuery.of(context).size.width * (.5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(AppLocalizations.of(context)!.seller_ucf,
+          if (_productDetails?.shop_name != null)
+            Container(
+              width: MediaQuery.of(context).size.width * (.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.seller_ucf,
+                      style: const TextStyle(
+                          color: Color(0xff6B7377),
+                          fontFamily: 'Public Sans',
+                          fontSize: 10)),
+                  Text(
+                    _productDetails!.shop_name!,
                     style: const TextStyle(
-                        color: Color(0xff6B7377),
-                        fontFamily: 'Public Sans',
-                        fontSize: 10)),
-                Text(
-                  _productDetails!.shop_name!,
-                  style: const TextStyle(
-                      color: Color(0xff3E4447),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold),
-                )
-              ],
+                        color: Color(0xff3E4447),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
             ),
-          ),
           const Spacer(),
           Visibility(
             visible: AppConfig.businessSettingsData.conversationSystem,
@@ -1845,7 +1844,7 @@ class _ProductDetailsState extends State<ProductDetails>
 
   ListView buildChoiceOptionList() {
     return ListView.builder(
-      itemCount: _productDetails!.choice_options!.length,
+      itemCount: _productDetails!.choice_options?.length ?? 0,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
@@ -2400,7 +2399,7 @@ class _ProductDetailsState extends State<ProductDetails>
   }
 
   Widget buildBrandRow() {
-    return _productDetails!.brand!.id! > 0
+    return (_productDetails!.brand?.id ?? -1) > 0
         ? InkWell(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {

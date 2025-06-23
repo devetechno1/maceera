@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import '../app_config.dart';
 import '../presenter/cart_provider.dart';
 import '../ui_elements/close_app_dialog_widget.dart';
+import 'home/home.dart';
 // import 'home/home_page_type_enum.dart';
 
 class Main extends StatefulWidget {
@@ -116,6 +117,8 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
+    homeData.showPopupBanner(context);
+
     return WillPopScope(
       onWillPop: willPop,
       child: Directionality(

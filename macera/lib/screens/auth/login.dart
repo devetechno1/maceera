@@ -80,26 +80,29 @@ class _LoginState extends State<Login> {
   Future<void> onPressedLogin(ctx) async {
     FocusScope.of(context).unfocus();
 
-    Loading.show(context);
     final email = _emailController.text.toString();
     final password = _passwordController.text.toString();
 
     if (_login_by == 'email' && email == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_email,
+        isError: true,
       );
       return;
     } else if (_login_by == 'phone' && _phone == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_phone_number,
+        isError: true,
       );
       return;
     } else if (password == "") {
       ToastComponent.showDialog(
         AppLocalizations.of(context)!.enter_password,
+        isError: true,
       );
       return;
     }
+    Loading.show(context);
 
     final loginResponse = await AuthRepository().getLoginResponse(
         _login_by == 'email' ? email : _phone, password, _login_by);
@@ -113,11 +116,13 @@ class _LoginState extends State<Login> {
       if (loginResponse.message.runtimeType == List) {
         ToastComponent.showDialog(
           loginResponse.message!.join("\n"),
+          isError: true,
         );
         return;
       }
       ToastComponent.showDialog(
         loginResponse.message!.toString(),
+        isError: true,
       );
     } else {
       print("in the success block ");

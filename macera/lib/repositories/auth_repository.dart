@@ -93,29 +93,30 @@ class AuthRepository {
 
   Future<LoginResponse> getSignupResponse(
     String name,
-    String? emailOrPhone,
+    String? email,
+    String phone,
     String password,
     String passowrdConfirmation,
-    String registerBy,
     String capchaKey,
   ) async {
     final postBody = jsonEncode({
       "name": "$name",
-      "email_or_phone": "$emailOrPhone",
+      if (email != null) "email": "$email",
+      "phone": "$phone",
       "password": "$password",
       "password_confirmation": "$passowrdConfirmation",
-      "register_by": "$registerBy",
       "g-recaptcha-response": "$capchaKey",
     });
 
     const String url = ("${AppConfig.BASE_URL}/auth/signup");
     final response = await ApiRequest.post(
-        url: url,
-        headers: {
-          "Content-Type": "application/json",
-          "App-Language": app_language.$!,
-        },
-        body: postBody);
+      url: url,
+      headers: {
+        "Content-Type": "application/json",
+        "App-Language": app_language.$!,
+      },
+      body: postBody,
+    );
 
     return loginResponseFromJson(response.body);
   }

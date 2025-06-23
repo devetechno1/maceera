@@ -8,18 +8,17 @@ class CategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 220,
-        child: ListenableBuilder(
-          listenable: homeData,
-          builder: (context, child) {
-            if (!homeData.isFeaturedProductInitial &&
-                homeData.featuredProductList.isEmpty) {
-              return const SizedBox();
-            }
-
-            return Column(
+    return ListenableBuilder(
+      listenable: homeData,
+      builder: (context, child) {
+        if (!homeData.isCategoryInitial &&
+            homeData.featuredCategoryList.isEmpty) {
+          return const SliverToBoxAdapter(child: SizedBox.shrink());
+        }
+        return SliverToBoxAdapter(
+          child: SizedBox(
+            height: 220,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
@@ -38,10 +37,10 @@ class CategoryList extends StatelessWidget {
                   child: FeaturedCategoriesWidget(homeData: homeData),
                 ),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

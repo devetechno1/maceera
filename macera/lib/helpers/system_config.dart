@@ -7,5 +7,5 @@ class SystemConfig {
   static BuildContext? context;
   static CurrencyInfo? systemCurrency;
   static User? systemUser;
-  static bool isShownSplashScreed = false;
+  static bool isShownSplashScreen = false;
 }

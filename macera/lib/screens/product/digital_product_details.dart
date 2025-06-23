@@ -164,7 +164,7 @@ class _DigitalProductDetailsState extends State<DigitalProductDetails>
 
   fetchProductDetails() async {
     final productDetailsResponse = await ProductRepository()
-        .getProductDetails(slug: widget.slug, userId: user_id.$);
+        .getProductDetails(slug: widget.slug);
 
     if (productDetailsResponse.detailed_products!.isNotEmpty) {
       _productDetails = productDetailsResponse.detailed_products![0];
@@ -394,7 +394,7 @@ class _DigitalProductDetailsState extends State<DigitalProductDetails>
     }
 
     final cartAddResponse = await CartRepository()
-        .getCartAddResponse(_productDetails!.id, _variant, user_id.$, 1);
+        .getCartAddResponse(_productDetails!.id, _variant, 1);
 
     temp_user_id.$ = cartAddResponse.tempUserId;
     temp_user_id.save();
