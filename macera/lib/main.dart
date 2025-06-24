@@ -330,6 +330,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context, provider, snapshot) {
           final ThemeProvider theme =
               Provider.of<ThemeProvider>(context, listen: true);
+
           return MaterialApp.router(
             routerConfig: routes,
             title: AppConfig.appNameOnDeviceLang,
@@ -363,6 +364,7 @@ class _MyAppState extends State<MyApp> {
               AppLocalizations.delegate,
             ],
             locale: provider.locale,
+            key: ValueKey(provider.locale.languageCode),
             supportedLocales: LangConfig().supportedLocales(),
             localeResolutionCallback: (deviceLocale, supportedLocales) {
               if (AppLocalizations.delegate.isSupported(deviceLocale!)) {

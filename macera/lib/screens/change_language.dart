@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../data_model/language_list_response.dart';
+import 'home/home.dart';
 
 class ChangeLanguage extends StatefulWidget {
   const ChangeLanguage({Key? key}) : super(key: key);
@@ -90,7 +91,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
     }
   }
 
-  onLanguageItemTap(index) {
+  onLanguageItemTap(index) async {
     if (index != _selected_index) {
       setState(() {
         _selected_index = index;
@@ -99,16 +100,22 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
       // if(Locale().)
 
       app_language.$ = _list[_selected_index].code;
-      app_language.save();
       app_mobile_language.$ = _list[_selected_index].mobile_app_code;
-      app_mobile_language.save();
       app_language_rtl.$ = _list[_selected_index].rtl;
-      app_language_rtl.save();
+
+      await Future.wait([
+        app_language.save(),
+        app_mobile_language.save(),
+        app_language_rtl.save(),
+      ]);
 
       // var local_provider = new LocaleProvider();
       // local_provider.setLocale(_list[_selected_index].code);
       Provider.of<LocaleProvider>(context, listen: false)
           .setLocale(_list[_selected_index].mobile_app_code ?? 'en');
+
+      homeData.onRefresh();
+
       context.go('/');
     }
   }
