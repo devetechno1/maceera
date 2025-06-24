@@ -80,6 +80,25 @@
           "other_platform_oauth_client": []
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58373654838:android:632e624da5de3c92024b97",
+        "android_client_info": {
+          "package_name": "com.maceraeg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB06d2oaA5zX1QRW1HqTmCq6NiuvrWYT24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
     }
   ],
   "configuration_version": "1"
