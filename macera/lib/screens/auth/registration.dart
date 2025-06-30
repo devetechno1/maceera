@@ -141,7 +141,7 @@ class _RegistrationState extends State<Registration> {
     }
     Loading.show(context);
 
-  final String tempEmail =
+    final String tempEmail =
         email.trim().isEmpty ? "$_phone@email.com" : email.trim();
 
     final signupResponse = await AuthRepository().getSignupResponse(

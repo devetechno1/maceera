@@ -98,10 +98,10 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         link: json["link"],
-        orderId: json["order_id"],
+        orderId: int.tryParse("${json["order_id"]}"),
         orderCode: json["order_code"],
-        userId: json["user_id"],
-        sellerId: json["seller_id"],
+        userId: int.tryParse("${json["user_id"]}"),
+        sellerId: int.tryParse("${json["seller_id"]}"),
         status: json["status"],
       );
 

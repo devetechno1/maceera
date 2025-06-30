@@ -66,38 +66,39 @@ class _NotificationListState extends State<NotificationList> {
                   fontWeight: FontWeight.bold,
                   color: MyTheme.dark_font_grey),
             ),
-            PopupMenuButton<int>(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 1,
-                  child: Text(LangText(context).local.delete_selection),
-                ),
-              ],
-              onSelected: (value) async {
-                // print('delete on selection');
-                // if empty list then return
-                if (notificationIds.isEmpty) {
-                  ToastComponent.showDialog(
-                    LangText(context).local.nothing_selected,
-                  );
-                  return;
-                }
-                // show loading and delete selected notification
-                Loading.show(context);
-                final notificationResponse = await NotificationRepository()
-                    .notificationBulkDelete(notificationIds);
-                Loading.close();
-                if (notificationResponse.result) {
-                  ToastComponent.showDialog(
-                    notificationResponse.message,
-                  );
-                }
-                // reset all list
-                if (notificationResponse.result) {
-                  resetAll();
-                }
-              },
-            )
+            if (notificationIds.isNotEmpty)
+              PopupMenuButton<int>(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Text(LangText(context).local.delete_selection),
+                  ),
+                ],
+                onSelected: (value) async {
+                  // print('delete on selection');
+                  // if empty list then return
+                  if (notificationIds.isEmpty) {
+                    ToastComponent.showDialog(
+                      LangText(context).local.nothing_selected,
+                    );
+                    return;
+                  }
+                  // show loading and delete selected notification
+                  Loading.show(context);
+                  final notificationResponse = await NotificationRepository()
+                      .notificationBulkDelete(notificationIds);
+                  Loading.close();
+                  if (notificationResponse.result) {
+                    ToastComponent.showDialog(
+                      notificationResponse.message,
+                    );
+                  }
+                  // reset all list
+                  if (notificationResponse.result) {
+                    resetAll();
+                  }
+                },
+              )
           ],
         ),
       ),

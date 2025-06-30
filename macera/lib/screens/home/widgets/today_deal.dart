@@ -14,13 +14,7 @@ class TodaysDealProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // if (homePresenter.TodayDealList.isEmpty) {
-    //   return Center(
-    //     child: Text(
-    //       LangText(context).local.error_fetching_todays_deal_products,
-    //     ),
-    //   );
-    // }
+    if (homePresenter.TodayDealList.isEmpty) return const SizedBox();
 
     return SizedBox(
       height: 250,

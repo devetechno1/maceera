@@ -145,11 +145,11 @@ class DetailedProduct {
         currency_symbol: json["currency_symbol"],
         current_stock: json["current_stock"],
         unit: json["unit"],
-        rating: json["rating"]?.toInt(),
+        rating: int.tryParse("${json["rating"]}"),
         rating_count: json["rating_count"],
         earn_point: json["earn_point"]?.toInt(),
-        minQty: json["min_qty"]?.toInt(),
-        maxQty: json["max_qty"]?.toInt(),
+        minQty: int.tryParse("${json["min_qty"]}"),
+        maxQty: int.tryParse("${json["max_qty"]}"),
         description: json["description"] == null || json["description"] == ""
             ? "No Description is available"
             : json['description'],
