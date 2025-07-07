@@ -17,10 +17,8 @@ import 'package:one_context/one_context.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_value/shared_value.dart';
 import 'package:device_preview/device_preview.dart';
-
 import 'app_config.dart';
 import 'custom/aiz_route.dart';
-
 import 'data_model/business_settings/update_model.dart';
 import 'helpers/business_setting_helper.dart';
 import 'helpers/main_helpers.dart';
