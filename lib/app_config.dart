@@ -20,7 +20,9 @@ class AppConfig {
 
   /// To make force update to app
   static String version = '1.0.0';
-
+  /// Internal development version shown on the splash screen.
+  /// Used to verify the app build matches the master app.
+  static const String deveVersion = '9.8.1';
   //configure this
   // static String copyright_text =
   //     "@ Deve Finance " + this_year; //this shows in the splash screen
@@ -33,7 +35,7 @@ class AppConfig {
           ? app_name_ar
           : app_name_en;
 
-  static bool isDebugMode = kDebugMode;
+  static bool isDebugMode = false;
   static bool turnDevicePreviewOn = isDebugMode;
 
   /// This get the name of the application in appLocal

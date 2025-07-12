@@ -1,4 +1,4 @@
-package com.appleerastore
+package com.maceraeg
 
 import io.flutter.embedding.android.FlutterActivity
 

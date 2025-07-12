@@ -66,9 +66,9 @@ class SplashScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      "V ${AppConfig.version}",
-                      style: const TextStyle(
+                    const Text(
+                      "V ${AppConfig.deveVersion}",
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14.0,
                         color: Colors.white,
